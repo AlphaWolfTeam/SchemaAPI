@@ -18,9 +18,10 @@ jobs:
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     
     
-    - name: Publish to Registry
-      uses: AhnSeongHyun/action-tag-docker-build-push@master
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1
       with:
-        repo_name: alphawolfsforce/jaws-schema-api
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+       username: ${{ secrets.DOCKER_USERNAME }}
+       password: ${{ secrets.DOCKER_PASSWORD }}
+       repository: alphawolfsforce/jaws-schema-api
+       tags: latest
