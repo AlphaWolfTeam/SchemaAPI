@@ -2,9 +2,7 @@ version: "3"
 
 services:
   serversample:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: alphawolfsforce/jaws-schema-api:latest
     environment:
       ENV_NAME: dev
     ports:
