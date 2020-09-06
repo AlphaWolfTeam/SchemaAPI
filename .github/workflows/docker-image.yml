@@ -30,4 +30,4 @@ jobs:
           command: ./update-service.sh
           host: ${{ secrets.HOST }}
           username: alphawolfsforce
-          passphrase: ${{ secrets.PASSPHRASE }}
+          password: ${{ secrets.PASSPHRASE }}
