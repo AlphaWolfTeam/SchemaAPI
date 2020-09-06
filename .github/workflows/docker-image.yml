@@ -29,5 +29,5 @@ jobs:
         with:
           command: ./update-service.sh
           host: ${{ secrets.HOST }}
-          username: alphawolfsforce
-          password: ${{ secrets.PASSPHRASE }}
+          username: jawsAlpha
+          password: ${{ secrets.PASSWORD }}
