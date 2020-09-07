@@ -13,10 +13,43 @@ export default class SchemaManager{
 
         if (schema) {
             schema.schemaProperties.forEach(async (property: IProperty) => {
-                PropertyManager.deleteById(property.propertyId);
+                PropertyManager.deleteById(String(property.propertyId));
             });
         }
     
         return schema;
+      }
+
+      static async deleteProperty(schemaId: string, propertyId: string): Promise<ISchema | null> {
+        let hasPropertyFound = false;
+        const schema = await SchemaRepository.getById(schemaId);
+        // .catch(() => {
+        //   throw new GroupNotFoundError();
+        // });
+        const property = await PropertyManager.getById(propertyId);
+        // .catch(() => {
+        //   throw new PersonNotFoundError();
+        // });
+    
+        if (schema) {
+            schema.schemaProperties = schema.schemaProperties.filter(
+            (property: IProperty) => {
+              if (String(property.propertyId) === propertyId) {
+                hasPropertyFound = true;
+                return false;
+              }
+              return true;
+            },
+          );
+        }
+        if (!hasPropertyFound) {
+         // throw new PersonNotFoundError();
+        }
+    
+        if (property) {
+          await PropertyManager.deleteById(propertyId);
+        }
+    
+        return SchemaRepository.updateById(schemaId, schema as ISchema);
       }
 }
