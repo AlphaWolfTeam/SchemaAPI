@@ -52,4 +52,11 @@ export default class SchemaManager{
     
         return SchemaRepository.updateById(schemaId, schema as ISchema);
       }
+
+      static async updateById(id: string, schema: Partial<ISchema>): Promise<ISchema | null> {
+        return SchemaRepository.updateById(id, schema)
+        // .catch(() => {
+        //   throw new PersonNotFoundError();
+        // });
+      }
 }
