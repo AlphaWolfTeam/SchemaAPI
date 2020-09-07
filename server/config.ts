@@ -2,7 +2,7 @@ export default {
   dev: {
     db: {
       port: 27017,
-      host: 'localhost',
+      host: '40.68.227.241',
       name: 'schema',
     },
   },
