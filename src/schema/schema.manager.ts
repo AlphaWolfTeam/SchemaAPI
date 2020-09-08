@@ -58,11 +58,9 @@ export default class SchemaManager {
     return schema;
 }
 
-static async getAll(){
+static async getAll(): Promise<ISchema[] | null>{
   return await SchemaRepository.getAll();
 }
-
-
 
   static async updateById(id: string, schema: ISchema): Promise<ISchema | null> {
     const prevSchema: ISchema = await SchemaRepository.getById(id) as ISchema;
