@@ -18,7 +18,7 @@ export default class SchemaRepository{
         return SchemaModel.findOneAndUpdate({ _id }, { $set: schema }, { upsert: true }).exec();
     }
 
-    static getAll(): Promise< {
+    static getAll(): Promise<ISchema[] | null> {
         return SchemaModel.find().exec();
     }
 }
