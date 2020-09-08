@@ -2,6 +2,11 @@ import SchemaModel from './schema.model';
 import ISchema from './schema.interface';
 
 export default class SchemaRepository{
+  
+  static createSchema(schema: ISchema): Promise<ISchema> {
+        return SchemaModel.create(schema);
+    }
+
     static getById(_id: string): Promise<ISchema | null> {
         return SchemaModel.findById(_id).exec();
     }
