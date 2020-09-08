@@ -20,7 +20,6 @@ export default class SchemaManager {
         PropertyManager.deleteById(String(property._id));
       });
     }
-
     return schema;
   }
 
@@ -50,6 +49,20 @@ export default class SchemaManager {
 
     return SchemaRepository.updateById(schemaId, schema as ISchema);
   }
+
+  static async getById(groupId: string): Promise<ISchema | null> {
+    const schema = await SchemaRepository.getById(groupId);
+    if (schema === null) {
+        // throw new SchemaNotFound();
+    }
+    return schema;
+}
+
+static async getAll(){
+  return await SchemaRepository.getAll();
+}
+
+
 
   static async updateById(id: string, schema: ISchema): Promise<ISchema | null> {
     const prevSchema: ISchema = await SchemaRepository.getById(id) as ISchema;
