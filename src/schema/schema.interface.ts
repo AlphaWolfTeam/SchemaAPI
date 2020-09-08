@@ -5,7 +5,7 @@ export default interface ISchema {
     // schemaId: mongoose.Schema.Types.ObjectId,
     schemaName: string,
     schemaProperties: IProperty[],
-    permissions: Permissions,
+    permissions: string,
     createdAt: Date,
     updatedAt: Date,
 }

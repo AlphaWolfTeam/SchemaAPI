@@ -18,7 +18,7 @@ const SchemaSchema = new mongoose.Schema({
         required: true
       }],
     permissions:{
-        type: Permissions,
+        type: String,
         required: true
     },
     createdAt:{

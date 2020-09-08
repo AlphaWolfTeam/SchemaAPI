@@ -1,18 +1,19 @@
-import Types from './enum.types'
+
+// import Types from "./enum.types";
 
 export default interface IProperty{
     _id: string,
     propertyName: string,
-    propertyType: Types,
-    defaultValue?: Types,
+    propertyType: string,
+    defaultValue?: string,
     propertyRef: string,
-    enum?: Types[],
+    enum?: string[],
     isUnique: boolean,
     index?: boolean,
     required?: boolean,
-    validate?: Function,
+    // validate?: Function,
     createdAt: Date,
     updatedAt: Date,
-    permissions?: Permissions
+    permissions?: string
 }
 

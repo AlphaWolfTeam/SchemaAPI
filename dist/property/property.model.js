@@ -1,35 +1,35 @@
-import * as mongoose from 'mongoose';
-import  IProperty  from './property.interface';
-import config from '../config/index';
-import Types from './enum.types';
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose = require("mongoose");
+const index_1 = require("../config/index");
+const enum_types_1 = require("./enum.types");
 const PropertySchema = new mongoose.Schema({
-    propertyId:{
+    propertyId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         unique: true
     },
-    propertyName:{
+    propertyName: {
         type: String,
         required: true
     },
-    propertyType:{
+    propertyType: {
         type: String,
-        enum: Types,
+        enum: enum_types_1.default,
         required: true
     },
-    defaultValue:{
+    defaultValue: {
         type: String,
-        enum: Types,
+        enum: enum_types_1.default,
         required: false
     },
-    propertyRef:{
+    propertyRef: {
         type: String,
         required: true
     },
-    enum:{
+    enum: {
         type: [String],
-        enum: Types,
+        enum: enum_types_1.default,
         required: false
     },
     isUnique: {
@@ -44,10 +44,6 @@ const PropertySchema = new mongoose.Schema({
         type: Boolean,
         required: false
     },
-    // validate:{
-        // type: Function, 
-        // required: false
-    // } ,
     createdAt: {
         type: Date,
         required: true
@@ -61,7 +57,6 @@ const PropertySchema = new mongoose.Schema({
         required: false
     }
 });
-
-const PropertyModel = mongoose.model<IProperty & mongoose.Document>(config.mongo.propertyCollectionName, PropertySchema);
-
-export default PropertyModel;
+const PropertyModel = mongoose.model(index_1.default.mongo.propertyCollectionName, PropertySchema);
+exports.default = PropertyModel;
+//# sourceMappingURL=property.model.js.map

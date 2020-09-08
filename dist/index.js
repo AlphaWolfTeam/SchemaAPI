@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
-const server_1 = require("./express/server");
+const server_1 = require("./server");
 const index_1 = require("./config/index");
 const { mongo, service } = index_1.default;
 const initializeMongo = async () => {

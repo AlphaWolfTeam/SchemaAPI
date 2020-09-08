@@ -8,7 +8,8 @@ const config = {
     },
     mongo: {
         uri: env.get('MONGO_URI').required().asUrlString(),
-        featureCollectionName: env.get('MONGO_FEATURE_COLLECTION_NAME').required().asString(),
+        schemaCollectionName: env.get('MONGO_SCHEMA_COLLECTION_NAME').required().asString(),
+        propertyCollectionName: env.get('MONGO_PROPERTY_COLLECTION_NAME').required().asString(),
     },
 };
 exports.default = config;
