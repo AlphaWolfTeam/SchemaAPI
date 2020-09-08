@@ -11,11 +11,7 @@ export default class SchemaManager{
     }
   
     static async deleteSchema(id: string): Promise<ISchema | null> {
-        //  const schema = await SchemaRepository.deleteById(id).catch(() => {
-        //    throw new SchemaNotFoundError();
-        //  });
         const schema = await SchemaRepository.deleteById(id);
-
 
         if (schema) {
             schema.schemaProperties.forEach(async (property: IProperty) => {
@@ -29,13 +25,7 @@ export default class SchemaManager{
       static async deleteProperty(schemaId: string, propertyId: string): Promise<ISchema | null> {
         let hasPropertyFound = false;
         const schema = await SchemaRepository.getById(schemaId);
-        // .catch(() => {
-        //   throw new GroupNotFoundError();
-        // });
         const property = await PropertyManager.getById(propertyId);
-        // .catch(() => {
-        //   throw new PersonNotFoundError();
-        // });
     
         if (schema) {
             schema.schemaProperties = schema.schemaProperties.filter(
@@ -60,9 +50,6 @@ export default class SchemaManager{
       }
 
       static async updateById(id: string, schema: Partial<ISchema>): Promise<ISchema | null> {
-        return SchemaRepository.updateById(id, schema)
-        // .catch(() => {
-        //   throw new PersonNotFoundError();
-        // });
+        return SchemaRepository.updateById(id, schema);
       }
 }
