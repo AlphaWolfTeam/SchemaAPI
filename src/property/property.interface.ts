@@ -1,8 +1,7 @@
-import * as mongoose from 'mongoose';
 import Types from './enum.types'
 
 export default interface IProperty{
-    propertyId: mongoose.Schema.Types.ObjectId,
+    _id: string,
     propertyName: string,
     propertyType: Types,
     defaultValue?: Types,

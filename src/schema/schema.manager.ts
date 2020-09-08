@@ -6,16 +6,20 @@ import IProperty from '../property/property.interface';
 
 export default class SchemaManager{
 
-    static createSchema(schema: ISchema): Promise<ISchema> {
+    static createSchema(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
+        schemaProperties.forEach(async property => {
+          schema.schemaProperties.push(await PropertyManager.create(property) as IProperty);  
+        });
         return SchemaRepository.createSchema(schema);
     }
+
   
     static async deleteSchema(id: string): Promise<ISchema | null> {
         const schema = await SchemaRepository.deleteById(id);
 
         if (schema) {
             schema.schemaProperties.forEach(async (property: IProperty) => {
-                PropertyManager.deleteById(String(property.propertyId));
+                PropertyManager.deleteById(String(property._id));
             });
         }
     
@@ -30,7 +34,7 @@ export default class SchemaManager{
         if (schema) {
             schema.schemaProperties = schema.schemaProperties.filter(
             (property: IProperty) => {
-              if (String(property.propertyId) === propertyId) {
+              if (String(property._id) === propertyId) {
                 hasPropertyFound = true;
                 return false;
               }

@@ -2,6 +2,10 @@ import PropertyRepository from './property.repository';
 import IProperty from './property.interface';
 
 export default class PropertyManager {
+
+    // static create(name: string): Promise<IGroup | null> {
+    //     return new GroupModel({name, people: [],parent: null,sub_groups: [],}).save();
+    //   }
     static create(property: IProperty): Promise<IProperty | null> {
         return PropertyRepository.create(property);
     }
