@@ -17,6 +17,5 @@ export default class SchemaRepository{
 
     static updateById(_id: string, schema: Partial<ISchema>): Promise<ISchema | null> {
         return SchemaModel.findOneAndUpdate({ _id }, { $set: schema }, { upsert: true }).exec();
-      }
-
+    }
 }
