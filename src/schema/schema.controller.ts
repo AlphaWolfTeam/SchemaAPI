@@ -53,19 +53,16 @@ export default class SchemaController {
         }
     }
 
-    // static async getById(req: Request, res: Response){
-    //     const schemaId: Schema.Types.ObjectId = req.params.id;
-    //     res.json(await SchemaManager.get(schemaId));
-    //     res.end();
-    // }
+    static async getById(req: Request, res: Response){
+        const schemaId: string = req.params.id;
+        res.json(await SchemaManager.getById(schemaId));
+        res.end();
+    }
 
-    static async getAll(req: Request, res: Response): Promise<void> {
-        console.log(res)
+    static async getAll(req: Request, res: Response) {
         console.log(req)
-        // const personId: string = req.params.id;
-        // res.json(personId);
-        // res.end();
-        // next();
+        res.json(await SchemaManager.getAll());
+        res.end();
     }
 
 }
