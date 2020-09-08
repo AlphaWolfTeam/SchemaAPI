@@ -52,9 +52,39 @@ export default class SchemaManager {
   }
 
   static async updateById(id: string, schema: ISchema): Promise<ISchema | null> {
+    const prevSchema: ISchema = await SchemaRepository.getById(id) as ISchema;
+    let isExist: boolean;
+
     schema.schemaProperties.forEach(async property => {
-      await PropertyManager.updateById(property._id, property);
+      isExist = false;
+
+      prevSchema.schemaProperties.forEach(async prevProperty => {
+        if (property._id === prevProperty._id) {
+          isExist = true;
+        }
+      });
+
+      if (isExist) {
+        property = await PropertyManager.updateById(property._id, property) as IProperty;
+      } else {
+        property = await PropertyManager.create(property) as IProperty;
+      }
     });
+
+    prevSchema.schemaProperties.forEach(async prevProperty => {
+      isExist = false;
+
+      schema.schemaProperties.forEach(async property => {
+        if (property._id === prevProperty._id) {
+          isExist = true;
+        }
+      });
+
+      if (!isExist) {
+        await PropertyManager.deleteById(prevProperty._id);
+      }
+    });
+
     return SchemaRepository.updateById(id, schema);
   }
 }
