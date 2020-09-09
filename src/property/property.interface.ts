@@ -1,15 +1,10 @@
-
-// import Types from "./enum.types";
-
 export default interface IProperty{
     _id?: string,
     propertyName: string,
     propertyType: string,
-    defaultValue?: string,
-    //defaultValue?: unknown,
+    defaultValue?: any,
     propertyRef: string,
-    enum?: string[],
-    //enum?: unknown[],
+    enum?: any[],
     isUnique: boolean,
     index?: boolean,
     required?: boolean,

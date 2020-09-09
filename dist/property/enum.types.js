@@ -1,18 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Types = void 0;
 const Types = [
     'Array',
     'Boolean',
-    'Buffer',
     'Date',
-    'Decimal128',
-    'DocumentArray',
-    'Embedded',
-    'Map',
-    'Mixed',
     'Number',
     'ObjectId',
     'String'
 ];
-exports.default = Types;
+exports.Types = Types;
 //# sourceMappingURL=enum.types.js.map

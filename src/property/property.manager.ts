@@ -14,7 +14,7 @@ export default class PropertyManager {
         return await PropertyRepository.deleteById(id);
     }
 
-    static async updateById(id: string, property: Partial<IProperty>): Promise<IProperty | null> {
-        return await PropertyRepository.updateById(id, property);
-    }
+    // static async updateById(id: string, property: Partial<IProperty>): Promise<IProperty | null> {
+    //     return await PropertyRepository.updateById(id, property);
+    // }
 }

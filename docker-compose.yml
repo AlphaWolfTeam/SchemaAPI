@@ -6,4 +6,10 @@ services:
     environment:
       ENV_NAME: dev
     ports:
-      - 7001:7001
+      - 27017:27017
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    container_name: mongo-halbanaservice
+
