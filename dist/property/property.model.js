@@ -10,21 +10,19 @@ const PropertySchema = new mongoose.Schema({
     },
     propertyType: {
         type: String,
-        enum: enum_types_1.default,
+        enum: enum_types_1.Types,
         required: true
     },
     defaultValue: {
-        type: String,
-        enum: enum_types_1.default,
-        required: false
+        type: mongoose.Schema.Types.Mixed,
+        required: true
     },
     propertyRef: {
         type: String,
         required: true
     },
     enum: {
-        type: [String],
-        enum: enum_types_1.default,
+        type: [mongoose.Schema.Types.Mixed],
         required: false
     },
     isUnique: {
