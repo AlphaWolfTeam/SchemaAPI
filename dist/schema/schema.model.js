@@ -3,11 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const index_1 = require("../config/index");
 const SchemaSchema = new mongoose.Schema({
-    schemaId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        unique: true
-    },
     schemaName: {
         type: String,
         required: true

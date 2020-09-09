@@ -5,7 +5,9 @@ const property_manager_1 = require("../property/property.manager");
 class SchemaManager {
     static createSchema(schema, schemaProperties) {
         schemaProperties.forEach(async (property) => {
-            schema.schemaProperties.push(await property_manager_1.default.create(property));
+            const propp = await property_manager_1.default.create(property);
+            console.log(propp);
+            schema.schemaProperties.push(propp);
         });
         return schema_repository_1.default.createSchema(schema);
     }
@@ -13,7 +15,7 @@ class SchemaManager {
         const schema = await schema_repository_1.default.deleteById(id);
         if (schema) {
             schema.schemaProperties.forEach(async (property) => {
-                property_manager_1.default.deleteById(String(property._id));
+                property_manager_1.default.deleteById(String(property));
             });
         }
         return schema;
@@ -24,7 +26,7 @@ class SchemaManager {
         const property = await property_manager_1.default.getById(propertyId);
         if (schema) {
             schema.schemaProperties = schema.schemaProperties.filter((property) => {
-                if (String(property._id) === propertyId) {
+                if (String(property) === propertyId) {
                     hasPropertyFound = true;
                     return false;
                 }
@@ -38,8 +40,8 @@ class SchemaManager {
         }
         return schema_repository_1.default.updateById(schemaId, schema);
     }
-    static async getById(groupId) {
-        const schema = await schema_repository_1.default.getById(groupId);
+    static async getById(schemaId) {
+        const schema = await schema_repository_1.default.getById(schemaId);
         if (schema === null) {
         }
         return schema;
@@ -53,12 +55,12 @@ class SchemaManager {
         schema.schemaProperties.forEach(async (property) => {
             isExist = false;
             prevSchema.schemaProperties.forEach(async (prevProperty) => {
-                if (property._id === prevProperty._id) {
+                if (property === prevProperty) {
                     isExist = true;
                 }
             });
             if (isExist) {
-                property = await property_manager_1.default.updateById(property._id, property);
+                property = await property_manager_1.default.updateById(String(property), property);
             }
             else {
                 property = await property_manager_1.default.create(property);
@@ -67,12 +69,12 @@ class SchemaManager {
         prevSchema.schemaProperties.forEach(async (prevProperty) => {
             isExist = false;
             schema.schemaProperties.forEach(async (property) => {
-                if (property._id === prevProperty._id) {
+                if (property === prevProperty) {
                     isExist = true;
                 }
             });
             if (!isExist) {
-                await property_manager_1.default.deleteById(prevProperty._id);
+                await property_manager_1.default.deleteById(String(prevProperty));
             }
         });
         return schema_repository_1.default.updateById(id, schema);

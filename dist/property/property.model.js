@@ -4,11 +4,6 @@ const mongoose = require("mongoose");
 const index_1 = require("../config/index");
 const enum_types_1 = require("./enum.types");
 const PropertySchema = new mongoose.Schema({
-    propertyId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        unique: true
-    },
     propertyName: {
         type: String,
         required: true

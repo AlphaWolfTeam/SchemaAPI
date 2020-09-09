@@ -4,11 +4,11 @@ import config from '../config/index';
 import Types from './enum.types';
 
 const PropertySchema = new mongoose.Schema({
-    propertyId:{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        unique: true
-    },
+    // propertyId:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     required: true,
+    //     unique: true
+    // },
     propertyName:{
         type: String,
         required: true

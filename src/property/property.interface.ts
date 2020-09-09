@@ -2,7 +2,7 @@
 // import Types from "./enum.types";
 
 export default interface IProperty{
-    _id: string,
+    _id?: string,
     propertyName: string,
     propertyType: string,
     defaultValue?: string,

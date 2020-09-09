@@ -3,11 +3,11 @@ import  ISchema  from './schema.interface';
 import config from '../config/index';
 
 const SchemaSchema = new mongoose.Schema({
-    schemaId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        unique: true
-    },
+    // schemaId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     required: true,
+    //     unique: true
+    // },
     schemaName:{
         type: String,
         required: true

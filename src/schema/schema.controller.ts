@@ -5,13 +5,14 @@ import ISchema from './schema.interface';
 export default class SchemaController {
     static async create(req: Request, res: Response): Promise<void> {
         const schema: ISchema = {
-            // schemaId: req.body.schemaId,
             schemaName: req.body.schemaName,
             schemaProperties: [],
             permissions: req.body.permissions,
             createdAt: req.body.createdAt,
             updatedAt: req.body.updatedAt,
         }
+        // console.log(schema);
+        // res.send('heloooooooooooo');
         res.json(await SchemaManager.createSchema(schema, req.body.schemaProperties));
         res.end();
     }
@@ -20,7 +21,6 @@ export default class SchemaController {
         try {
             const updated = await SchemaManager.updateById(req.params.id, req.body);
             if (updated) {
-                // console.log('info', 'UPDATE SCHEMA', `@ id=(${updated.schemaId})`);
             }
             res.json(updated);
         } catch (e) {
@@ -32,7 +32,6 @@ export default class SchemaController {
         try {
             const deleted = await SchemaManager.deleteSchema(req.params.id);
             if (deleted) {
-                // console.log('info', 'DELETE SCHEMA', `@ id=(${deleted.schemaId})`);
             }
             res.json(deleted);
         } catch (e) {
@@ -44,8 +43,6 @@ export default class SchemaController {
         try {
             const schema = await SchemaManager.deleteProperty(req.params.id, req.params.propertyId);
             if (schema) {
-                // console.log(`info Delete Property id(${req.params.propertyId}) from group 
-                // id=(${schema.schemaId}) name=(${schema.schemaName})`);
             }
             res.json(schema);
         } catch (e) {
