@@ -18,6 +18,11 @@ const PropertySchema = new mongoose.Schema({
         enum: Types,
         required: true
     },
+    // defaultValue:{
+    //     type: String,
+    //     enum: Types,
+    //     required: false
+    // },
     defaultValue:{
         type: String,
         enum: Types,
@@ -27,6 +32,11 @@ const PropertySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // enum:{
+    //     type: [String],
+    //     enum: Types,
+    //     required: false
+    // },
     enum:{
         type: [String],
         enum: Types,
