@@ -3,12 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const schema_repository_1 = require("./schema.repository");
 const property_manager_1 = require("../property/property.manager");
 class SchemaManager {
-    static createSchema(schema, schemaProperties) {
-        schemaProperties.forEach(async (property) => {
-            const propp = await property_manager_1.default.create(property);
-            console.log(propp);
-            schema.schemaProperties.push(propp);
-        });
+    static async createSchema(schema, schemaProperties) {
+        for await (let property of schemaProperties) {
+            const createdProperty = await property_manager_1.default.create(property);
+            schema.schemaProperties.push(createdProperty);
+        }
         return schema_repository_1.default.createSchema(schema);
     }
     static async deleteSchema(id) {
@@ -51,32 +50,15 @@ class SchemaManager {
     }
     static async updateById(id, schema) {
         const prevSchema = await schema_repository_1.default.getById(id);
-        let isExist;
-        schema.schemaProperties.forEach(async (property) => {
-            isExist = false;
-            prevSchema.schemaProperties.forEach(async (prevProperty) => {
-                if (property === prevProperty) {
-                    isExist = true;
-                }
-            });
-            if (isExist) {
-                property = await property_manager_1.default.updateById(String(property), property);
-            }
-            else {
-                property = await property_manager_1.default.create(property);
-            }
-        });
-        prevSchema.schemaProperties.forEach(async (prevProperty) => {
-            isExist = false;
-            schema.schemaProperties.forEach(async (property) => {
-                if (property === prevProperty) {
-                    isExist = true;
-                }
-            });
-            if (!isExist) {
-                await property_manager_1.default.deleteById(String(prevProperty));
-            }
-        });
+        const newProperties = [...schema.schemaProperties];
+        schema.schemaProperties = [];
+        for await (let prevProperty of prevSchema.schemaProperties) {
+            await property_manager_1.default.deleteById(String(prevProperty));
+        }
+        for await (let property of newProperties) {
+            let createdProperty = await property_manager_1.default.create(property);
+            schema.schemaProperties.push(createdProperty);
+        }
         return schema_repository_1.default.updateById(id, schema);
     }
 }

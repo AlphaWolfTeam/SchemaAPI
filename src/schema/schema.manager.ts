@@ -2,16 +2,14 @@ import SchemaRepository from './schema.repository';
 import PropertyManager from '../property/property.manager';
 import ISchema from './schema.interface';
 import IProperty from '../property/property.interface';
-// import { Schema } from 'mongoose';
 
 export default class SchemaManager {
 
-  static createSchema(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
-    schemaProperties.forEach(async property => {
-      const propp = await PropertyManager.create(property);
-      console.log(propp);
-      schema.schemaProperties.push(propp as IProperty);
-    });
+  static async createSchema(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
+    for await (let property of schemaProperties) {
+      const createdProperty = await PropertyManager.create(property);
+      schema.schemaProperties.push(createdProperty as IProperty);
+    }
     return SchemaRepository.createSchema(schema);
   }
 
@@ -56,48 +54,28 @@ export default class SchemaManager {
   static async getById(schemaId: string): Promise<ISchema | null> {
     const schema = await SchemaRepository.getById(schemaId);
     if (schema === null) {
-        // throw new SchemaNotFound();
+      // throw new SchemaNotFound();
     }
     return schema;
-}
+  }
 
-static async getAll(): Promise<ISchema[] | null>{
-  return await SchemaRepository.getAll();
-}
+  static async getAll(): Promise<ISchema[] | null> {
+    return await SchemaRepository.getAll();
+  }
 
   static async updateById(id: string, schema: ISchema): Promise<ISchema | null> {
     const prevSchema: ISchema = await SchemaRepository.getById(id) as ISchema;
-    let isExist: boolean;
+    const newProperties = [...schema.schemaProperties];
+    schema.schemaProperties = [];
 
-    schema.schemaProperties.forEach(async property => {
-      isExist = false;
+    for await (let prevProperty of prevSchema.schemaProperties) {
+      await PropertyManager.deleteById(String(prevProperty));
+    }
 
-      prevSchema.schemaProperties.forEach(async prevProperty => {
-        if (property === prevProperty) {
-          isExist = true;
-        }
-      });
-
-      if (isExist) {
-        property = await PropertyManager.updateById(String(property), property) as IProperty;
-      } else {
-        property = await PropertyManager.create(property) as IProperty;
-      }
-    });
-
-    prevSchema.schemaProperties.forEach(async prevProperty => {
-      isExist = false;
-
-      schema.schemaProperties.forEach(async property => {
-        if (property === prevProperty) {
-          isExist = true;
-        }
-      });
-
-      if (!isExist) {
-        await PropertyManager.deleteById(String(prevProperty));
-      }
-    });
+    for await (let property of newProperties) {
+      let createdProperty = await PropertyManager.create(property) as IProperty;
+      schema.schemaProperties.push(createdProperty);
+    }
 
     return SchemaRepository.updateById(id, schema);
   }
