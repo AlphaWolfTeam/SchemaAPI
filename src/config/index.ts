@@ -7,6 +7,7 @@ const config = {
     },
     mongo: {
         uri: env.get('MONGO_URI').required().asUrlString(),
+        testUri: 'mongodb://localhost',
         schemaCollectionName: env.get('MONGO_SCHEMA_COLLECTION_NAME').required().asString(),
         propertyCollectionName: env.get('MONGO_PROPERTY_COLLECTION_NAME').required().asString(),
     },

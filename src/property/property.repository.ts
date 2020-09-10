@@ -26,7 +26,11 @@ export default class PropertyRepository {
             case 'Date':
                 return new Date(value);
             case 'Array':
-                return new Array(value);
+                if (!Array.isArray(value)) {
+                    return new Array(value);
+                } else {
+                    return value;
+                }
             case 'ObjectId':
                 return new String(value);
         }
