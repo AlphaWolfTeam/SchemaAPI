@@ -2,7 +2,7 @@ import SchemaModel from './schema.model';
 import ISchema from './schema.interface';
 
 export default class SchemaRepository{
-  static createSchema(schema: ISchema): Promise<ISchema | null> {
+  static create(schema: ISchema): Promise<ISchema | null> {
         return SchemaModel.create(schema);
     }
 

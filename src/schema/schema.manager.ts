@@ -5,12 +5,12 @@ import IProperty from '../property/property.interface';
 
 export default class SchemaManager {
 
-  static async createSchema(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
+  static async create(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
     for await (let property of schemaProperties) {
       const createdProperty = await PropertyManager.create(property);
       schema.schemaProperties.push(createdProperty as IProperty);
     }
-    return SchemaRepository.createSchema(schema);
+    return SchemaRepository.create(schema);
   }
 
   static async deleteSchema(id: string): Promise<ISchema | null> {

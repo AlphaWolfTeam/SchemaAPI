@@ -11,7 +11,7 @@ export default class SchemaController {
             createdAt: req.body.createdAt,
             updatedAt: req.body.updatedAt,
         }
-        res.json(await SchemaManager.createSchema(schema, req.body.schemaProperties));
+        res.json(await SchemaManager.create(schema, req.body.schemaProperties));
         res.end();
     }
 
