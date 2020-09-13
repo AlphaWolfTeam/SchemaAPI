@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const property_model_1 = require("./property.model");
+const property_model_1 = __importDefault(require("./property.model"));
 class PropertyRepository {
     static async create(property) {
         const createdProperty = await property_model_1.default.create(property);
@@ -25,7 +28,14 @@ class PropertyRepository {
             case 'Date':
                 return new Date(value);
             case 'Array':
-                return new Array(value);
+                if (!Array.isArray(value)) {
+                    return new Array(value);
+                }
+                else {
+                    return value;
+                }
+            case 'ObjectId':
+                return new String(value);
         }
     }
     static getById(_id) {

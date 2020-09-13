@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const schema_model_1 = require("./schema.model");
+const schema_model_1 = __importDefault(require("./schema.model"));
 class SchemaRepository {
-    static createSchema(schema) {
+    static create(schema) {
         return schema_model_1.default.create(schema);
     }
     static getById(_id) {

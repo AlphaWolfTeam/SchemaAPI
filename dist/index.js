@@ -1,12 +1,20 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose = require("mongoose");
-const server_1 = require("./server");
-const index_1 = require("./config/index");
+const mongoose_1 = __importDefault(require("mongoose"));
+const server_1 = __importDefault(require("./server"));
+const index_1 = __importDefault(require("./config/index"));
 const { mongo, service } = index_1.default;
 const initializeMongo = async () => {
     console.log('Connecting to Mongo...');
-    await mongoose.connect(mongo.uri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
+    await mongoose_1.default.connect(mongo.uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true
+    });
     console.log('Mongo connection established');
 };
 const main = async () => {
