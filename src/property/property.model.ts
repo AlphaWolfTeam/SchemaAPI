@@ -55,13 +55,9 @@ const PropertySchema = new mongoose.Schema({
     }
 });
 
-// PropertySchema.pre('save', function (next) {
-//     const currentProperty: any = this as any;
-//     // console.log('this ' + currentProperty.propertyType);
-//     currentProperty.defaultValue = 'hhhh';
-//     next()
-// });
-
-const PropertyModel = mongoose.model<IProperty & mongoose.Document>(config.mongo.propertyCollectionName, PropertySchema);
+const PropertyModel = mongoose.model<IProperty & mongoose.Document>(
+    config.mongo.propertyCollectionName,
+    PropertySchema
+);
 
 export default PropertyModel;

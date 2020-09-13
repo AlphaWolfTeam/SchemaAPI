@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const wrapper_1 = require("../utils/wrapper");
-const schema_controller_1 = require("../schema/schema.controller");
+const schema_controller_1 = __importDefault(require("../schema/schema.controller"));
 const schemaRouter = express_1.Router();
 schemaRouter.post('/api/schema', wrapper_1.wrapAsync(schema_controller_1.default.create));
 schemaRouter.put('/api/schema/:id', wrapper_1.wrapAsync(schema_controller_1.default.update));

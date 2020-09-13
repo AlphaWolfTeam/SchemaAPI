@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const schema_manager_1 = require("./schema.manager");
+const schema_manager_1 = __importDefault(require("./schema.manager"));
 class SchemaController {
     static async create(req, res) {
         const schema = {
@@ -10,7 +13,7 @@ class SchemaController {
             createdAt: req.body.createdAt,
             updatedAt: req.body.updatedAt,
         };
-        res.json(await schema_manager_1.default.createSchema(schema, req.body.schemaProperties));
+        res.json(await schema_manager_1.default.create(schema, req.body.schemaProperties));
         res.end();
     }
     static async update(req, res) {

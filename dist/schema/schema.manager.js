@@ -1,14 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const schema_repository_1 = require("./schema.repository");
-const property_manager_1 = require("../property/property.manager");
+const schema_repository_1 = __importDefault(require("./schema.repository"));
+const property_manager_1 = __importDefault(require("../property/property.manager"));
 class SchemaManager {
-    static async createSchema(schema, schemaProperties) {
+    static async create(schema, schemaProperties) {
         for await (let property of schemaProperties) {
             const createdProperty = await property_manager_1.default.create(property);
             schema.schemaProperties.push(createdProperty);
         }
-        return schema_repository_1.default.createSchema(schema);
+        return schema_repository_1.default.create(schema);
     }
     static async deleteSchema(id) {
         const schema = await schema_repository_1.default.deleteById(id);
