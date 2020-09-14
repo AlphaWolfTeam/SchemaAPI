@@ -2,6 +2,7 @@ import SchemaRepository from './schema.repository';
 import PropertyManager from '../property/property.manager';
 import ISchema from './schema.interface';
 import IProperty from '../property/property.interface';
+import { InvalidId, SchemaNotFoundError } from '../utils/errors/user';
 
 export default class SchemaManager {
 
@@ -14,13 +15,18 @@ export default class SchemaManager {
   }
 
   static async deleteSchema(id: string): Promise<ISchema | null> {
-    const schema = await SchemaRepository.deleteById(id);
+    const schema = await SchemaRepository.deleteById(id).catch(() => {
+      throw new InvalidId();
+    });
 
     if (schema) {
       schema.schemaProperties.forEach(async (property: IProperty) => {
         PropertyManager.deleteById(String(property));
       });
+    } else {
+      throw new SchemaNotFoundError();
     }
+
     return schema;
   }
 
@@ -52,9 +58,11 @@ export default class SchemaManager {
   }
 
   static async getById(schemaId: string): Promise<ISchema | null> {
-    const schema = await SchemaRepository.getById(schemaId);
+    const schema = await SchemaRepository.getById(schemaId).catch(() => {
+      throw new InvalidId();
+    });
     if (schema === null) {
-      // throw new SchemaNotFound();
+      throw new SchemaNotFoundError();
     }
     return schema;
   }

@@ -35,7 +35,7 @@ class PropertyRepository {
                     return value;
                 }
             case 'ObjectId':
-                return new String(value);
+                return new Object(value);
         }
     }
     static getById(_id) {

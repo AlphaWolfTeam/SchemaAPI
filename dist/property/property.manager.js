@@ -12,6 +12,7 @@ class PropertyManager {
         return await property_repository_1.default.getById(id);
     }
     static async deleteById(id) {
+        throw new TypeError();
         return await property_repository_1.default.deleteById(id);
     }
 }
