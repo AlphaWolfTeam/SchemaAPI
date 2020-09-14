@@ -1,23 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotFoundError = exports.NotPermittedError = exports.ValidationError = void 0;
+exports.InvalidValue = exports.InvalidId = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
-class ValidationError extends application_1.UserError {
+class SchemaNotFoundError extends application_1.UserError {
     constructor() {
-        super('Validation error', 400);
+        super('Schema not found', 404);
     }
 }
-exports.ValidationError = ValidationError;
-class NotPermittedError extends application_1.UserError {
+exports.SchemaNotFoundError = SchemaNotFoundError;
+class PropertyNotFoundError extends application_1.UserError {
     constructor() {
-        super('Operation not permitted', 403);
+        super('Property not found', 404);
     }
 }
-exports.NotPermittedError = NotPermittedError;
-class NotFoundError extends application_1.UserError {
+exports.PropertyNotFoundError = PropertyNotFoundError;
+class InvalidId extends application_1.UserError {
     constructor() {
-        super('Resource not found', 404);
+        super('Invalid id', 404);
     }
 }
-exports.NotFoundError = NotFoundError;
+exports.InvalidId = InvalidId;
+class InvalidValue extends application_1.UserError {
+    constructor() {
+        super('Invalid value', 404);
+    }
+}
+exports.InvalidValue = InvalidValue;
 //# sourceMappingURL=user.js.map

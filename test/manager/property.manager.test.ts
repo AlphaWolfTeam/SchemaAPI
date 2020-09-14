@@ -1,5 +1,4 @@
 import { InvalidId, PropertyNotFoundError, InvalidValue, SchemaNotFoundError } from './../../src/utils/errors/user';
-// import { UserError } from './../../src/utils/errors/application';
 import chai from 'chai';
 import mongoose from 'mongoose';
 import config from '../../src/config/index';

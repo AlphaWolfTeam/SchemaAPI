@@ -9,12 +9,15 @@ export default class PropertyRepository {
     static async create(property: IProperty): Promise<IProperty | null> {
         const createdProperty = await PropertyModel.create(property) as IProperty;
         if (createdProperty.defaultValue) {
-            createdProperty.defaultValue = await this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
+            createdProperty.defaultValue = await this.convertValue(
+                createdProperty.defaultValue,
+                createdProperty.propertyType
+            );
         }
         if (createdProperty.enum) {
-            createdProperty.enum = createdProperty.enum.map(async (value) => {
-                return await this.convertValue(value, createdProperty.propertyType);
-            })
+            createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
+                return this.convertValue(value, createdProperty.propertyType);
+            }))      
         }
         return await this.updateById(createdProperty._id as string, createdProperty);
     }
@@ -27,7 +30,7 @@ export default class PropertyRepository {
                 if (isNaN(value)) {
                     throw new InvalidValue();
                 } else {
-                    return new Number(value);
+                    return Number(value);
                 }
             case 'Boolean':
                 if (this.isValidBoolean(value)) {

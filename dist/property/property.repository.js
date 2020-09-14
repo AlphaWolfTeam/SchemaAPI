@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const property_model_1 = __importDefault(require("./property.model"));
+const user_1 = require("../utils/errors/user");
+const moment_1 = __importDefault(require("moment"));
 class PropertyRepository {
     static async create(property) {
         const createdProperty = await property_model_1.default.create(property);
@@ -11,7 +13,7 @@ class PropertyRepository {
             createdProperty.defaultValue = this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
         }
         if (createdProperty.enum) {
-            createdProperty.enum = createdProperty.enum.map(value => {
+            createdProperty.enum = createdProperty.enum.map(async (value) => {
                 return this.convertValue(value, createdProperty.propertyType);
             });
         }
@@ -22,11 +24,35 @@ class PropertyRepository {
             case 'String':
                 return new String(value);
             case 'Number':
-                return new Number(value);
+                console.log('value:', value, 'is valid value:', !isNaN(value));
+                if (isNaN(value)) {
+                    console.log('throw an error');
+                    throw new user_1.InvalidValue();
+                }
+                else {
+                    console.log(Number(value));
+                    return Number(value);
+                }
             case 'Boolean':
-                return new Boolean(value);
+                console.log('value:', value, 'is valid value:', this.isValidBoolean(value));
+                if (this.isValidBoolean(value)) {
+                    console.log('returned value');
+                    return new Boolean(value);
+                }
+                else {
+                    console.log('throw an error');
+                    throw new user_1.InvalidValue();
+                }
             case 'Date':
-                return new Date(value);
+                console.log('value:', value, 'is valid value:', (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()));
+                if (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
+                    console.log('returned value');
+                    return new Date(value);
+                }
+                else {
+                    console.log('throw an error');
+                    throw new user_1.InvalidValue();
+                }
             case 'Array':
                 if (!Array.isArray(value)) {
                     return new Array(value);
@@ -34,9 +60,14 @@ class PropertyRepository {
                 else {
                     return value;
                 }
-            case 'ObjectId':
-                return new Object(value);
         }
+    }
+    static isValidBoolean(value) {
+        return String(value) === 'false' || String(value) === 'true';
+    }
+    static async isSchemaExist(objectId) {
+        const returnedSchema = await PropertyRepository.getById(String(objectId));
+        return returnedSchema !== null;
     }
     static getById(_id) {
         return property_model_1.default.findById(_id).exec();
