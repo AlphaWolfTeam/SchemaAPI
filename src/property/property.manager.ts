@@ -1,20 +1,31 @@
+import { PropertyNotFoundError, InvalidId } from './../utils/errors/user';
 import PropertyRepository from './property.repository';
 import IProperty from './property.interface';
 
 export default class PropertyManager {
-    static create(property: IProperty): Promise<IProperty | null> {
-        return PropertyRepository.create(property);
+    static async create(property: IProperty): Promise<IProperty | null> {
+        return PropertyRepository.create(property).catch((error) => {
+            throw error;
+        });
     }
 
     static async getById(id: string): Promise<IProperty | null> {
-        return await PropertyRepository.getById(id);
+        const property = await PropertyRepository.getById(id).catch(() => {
+            throw new InvalidId();
+        });
+        if (property === null) {
+            throw new PropertyNotFoundError();
+        }
+        return property;
     }
 
     static async deleteById(id: string): Promise<IProperty | null> {
-        return await PropertyRepository.deleteById(id);
+        const property = await PropertyRepository.deleteById(id).catch(() => {
+            throw new InvalidId();
+        });
+        if (property === null) {
+            throw new PropertyNotFoundError();
+        }
+        return property;
     }
-
-    // static async updateById(id: string, property: Partial<IProperty>): Promise<IProperty | null> {
-    //     return await PropertyRepository.updateById(id, property);
-    // }
 }

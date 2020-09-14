@@ -1,30 +1,50 @@
+import { SchemaNotFoundError, InvalidValueInProperty } from './../utils/errors/user';
 import PropertyModel from './property.model';
 import IProperty from './property.interface';
+import moment from 'moment';
+import mongoose from 'mongoose';
 
 export default class PropertyRepository {
     static async create(property: IProperty): Promise<IProperty | null> {
-        const createdProperty = await PropertyModel.create(property) as IProperty;
+        const createdProperty = await PropertyModel.create(property).catch(() => {
+            throw new InvalidValueInProperty();
+        });
         if (createdProperty.defaultValue) {
-            createdProperty.defaultValue = this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
+            createdProperty.defaultValue = await this.convertValue(
+                createdProperty.defaultValue,
+                createdProperty.propertyType
+            );
         }
         if (createdProperty.enum) {
-            createdProperty.enum = createdProperty.enum.map(value => {
+            createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
                 return this.convertValue(value, createdProperty.propertyType);
-            })
+            }));
         }
         return await this.updateById(createdProperty._id as string, createdProperty);
     }
 
-    static convertValue(value: any, newType: String): any {
+    static async convertValue(value: any, newType: String): Promise<any> {
         switch (newType) {
             case 'String':
                 return new String(value);
             case 'Number':
-                return new Number(value);
+                if (isNaN(value)) {
+                    throw new InvalidValueInProperty();
+                } else {
+                    return new Number(value);
+                }
             case 'Boolean':
-                return new Boolean(value);
+                if (this.isValidBoolean(value)) {
+                    return new Boolean(value);
+                } else {
+                    throw new InvalidValueInProperty();
+                }
             case 'Date':
-                return new Date(value);
+                if (moment(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
+                    return new Date(value);
+                } else {
+                    throw new InvalidValueInProperty();
+                }
             case 'Array':
                 if (!Array.isArray(value)) {
                     return new Array(value);
@@ -32,8 +52,23 @@ export default class PropertyRepository {
                     return value;
                 }
             case 'ObjectId':
-                return new String(value);
+                if (!mongoose.Types.ObjectId.isValid(value)) {
+                    throw new InvalidValueInProperty();
+                } else if (!(await this.isSchemaExist(value))) {
+                    throw new SchemaNotFoundError();
+                } else {
+                    return value;
+                }
         }
+    }
+
+    static isValidBoolean(value: any): boolean {
+        return String(value) === 'false' || String(value) === 'true';
+    }
+
+    static async isSchemaExist(objectId: mongoose.Types.ObjectId): Promise<boolean> {
+        const returnedSchema = await PropertyRepository.getById(String(objectId));
+        return returnedSchema !== null;
     }
 
     static getById(_id: string): Promise<IProperty | null> {
@@ -45,6 +80,9 @@ export default class PropertyRepository {
     }
 
     static updateById(_id: string, property: Partial<IProperty>): Promise<IProperty | null> {
-        return PropertyModel.findOneAndUpdate({ _id }, { $set: property }, { upsert: true }).exec();
+        return PropertyModel.findOneAndUpdate(
+            { _id },
+            { $set: property },
+            { upsert: true }).exec();
     }
 }

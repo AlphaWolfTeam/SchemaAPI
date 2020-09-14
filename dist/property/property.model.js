@@ -41,7 +41,7 @@ const PropertySchema = new mongoose.Schema({
     },
     propertyRef: {
         type: String,
-        required: true
+        required: false
     },
     enum: {
         type: [mongoose.Schema.Types.Mixed],

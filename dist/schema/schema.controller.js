@@ -6,15 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const schema_manager_1 = __importDefault(require("./schema.manager"));
 class SchemaController {
     static async create(req, res) {
-        const schema = {
-            schemaName: req.body.schemaName,
-            schemaProperties: [],
-            permissions: req.body.permissions,
-            createdAt: req.body.createdAt,
-            updatedAt: req.body.updatedAt,
-        };
-        res.json(await schema_manager_1.default.create(schema, req.body.schemaProperties));
-        res.end();
+        try {
+            const schema = {
+                schemaName: req.body.schemaName,
+                schemaProperties: [],
+                permissions: req.body.permissions,
+                createdAt: req.body.createdAt,
+                updatedAt: req.body.updatedAt,
+            };
+            res.json(await schema_manager_1.default.create(schema, req.body.schemaProperties));
+            res.end();
+        }
+        catch (error) {
+            res.json(error);
+        }
     }
     static async update(req, res) {
         try {
@@ -23,8 +28,8 @@ class SchemaController {
             }
             res.json(updated);
         }
-        catch (e) {
-            throw e;
+        catch (error) {
+            res.json(error);
         }
     }
     static async deleteSchema(req, res) {
@@ -34,8 +39,8 @@ class SchemaController {
             }
             res.json(deleted);
         }
-        catch (e) {
-            throw e;
+        catch (error) {
+            res.json(error);
         }
     }
     static async deleteProperty(req, res) {
@@ -45,19 +50,28 @@ class SchemaController {
             }
             res.json(schema);
         }
-        catch (e) {
-            throw e;
+        catch (error) {
+            res.json(error);
         }
     }
     static async getById(req, res) {
-        const schemaId = req.params.id;
-        res.json(await schema_manager_1.default.getById(schemaId));
-        res.end();
+        try {
+            const schemaId = req.params.id;
+            res.json(await schema_manager_1.default.getById(schemaId));
+            res.end();
+        }
+        catch (error) {
+            res.json(error);
+        }
     }
-    static async getAll(req, res) {
-        console.log(req);
-        res.json(await schema_manager_1.default.getAll());
-        res.end();
+    static async getAll(_req, res) {
+        try {
+            res.json(await schema_manager_1.default.getAll());
+            res.end();
+        }
+        catch (error) {
+            res.json(error);
+        }
     }
 }
 exports.default = SchemaController;

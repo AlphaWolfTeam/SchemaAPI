@@ -3,10 +3,14 @@ import express from 'express';
 import * as bodyParser from 'body-parser';
 // import * as helmet from 'helmet';
 // import * as logger from 'morgan';
-
 // import { once } from 'events';
-import { errorMiddleware } from './utils/error';
+// import { errorMiddleware } from './utils/error';
 import appRouter from './router';
+import {
+  userErrorHandler,
+  serverErrorHandler,
+  unknownErrorHandler
+} from './utils/errors/handler';
 
 class Server {
     private app: express.Application;
@@ -26,9 +30,11 @@ class Server {
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: true }));
         // app.use(logger('dev'));
+        app.use(userErrorHandler);
+        app.use(serverErrorHandler);
+        app.use(unknownErrorHandler);
         app.use(appRouter);
-
-        app.use(errorMiddleware);
+        // app.use(errorMiddleware);
 
         return app;
     }

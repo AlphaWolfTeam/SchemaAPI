@@ -24,8 +24,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
-const error_1 = require("./utils/error");
 const router_1 = __importDefault(require("./router"));
+const handler_1 = require("./utils/errors/handler");
 class Server {
     constructor(port) {
         this.app = Server.createExpressApp();
@@ -35,8 +35,10 @@ class Server {
         const app = express_1.default();
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(handler_1.userErrorHandler);
+        app.use(handler_1.serverErrorHandler);
+        app.use(handler_1.unknownErrorHandler);
         app.use(router_1.default);
-        app.use(error_1.errorMiddleware);
         return app;
     }
     async start() {
