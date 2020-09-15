@@ -1,4 +1,4 @@
-export default interface IProperty{
+export default interface IProperty {
     _id?: string,
     propertyName: string,
     propertyType: string,
@@ -13,4 +13,3 @@ export default interface IProperty{
     updatedAt: Date,
     permissions?: string
 }
-
