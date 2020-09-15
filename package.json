@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha --timeout 15000 -r ./node_modules/ts-node/register ./test/**/**.test.ts",
     "tsc": "tsc",
+    "dev": "set LOAD_DEV_DOTENV=true&& npm start",
     "start": "tsc && node ./dist/index.js"
   },
   "repository": {

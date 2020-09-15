@@ -29,6 +29,15 @@ class PropertyManager {
         }
         return property;
     }
+    static async updateById(id, newProperty) {
+        const property = await property_repository_1.default.updateById(id, newProperty).catch(() => {
+            throw new user_1.InvalidId();
+        });
+        if (property === null) {
+            throw new user_1.PropertyNotFoundError();
+        }
+        return property;
+    }
 }
 exports.default = PropertyManager;
 //# sourceMappingURL=property.manager.js.map

@@ -1,4 +1,3 @@
-// import * as mongoose from 'mongoose';
 import IProperty from '../property/property.interface'
 
 export default interface ISchema {
