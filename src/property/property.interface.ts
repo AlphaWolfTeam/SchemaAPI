@@ -8,7 +8,7 @@ export default interface IProperty{
     isUnique: boolean,
     index?: boolean,
     required?: boolean,
-    //validate?: Function,
+    validateFunctions?: Function[],
     createdAt: Date,
     updatedAt: Date,
     permissions?: string

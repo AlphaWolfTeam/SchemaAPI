@@ -59,6 +59,10 @@ const PropertySchema = new mongoose.Schema({
         type: Boolean,
         required: false
     },
+    validateFunctions: {
+        type: [mongoose.Schema.Types.Mixed],
+        required: false
+    },
     createdAt: {
         type: Date,
         required: true

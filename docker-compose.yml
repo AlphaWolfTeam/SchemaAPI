@@ -11,7 +11,6 @@ services:
     image: 'alphawolfsforce/jaws-schema-api:latest'
     environment:
       ENV_NAME: dev
-      MONGO_URI: mongodb://mongo/schema
     ports:
       - '3000:3000'
     depends_on:
