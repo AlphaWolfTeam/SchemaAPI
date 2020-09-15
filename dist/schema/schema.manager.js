@@ -3,22 +3,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = require("./../utils/errors/user");
 const schema_repository_1 = __importDefault(require("./schema.repository"));
 const property_manager_1 = __importDefault(require("../property/property.manager"));
-const user_1 = require("../utils/errors/user");
+const user_2 = require("../utils/errors/user");
 class SchemaManager {
     static async create(schema, schemaProperties) {
+        schema.schemaProperties = [];
         for await (let property of schemaProperties) {
             const createdProperty = await property_manager_1.default.create(property);
             schema.schemaProperties.push(createdProperty);
         }
         return schema_repository_1.default.create(schema).catch(() => {
-            throw new user_1.InvalidValueInSchema();
+            throw new user_2.InvalidValueInSchema();
         });
     }
     static async deleteSchema(id) {
         const schema = await schema_repository_1.default.deleteById(id).catch(() => {
-            throw new user_1.InvalidId();
+            throw new user_2.InvalidId();
         });
         if (schema) {
             schema.schemaProperties.forEach(async (property) => {
@@ -26,13 +28,13 @@ class SchemaManager {
             });
         }
         else {
-            throw new user_1.SchemaNotFoundError();
+            throw new user_2.SchemaNotFoundError();
         }
         return schema;
     }
     static async deleteProperty(schemaId, propertyId) {
         let hasPropertyFound = false;
-        const schema = await schema_repository_1.default.getById(schemaId);
+        const schema = await this.getById(schemaId);
         const property = await property_manager_1.default.getById(propertyId);
         if (schema) {
             schema.schemaProperties = schema.schemaProperties.filter((property) => {
@@ -43,7 +45,11 @@ class SchemaManager {
                 return true;
             });
         }
+        else {
+            throw new user_2.SchemaNotFoundError();
+        }
         if (!hasPropertyFound) {
+            throw new user_1.PropertyNotInSchemaError();
         }
         if (property) {
             await property_manager_1.default.deleteById(propertyId);
@@ -52,10 +58,10 @@ class SchemaManager {
     }
     static async getById(schemaId) {
         const schema = await schema_repository_1.default.getById(schemaId).catch(() => {
-            throw new user_1.InvalidId();
+            throw new user_2.InvalidId();
         });
         if (schema === null) {
-            throw new user_1.SchemaNotFoundError();
+            throw new user_2.SchemaNotFoundError();
         }
         return schema;
     }
@@ -63,7 +69,7 @@ class SchemaManager {
         return await schema_repository_1.default.getAll();
     }
     static async updateById(id, schema) {
-        const prevSchema = await schema_repository_1.default.getById(id);
+        const prevSchema = await this.getById(id);
         const newProperties = [...schema.schemaProperties];
         schema.schemaProperties = [];
         for await (let prevProperty of prevSchema.schemaProperties) {
