@@ -28,4 +28,14 @@ export default class PropertyManager {
         }
         return property;
     }
+
+    static async updateById(id: string, newProperty: IProperty): Promise<IProperty | null> {
+        const property = await PropertyRepository.updateById(id, newProperty).catch(() => {
+            throw new InvalidId();
+        });
+        if (property === null) {
+            throw new PropertyNotFoundError();
+        }
+        return property;
+    }
 }

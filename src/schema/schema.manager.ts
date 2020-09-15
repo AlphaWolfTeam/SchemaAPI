@@ -93,5 +93,29 @@ export default class SchemaManager {
     }
 
     return SchemaRepository.updateById(id, schema);
+
+    /*const prevSchema: ISchema = await this.getById(id) as ISchema;
+    const newProperties = [...schema.schemaProperties];
+    schema.schemaProperties = [];
+
+    for await (let newProperty of newProperties) {
+      for await (let prevProperty of prevSchema.schemaProperties) {
+        if (newProperty._id === String(prevProperty)) {
+          await PropertyManager.updateById(String(prevProperty), newProperty);
+        }
+      }
+    }
+
+    for await (let prevProperty of prevSchema.schemaProperties) {
+      if (!newProperties.includes(prevProperty))
+        await PropertyManager.deleteById(String(prevProperty));
+    }
+
+    for await (let property of newProperties) {
+      let createdProperty = await PropertyManager.create(property) as IProperty;
+      schema.schemaProperties.push(createdProperty);
+    }
+
+    return SchemaRepository.updateById(id, schema);*/
   }
 }
