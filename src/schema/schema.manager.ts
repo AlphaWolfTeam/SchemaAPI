@@ -1,17 +1,21 @@
+import { PropertyNotInSchemaError } from './../utils/errors/user';
 import SchemaRepository from './schema.repository';
 import PropertyManager from '../property/property.manager';
 import ISchema from './schema.interface';
 import IProperty from '../property/property.interface';
-import { InvalidId, SchemaNotFoundError } from '../utils/errors/user';
+import { InvalidId, SchemaNotFoundError, InvalidValueInSchema } from '../utils/errors/user';
 
 export default class SchemaManager {
 
   static async create(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
+    schema.schemaProperties = [];
     for await (let property of schemaProperties) {
-      const createdProperty = await PropertyManager.create(property);
+      const createdProperty = await PropertyManager.create(property) as IProperty;
       schema.schemaProperties.push(createdProperty as IProperty);
     }
-    return SchemaRepository.create(schema);
+    return SchemaRepository.create(schema).catch(() => {
+      throw new InvalidValueInSchema();
+    });
   }
 
   static async deleteSchema(id: string): Promise<ISchema | null> {
@@ -32,7 +36,7 @@ export default class SchemaManager {
 
   static async deleteProperty(schemaId: string, propertyId: string): Promise<ISchema | null> {
     let hasPropertyFound = false;
-    const schema = await SchemaRepository.getById(schemaId);
+    const schema = await this.getById(schemaId);
     const property = await PropertyManager.getById(propertyId);
 
     if (schema) {
@@ -45,9 +49,12 @@ export default class SchemaManager {
           return true;
         },
       );
+    } else {
+      throw new SchemaNotFoundError();
     }
+
     if (!hasPropertyFound) {
-      // throw new PersonNotFoundError();
+      throw new PropertyNotInSchemaError();
     }
 
     if (property) {
@@ -72,7 +79,7 @@ export default class SchemaManager {
   }
 
   static async updateById(id: string, schema: ISchema): Promise<ISchema | null> {
-    const prevSchema: ISchema = await SchemaRepository.getById(id) as ISchema;
+    const prevSchema: ISchema = await this.getById(id) as ISchema;
     const newProperties = [...schema.schemaProperties];
     schema.schemaProperties = [];
 

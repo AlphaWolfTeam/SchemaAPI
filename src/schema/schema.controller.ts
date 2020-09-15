@@ -14,8 +14,8 @@ export default class SchemaController {
             }
             res.json(await SchemaManager.create(schema, req.body.schemaProperties));
             res.end();
-        } catch (e) {
-            res.json(e);
+        } catch (error) {
+            res.json(error);
         }
     }
 
@@ -25,8 +25,8 @@ export default class SchemaController {
             if (updated) {
             }
             res.json(updated);
-        } catch (e) {
-            res.json(e);
+        } catch (error) {
+            res.json(error);
         }
     }
 
@@ -36,8 +36,8 @@ export default class SchemaController {
             if (deleted) {
             }
             res.json(deleted);
-        } catch (e) {
-            res.json(e);
+        } catch (error) {
+            res.json(error);
         }
     }
 
@@ -50,8 +50,8 @@ export default class SchemaController {
             if (schema) {
             }
             res.json(schema);
-        } catch (e) {
-            res.json(e);
+        } catch (error) {
+            res.json(error);
         }
     }
 
@@ -60,8 +60,8 @@ export default class SchemaController {
             const schemaId: string = req.params.id;
             res.json(await SchemaManager.getById(schemaId));
             res.end();
-        } catch (e) {
-            res.json(e);
+        } catch (error) {
+            res.json(error);
         }
     }
 
@@ -69,8 +69,8 @@ export default class SchemaController {
         try {
             res.json(await SchemaManager.getAll());
             res.end();
-        } catch (e) {
-            res.json(e);
+        } catch (error) {
+            res.json(error);
         }
     }
 

@@ -17,8 +17,8 @@ class SchemaController {
             res.json(await schema_manager_1.default.create(schema, req.body.schemaProperties));
             res.end();
         }
-        catch (e) {
-            res.json(e);
+        catch (error) {
+            res.json(error);
         }
     }
     static async update(req, res) {
@@ -28,8 +28,8 @@ class SchemaController {
             }
             res.json(updated);
         }
-        catch (e) {
-            res.json(e);
+        catch (error) {
+            res.json(error);
         }
     }
     static async deleteSchema(req, res) {
@@ -39,8 +39,8 @@ class SchemaController {
             }
             res.json(deleted);
         }
-        catch (e) {
-            res.json(e);
+        catch (error) {
+            res.json(error);
         }
     }
     static async deleteProperty(req, res) {
@@ -50,8 +50,8 @@ class SchemaController {
             }
             res.json(schema);
         }
-        catch (e) {
-            res.json(e);
+        catch (error) {
+            res.json(error);
         }
     }
     static async getById(req, res) {
@@ -60,8 +60,8 @@ class SchemaController {
             res.json(await schema_manager_1.default.getById(schemaId));
             res.end();
         }
-        catch (e) {
-            res.json(e);
+        catch (error) {
+            res.json(error);
         }
     }
     static async getAll(_req, res) {
@@ -69,8 +69,8 @@ class SchemaController {
             res.json(await schema_manager_1.default.getAll());
             res.end();
         }
-        catch (e) {
-            res.json(e);
+        catch (error) {
+            res.json(error);
         }
     }
 }

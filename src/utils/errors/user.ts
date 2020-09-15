@@ -12,14 +12,26 @@ export class PropertyNotFoundError extends UserError {
     }
 }
 
+export class PropertyNotInSchemaError extends UserError {
+    constructor() {
+        super('Property not in schema', 404);
+    }
+}
+
 export class InvalidId extends UserError {
     constructor() {
         super('Invalid id', 404);
     }
 }
 
-export class InvalidValue extends UserError {
+export class InvalidValueInProperty extends UserError {
     constructor() {
-        super('Invalid value', 404);
+        super('Invalid value in property', 404);
+    }
+}
+
+export class InvalidValueInSchema extends UserError {
+    constructor() {
+        super('Invalid value in schema', 404);
     }
 }

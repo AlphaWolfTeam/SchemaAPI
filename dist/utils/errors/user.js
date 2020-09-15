@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvalidValue = exports.InvalidId = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
+exports.InvalidValueInSchema = exports.InvalidValueInProperty = exports.InvalidId = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
 class SchemaNotFoundError extends application_1.UserError {
     constructor() {
@@ -20,10 +20,16 @@ class InvalidId extends application_1.UserError {
     }
 }
 exports.InvalidId = InvalidId;
-class InvalidValue extends application_1.UserError {
+class InvalidValueInProperty extends application_1.UserError {
     constructor() {
-        super('Invalid value', 404);
+        super('Invalid value in property', 404);
     }
 }
-exports.InvalidValue = InvalidValue;
+exports.InvalidValueInProperty = InvalidValueInProperty;
+class InvalidValueInSchema extends application_1.UserError {
+    constructor() {
+        super('Invalid value in schema', 404);
+    }
+}
+exports.InvalidValueInSchema = InvalidValueInSchema;
 //# sourceMappingURL=user.js.map

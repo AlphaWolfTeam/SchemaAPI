@@ -1,15 +1,20 @@
-version: "3"
-
+version: '3'
 services:
-  serversample:
-    image: alphawolfsforce/jaws-schema-api:latest
-    environment:
-      ENV_NAME: dev
-    ports:
-      - 27017:27017
-    depends_on:
-      - mongo
   mongo:
     image: mongo
-    container_name: mongo-halbanaservice
-
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - 'mongo:/data/db'
+  server:
+    image: 'alphawolfsforce/jaws-schema-api:latest'
+    environment:
+      ENV_NAME: dev
+      MONGO_URI: mongodb://mongo/schema
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+volumes: 
+  mongo:

@@ -3,59 +3,63 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = require("./../utils/errors/user");
 const property_model_1 = __importDefault(require("./property.model"));
-const user_1 = require("../utils/errors/user");
 const moment_1 = __importDefault(require("moment"));
+const mongoose_1 = __importDefault(require("mongoose"));
 class PropertyRepository {
     static async create(property) {
-        const createdProperty = await property_model_1.default.create(property);
+        const createdProperty = await property_model_1.default.create(property).catch(() => {
+            throw new user_1.InvalidValueInProperty();
+        });
         if (createdProperty.defaultValue) {
-            createdProperty.defaultValue = this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
+            createdProperty.defaultValue = await this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
         }
         if (createdProperty.enum) {
-            createdProperty.enum = createdProperty.enum.map(async (value) => {
+            createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
                 return this.convertValue(value, createdProperty.propertyType);
-            });
+            }));
         }
         return await this.updateById(createdProperty._id, createdProperty);
     }
-    static convertValue(value, newType) {
+    static async convertValue(value, newType) {
         switch (newType) {
             case 'String':
                 return new String(value);
             case 'Number':
-                console.log('value:', value, 'is valid value:', !isNaN(value));
                 if (isNaN(value)) {
-                    console.log('throw an error');
-                    throw new user_1.InvalidValue();
+                    throw new user_1.InvalidValueInProperty();
                 }
                 else {
-                    console.log(Number(value));
-                    return Number(value);
+                    return new Number(value);
                 }
             case 'Boolean':
-                console.log('value:', value, 'is valid value:', this.isValidBoolean(value));
                 if (this.isValidBoolean(value)) {
-                    console.log('returned value');
                     return new Boolean(value);
                 }
                 else {
-                    console.log('throw an error');
-                    throw new user_1.InvalidValue();
+                    throw new user_1.InvalidValueInProperty();
                 }
             case 'Date':
-                console.log('value:', value, 'is valid value:', (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()));
                 if (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
-                    console.log('returned value');
                     return new Date(value);
                 }
                 else {
-                    console.log('throw an error');
-                    throw new user_1.InvalidValue();
+                    throw new user_1.InvalidValueInProperty();
                 }
             case 'Array':
                 if (!Array.isArray(value)) {
                     return new Array(value);
+                }
+                else {
+                    return value;
+                }
+            case 'ObjectId':
+                if (!mongoose_1.default.Types.ObjectId.isValid(value)) {
+                    throw new user_1.InvalidValueInProperty();
+                }
+                else if (!(await this.isSchemaExist(value))) {
+                    throw new user_1.SchemaNotFoundError();
                 }
                 else {
                     return value;

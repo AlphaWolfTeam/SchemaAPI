@@ -1,13 +1,14 @@
-import { SchemaNotFoundError } from './../utils/errors/user';
+import { SchemaNotFoundError, InvalidValueInProperty } from './../utils/errors/user';
 import PropertyModel from './property.model';
 import IProperty from './property.interface';
-import { InvalidValue } from '../utils/errors/user';
 import moment from 'moment';
 import mongoose from 'mongoose';
 
 export default class PropertyRepository {
     static async create(property: IProperty): Promise<IProperty | null> {
-        const createdProperty = await PropertyModel.create(property) as IProperty;
+        const createdProperty = await PropertyModel.create(property).catch(() => {
+            throw new InvalidValueInProperty();
+        });
         if (createdProperty.defaultValue) {
             createdProperty.defaultValue = await this.convertValue(
                 createdProperty.defaultValue,
@@ -17,7 +18,7 @@ export default class PropertyRepository {
         if (createdProperty.enum) {
             createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
                 return this.convertValue(value, createdProperty.propertyType);
-            }))      
+            }));
         }
         return await this.updateById(createdProperty._id as string, createdProperty);
     }
@@ -28,21 +29,21 @@ export default class PropertyRepository {
                 return new String(value);
             case 'Number':
                 if (isNaN(value)) {
-                    throw new InvalidValue();
+                    throw new InvalidValueInProperty();
                 } else {
-                    return Number(value);
+                    return new Number(value);
                 }
             case 'Boolean':
                 if (this.isValidBoolean(value)) {
                     return new Boolean(value);
                 } else {
-                    throw new InvalidValue();
+                    throw new InvalidValueInProperty();
                 }
             case 'Date':
                 if (moment(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
                     return new Date(value);
                 } else {
-                    throw new InvalidValue();
+                    throw new InvalidValueInProperty();
                 }
             case 'Array':
                 if (!Array.isArray(value)) {
@@ -52,7 +53,7 @@ export default class PropertyRepository {
                 }
             case 'ObjectId':
                 if (!mongoose.Types.ObjectId.isValid(value)) {
-                    throw new InvalidValue();
+                    throw new InvalidValueInProperty();
                 } else if (!(await this.isSchemaExist(value))) {
                     throw new SchemaNotFoundError();
                 } else {
@@ -79,6 +80,9 @@ export default class PropertyRepository {
     }
 
     static updateById(_id: string, property: Partial<IProperty>): Promise<IProperty | null> {
-        return PropertyModel.findOneAndUpdate({ _id }, { $set: property }, { upsert: true }).exec();
+        return PropertyModel.findOneAndUpdate(
+            { _id },
+            { $set: property },
+            { upsert: true }).exec();
     }
 }

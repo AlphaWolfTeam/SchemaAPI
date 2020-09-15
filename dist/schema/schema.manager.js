@@ -12,7 +12,9 @@ class SchemaManager {
             const createdProperty = await property_manager_1.default.create(property);
             schema.schemaProperties.push(createdProperty);
         }
-        return schema_repository_1.default.create(schema);
+        return schema_repository_1.default.create(schema).catch(() => {
+            throw new user_1.InvalidValueInSchema();
+        });
     }
     static async deleteSchema(id) {
         const schema = await schema_repository_1.default.deleteById(id).catch(() => {
