@@ -12,25 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.receiveDataFromRabbit = exports.sendDataToRabbit = exports.initRabbit = void 0;
+exports.sendDataToRabbit = exports.initRabbit = void 0;
 const menashmq_1 = __importDefault(require("menashmq"));
+const index_1 = __importDefault(require("../../config/index"));
+const { rabbit } = index_1.default;
 exports.initRabbit = () => __awaiter(void 0, void 0, void 0, function* () {
-    // get ip and queue name from config
-    yield menashmq_1.default.connect('amqp://localhost:5672');
-    yield menashmq_1.default.declareQueue('queue-name');
+    console.log("Connecting to Rabbit...");
+    yield menashmq_1.default.connect(rabbit.uri, rabbit.retryOptions);
+    console.log("Rabbit connected");
+    yield menashmq_1.default.declareQueue(rabbit.queueName);
+    console.log("Rabbit initialized");
 });
 exports.sendDataToRabbit = (data) => __awaiter(void 0, void 0, void 0, function* () {
-    return menashmq_1.default.send('queue-name', data);
+    return menashmq_1.default.send(rabbit.queueName, data);
 });
-exports.receiveDataFromRabbit = (msg) => {
-    const data = msg.getContent();
-    console.log(data);
-    msg.ack();
-};
-// const main = async() => {
-//     await initRabbit();
-//     await menash.queue('instances-queue').activateConsumer(receiveDataFromRabbit: ConsumerMessage);
-// }
-// const main = async() => {
-//     await initRabbit();
-// }
+//# sourceMappingURL=rabbit.js.map

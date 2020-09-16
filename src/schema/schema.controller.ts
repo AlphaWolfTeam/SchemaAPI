@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import SchemaManager from './schema.manager';
 import ISchema from './schema.interface';
+import { sendDataToRabbit } from '../utils/rabbitmq/rabbit';
+import IRabbitMessage from '../utils/rabbitmq/rabbitMessage.interface';
+import PropertyManager from '../property/property.manager';
+import IProperty from '../property/property.interface';
 
 export default class SchemaController {
     static async create(req: Request, res: Response): Promise<void> {
@@ -12,8 +16,9 @@ export default class SchemaController {
                 createdAt: req.body.createdAt,
                 updatedAt: req.body.updatedAt,
             }
-            res.json(await SchemaManager.create(schema, req.body.schemaProperties));
-            res.end();
+            const createdSchema = await SchemaManager.create(schema, req.body.schemaProperties);
+            sendDataToRabbit({ method:'create schema' ,schema: createdSchema} as IRabbitMessage) 
+            res.json(createdSchema);
         } catch (error) {
             res.json(error);
         }
@@ -21,10 +26,10 @@ export default class SchemaController {
 
     static async update(req: Request, res: Response): Promise<void> {
         try {
-            const updated = await SchemaManager.updateById(req.params.id, req.body);
-            if (updated) {
-            }
-            res.json(updated);
+            const prevSchema = await SchemaManager.getById(req.params.id) as ISchema;
+            const updatedSchema = await SchemaManager.updateById(req.params.id, req.body);
+            sendDataToRabbit({ method:'update schema' ,schema: updatedSchema, prevSchemaName: prevSchema.schemaName} as IRabbitMessage) 
+            res.json(updatedSchema);
         } catch (error) {
             res.json(error);
         }
@@ -32,10 +37,9 @@ export default class SchemaController {
 
     static async deleteSchema(req: Request, res: Response): Promise<void> {
         try {
-            const deleted = await SchemaManager.deleteSchema(req.params.id);
-            if (deleted) {
-            }
-            res.json(deleted);
+            const deleted = await SchemaManager.deleteSchema(req.params.id) as ISchema;
+            sendDataToRabbit({ method:'delete schema' , schemaName: deleted.schemaName} as IRabbitMessage) 
+            res.end(); 
         } catch (error) {
             res.json(error);
         }
@@ -43,13 +47,10 @@ export default class SchemaController {
 
     static async deleteProperty(req: Request, res: Response): Promise<void> {
         try {
-            const schema = await SchemaManager.deleteProperty(
-                req.params.id,
-                req.params.propertyId
-            );
-            if (schema) {
-            }
-            res.json(schema);
+            const property = await PropertyManager.getById(req.params.propertyId) as IProperty;
+            const schema = await SchemaManager.deleteProperty(req.params.id, req.params.propertyId) as ISchema;
+            sendDataToRabbit({ method:'delete property', schemaName: schema.schemaName, propertyName: property.propertyName } as IRabbitMessage) 
+            res.end();
         } catch (error) {
             res.json(error);
         }
@@ -59,7 +60,6 @@ export default class SchemaController {
         try {
             const schemaId: string = req.params.id;
             res.json(await SchemaManager.getById(schemaId));
-            res.end();
         } catch (error) {
             res.json(error);
         }
@@ -68,10 +68,8 @@ export default class SchemaController {
     static async getAll(_req: Request, res: Response) {
         try {
             res.json(await SchemaManager.getAll());
-            res.end();
         } catch (error) {
             res.json(error);
         }
     }
-
 }

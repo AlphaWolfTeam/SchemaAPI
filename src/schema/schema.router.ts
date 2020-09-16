@@ -9,6 +9,6 @@ schemaRouter.put('/api/schema/:id',wrapAsync(Controller.update),);
 schemaRouter.delete('/api/schema/:id', wrapAsync(Controller.deleteSchema));
 schemaRouter.delete('/api/schema/:id/:propertyId', wrapAsync(Controller.deleteProperty));
 schemaRouter.get('/api/schema/:id', wrapAsync(Controller.getById));
-schemaRouter.get('/api/schemas', wrapAsync(Controller.getAll));
+schemaRouter.get('/api/schema', wrapAsync(Controller.getAll));
 
 export default schemaRouter;
