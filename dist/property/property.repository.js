@@ -30,6 +30,11 @@ class PropertyRepository {
                     return this.convertValue(value, createdProperty.propertyType);
                 }));
             }
+            if (createdProperty.defaultValue && createdProperty.enum) {
+                if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
+                    throw new user_1.InvalidValueInProperty();
+                }
+            }
             return yield this.updateById(createdProperty._id, createdProperty);
         });
     }
@@ -37,31 +42,31 @@ class PropertyRepository {
         return __awaiter(this, void 0, void 0, function* () {
             switch (newType) {
                 case 'String':
-                    return new String(value);
+                    return String(value);
                 case 'Number':
                     if (isNaN(value)) {
                         throw new user_1.InvalidValueInProperty();
                     }
                     else {
-                        return new Number(value);
+                        return Number(value);
                     }
                 case 'Boolean':
                     if (this.isValidBoolean(value)) {
-                        return new Boolean(value);
+                        return Boolean(value);
                     }
                     else {
                         throw new user_1.InvalidValueInProperty();
                     }
                 case 'Date':
                     if (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
-                        return new Date(value);
+                        return Date.parse(value);
                     }
                     else {
                         throw new user_1.InvalidValueInProperty();
                     }
                 case 'Array':
                     if (!Array.isArray(value)) {
-                        return new Array(value);
+                        return Array(value);
                     }
                     else {
                         return value;

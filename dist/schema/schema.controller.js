@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const schema_manager_1 = __importDefault(require("./schema.manager"));
+const rabbit_1 = require("../utils/rabbitmq/rabbit");
+const property_manager_1 = __importDefault(require("../property/property.manager"));
 class SchemaController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,7 +26,9 @@ class SchemaController {
                     createdAt: req.body.createdAt,
                     updatedAt: req.body.updatedAt,
                 };
-                res.json(yield schema_manager_1.default.create(schema, req.body.schemaProperties));
+                const createdSchema = yield schema_manager_1.default.create(schema, req.body.schemaProperties);
+                rabbit_1.sendDataToRabbit({ method: 'create schema', schema: createdSchema });
+                res.json(createdSchema);
             }
             catch (error) {
                 res.json(error);
@@ -34,10 +38,10 @@ class SchemaController {
     static update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const updated = yield schema_manager_1.default.updateById(req.params.id, req.body);
-                if (updated) {
-                }
-                res.json(updated);
+                const prevSchema = yield schema_manager_1.default.getById(req.params.id);
+                const updatedSchema = yield schema_manager_1.default.updateById(req.params.id, req.body);
+                rabbit_1.sendDataToRabbit({ method: 'update schema', schema: updatedSchema, prevSchemaName: prevSchema.schemaName });
+                res.json(updatedSchema);
             }
             catch (error) {
                 res.json(error);
@@ -48,9 +52,8 @@ class SchemaController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const deleted = yield schema_manager_1.default.deleteSchema(req.params.id);
-                if (deleted) {
-                }
-                res.json(deleted);
+                rabbit_1.sendDataToRabbit({ method: 'delete schema', schemaName: deleted.schemaName });
+                res.end();
             }
             catch (error) {
                 res.json(error);
@@ -60,10 +63,10 @@ class SchemaController {
     static deleteProperty(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const property = yield property_manager_1.default.getById(req.params.propertyId);
                 const schema = yield schema_manager_1.default.deleteProperty(req.params.id, req.params.propertyId);
-                if (schema) {
-                }
-                res.json(schema);
+                rabbit_1.sendDataToRabbit({ method: 'delete property', schemaName: schema.schemaName, propertyName: property.propertyName });
+                res.end();
             }
             catch (error) {
                 res.json(error);

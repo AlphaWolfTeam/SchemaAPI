@@ -8,13 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -28,7 +21,7 @@ class SchemaManager {
         return __awaiter(this, void 0, void 0, function* () {
             schema.schemaProperties = [];
             for (let property of schemaProperties) {
-                const createdProperty = yield property_manager_1.default.create(property);
+                const createdProperty = (yield property_manager_1.default.create(property));
                 schema.schemaProperties.push(createdProperty);
             }
             return schema_repository_1.default.create(schema).catch(() => {
@@ -95,47 +88,30 @@ class SchemaManager {
         });
     }
     static updateById(id, schema) {
-        var e_1, _a, e_2, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            const prevSchema = yield this.getById(id);
+            const prevSchema = (yield this.getById(id));
             const newProperties = [...schema.schemaProperties];
             schema.schemaProperties = [];
-            try {
-                for (var _c = __asyncValues(prevSchema.schemaProperties), _d; _d = yield _c.next(), !_d.done;) {
-                    let prevProperty = _d.value;
-                    let newPropertyIndex = newProperties.map(newProperty => newProperty._id).indexOf(String(prevProperty));
-                    if (newPropertyIndex !== -1) {
-                        let updatedProperty = yield property_manager_1.default.updateById(String(prevProperty), newProperties[newPropertyIndex]);
-                        schema.schemaProperties.push(updatedProperty);
-                    }
-                    else {
-                        yield property_manager_1.default.deleteById(String(prevProperty));
-                    }
+            for (let prevProperty of prevSchema.schemaProperties) {
+                let newPropertyIndex = newProperties
+                    .map((newProperty) => newProperty._id)
+                    .indexOf(String(prevProperty));
+                if (newPropertyIndex !== -1) {
+                    let updatedProperty = (yield property_manager_1.default.updateById(String(prevProperty), newProperties[newPropertyIndex]));
+                    schema.schemaProperties.push(updatedProperty);
+                }
+                else {
+                    yield property_manager_1.default.deleteById(String(prevProperty));
                 }
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (_d && !_d.done && (_a = _c.return)) yield _a.call(_c);
+            for (let newProperty of newProperties) {
+                let prevPropertyIndex = prevSchema.schemaProperties
+                    .map((prevProperty) => String(prevProperty))
+                    .indexOf(newProperty._id);
+                if (prevPropertyIndex === -1) {
+                    let createdProperty = (yield property_manager_1.default.create(newProperty));
+                    schema.schemaProperties.push(createdProperty);
                 }
-                finally { if (e_1) throw e_1.error; }
-            }
-            try {
-                for (var newProperties_1 = __asyncValues(newProperties), newProperties_1_1; newProperties_1_1 = yield newProperties_1.next(), !newProperties_1_1.done;) {
-                    let newProperty = newProperties_1_1.value;
-                    let prevPropertyIndex = prevSchema.schemaProperties.map(prevProperty => String(prevProperty)).indexOf(newProperty._id);
-                    if (prevPropertyIndex === -1) {
-                        let createdProperty = yield property_manager_1.default.create(newProperty);
-                        schema.schemaProperties.push(createdProperty);
-                    }
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (newProperties_1_1 && !newProperties_1_1.done && (_b = newProperties_1.return)) yield _b.call(newProperties_1);
-                }
-                finally { if (e_2) throw e_2.error; }
             }
             return schema_repository_1.default.updateById(id, schema);
         });

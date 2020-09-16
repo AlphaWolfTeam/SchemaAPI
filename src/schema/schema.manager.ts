@@ -1,20 +1,24 @@
-import { PropertyNotInSchemaError } from './../utils/errors/user';
-import SchemaRepository from './schema.repository';
-import PropertyManager from '../property/property.manager';
-import ISchema from './schema.interface';
-import IProperty from '../property/property.interface';
+import { PropertyNotInSchemaError } from "./../utils/errors/user";
+import SchemaRepository from "./schema.repository";
+import PropertyManager from "../property/property.manager";
+import ISchema from "./schema.interface";
+import IProperty from "../property/property.interface";
 import {
   InvalidId,
   SchemaNotFoundError,
-  InvalidValueInSchema
-} from '../utils/errors/user';
+  InvalidValueInSchema,
+} from "../utils/errors/user";
 
 export default class SchemaManager {
-
-  static async create(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
+  static async create(
+    schema: ISchema,
+    schemaProperties: IProperty[]
+  ): Promise<ISchema | null> {
     schema.schemaProperties = [];
     for (let property of schemaProperties) {
-      const createdProperty = await PropertyManager.create(property) as IProperty;
+      const createdProperty = (await PropertyManager.create(
+        property
+      )) as IProperty;
       schema.schemaProperties.push(createdProperty as IProperty);
     }
     return SchemaRepository.create(schema).catch(() => {
@@ -38,7 +42,10 @@ export default class SchemaManager {
     return schema;
   }
 
-  static async deleteProperty(schemaId: string, propertyId: string): Promise<ISchema | null> {
+  static async deleteProperty(
+    schemaId: string,
+    propertyId: string
+  ): Promise<ISchema | null> {
     let hasPropertyFound = false;
     const schema = await this.getById(schemaId);
     const property = await PropertyManager.getById(propertyId);
@@ -51,7 +58,7 @@ export default class SchemaManager {
             return false;
           }
           return true;
-        },
+        }
       );
     } else {
       throw new SchemaNotFoundError();
@@ -82,29 +89,37 @@ export default class SchemaManager {
     return await SchemaRepository.getAll();
   }
 
-  static async updateById(id: string, schema: ISchema): Promise<ISchema | null> {
-    const prevSchema: ISchema = await this.getById(id) as ISchema;
+  static async updateById(
+    id: string,
+    schema: ISchema
+  ): Promise<ISchema | null> {
+    const prevSchema: ISchema = (await this.getById(id)) as ISchema;
     const newProperties = [...schema.schemaProperties];
     schema.schemaProperties = [];
 
-    for await (let prevProperty of prevSchema.schemaProperties) {
-      let newPropertyIndex =
-        newProperties.map(newProperty => newProperty._id).indexOf(String(prevProperty));
+    for (let prevProperty of prevSchema.schemaProperties) {
+      let newPropertyIndex = newProperties
+        .map((newProperty) => newProperty._id)
+        .indexOf(String(prevProperty));
       if (newPropertyIndex !== -1) {
-        let updatedProperty = await PropertyManager.updateById(
+        let updatedProperty = (await PropertyManager.updateById(
           String(prevProperty),
-          newProperties[newPropertyIndex]) as IProperty;
+          newProperties[newPropertyIndex]
+        )) as IProperty;
         schema.schemaProperties.push(updatedProperty);
       } else {
         await PropertyManager.deleteById(String(prevProperty));
       }
     }
 
-    for await (let newProperty of newProperties) {
-      let prevPropertyIndex = prevSchema.schemaProperties.map(prevProperty =>
-        String(prevProperty)).indexOf(newProperty._id as string);
+    for (let newProperty of newProperties) {
+      let prevPropertyIndex = prevSchema.schemaProperties
+        .map((prevProperty) => String(prevProperty))
+        .indexOf(newProperty._id as string);
       if (prevPropertyIndex === -1) {
-        let createdProperty = await PropertyManager.create(newProperty) as IProperty;
+        let createdProperty = (await PropertyManager.create(
+          newProperty
+        )) as IProperty;
         schema.schemaProperties.push(createdProperty);
       }
     }

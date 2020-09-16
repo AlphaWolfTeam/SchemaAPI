@@ -11,14 +11,15 @@ const config = {
         schemaCollectionName: env.get('MONGO_SCHEMA_COLLECTION_NAME').required().asString(),
         propertyCollectionName: env.get('MONGO_PROPERTY_COLLECTION_NAME').required().asString(),
     },
-    // rabbit: {
-    //     uri: env.get('RABBIT_URI').required().asUrlString(),
-    //     retryOptions: {
-    //         minTimeout: env.get('RABBIT_RETRY_MIN_TIMEOUT').default(1000).asIntPositive(),
-    //         retries: env.get('RABBIT_RETRY_RETRIES').default(10).asIntPositive(),
-    //         factor: env.get('RABBIT_RETRY_FACTOR').default(1.8).asFloatPositive(),
-    //     },
-    // },
+    rabbit: {
+        uri: env.get('RABBIT_URI').required().asUrlString(),
+        retryOptions: {
+            minTimeout: env.get('RABBIT_RETRY_MIN_TIMEOUT').default(1000).asIntPositive(),
+            retries: env.get('RABBIT_RETRY_RETRIES').default(10).asIntPositive(),
+            factor: env.get('RABBIT_RETRY_FACTOR').default(1.8).asFloatPositive(),
+        },
+        queueName: env.get('QUEUE_NAME').required().asString()
+    },
 };
 
 export default config;
