@@ -3,7 +3,11 @@ import SchemaRepository from './schema.repository';
 import PropertyManager from '../property/property.manager';
 import ISchema from './schema.interface';
 import IProperty from '../property/property.interface';
-import { InvalidId, SchemaNotFoundError, InvalidValueInSchema } from '../utils/errors/user';
+import {
+  InvalidId,
+  SchemaNotFoundError,
+  InvalidValueInSchema
+} from '../utils/errors/user';
 
 export default class SchemaManager {
 
@@ -84,38 +88,27 @@ export default class SchemaManager {
     schema.schemaProperties = [];
 
     for await (let prevProperty of prevSchema.schemaProperties) {
-      await PropertyManager.deleteById(String(prevProperty));
-    }
-
-    for await (let property of newProperties) {
-      let createdProperty = await PropertyManager.create(property) as IProperty;
-      schema.schemaProperties.push(createdProperty);
-    }
-
-    return SchemaRepository.updateById(id, schema);
-
-    /*const prevSchema: ISchema = await this.getById(id) as ISchema;
-    const newProperties = [...schema.schemaProperties];
-    schema.schemaProperties = [];
-
-    for await (let newProperty of newProperties) {
-      for await (let prevProperty of prevSchema.schemaProperties) {
-        if (newProperty._id === String(prevProperty)) {
-          await PropertyManager.updateById(String(prevProperty), newProperty);
-        }
+      let newPropertyIndex =
+        newProperties.map(newProperty => newProperty._id).indexOf(String(prevProperty));
+      if (newPropertyIndex !== -1) {
+        let updatedProperty = await PropertyManager.updateById(
+          String(prevProperty),
+          newProperties[newPropertyIndex]) as IProperty;
+        schema.schemaProperties.push(updatedProperty);
+      } else {
+        await PropertyManager.deleteById(String(prevProperty));
       }
     }
 
-    for await (let prevProperty of prevSchema.schemaProperties) {
-      if (!newProperties.includes(prevProperty))
-        await PropertyManager.deleteById(String(prevProperty));
+    for await (let newProperty of newProperties) {
+      let prevPropertyIndex = prevSchema.schemaProperties.map(prevProperty =>
+        String(prevProperty)).indexOf(newProperty._id as string);
+      if (prevPropertyIndex === -1) {
+        let createdProperty = await PropertyManager.create(newProperty) as IProperty;
+        schema.schemaProperties.push(createdProperty);
+      }
     }
 
-    for await (let property of newProperties) {
-      let createdProperty = await PropertyManager.create(property) as IProperty;
-      schema.schemaProperties.push(createdProperty);
-    }
-
-    return SchemaRepository.updateById(id, schema);*/
+    return SchemaRepository.updateById(id, schema);
   }
 }

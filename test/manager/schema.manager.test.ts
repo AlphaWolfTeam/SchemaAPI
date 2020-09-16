@@ -296,12 +296,13 @@ describe('Schema Manager', () => {
     });
 
     describe('Update schema', () => {
-        let schema: ISchema;
+        let schema: ISchema, property: IProperty;
         const NEW_NAME: string = 'new';
         const newSchema: ISchema = { ...schemaExample, schemaName: NEW_NAME };;
 
         beforeEach(async () => {
-            schema = await SchemaManager.create({ ...schemaExample }, []) as ISchema;
+            schema = await SchemaManager.create({ ...schemaExample }, [{ ...propertyExample }]) as ISchema;
+            property = await PropertyManager.getById(String(schema.schemaProperties[0])) as IProperty;
         });
 
         afterEach(async () => {
@@ -309,7 +310,7 @@ describe('Schema Manager', () => {
         });
 
         context('Valid id', () => {
-            it('Should update schema', async () => {
+            it('Should update schema with no properties', async () => {
                 await SchemaManager.updateById(
                     schema._id as string,
                     newSchema
@@ -319,6 +320,74 @@ describe('Schema Manager', () => {
                 expect(res).to.exist;
                 expect(res).to.have.property('schemaName', NEW_NAME);
             });
+
+            it('Should update schema and create property', async () => {
+                await SchemaManager.updateById(
+                    schema._id as string,
+                    { ...newSchema, schemaProperties: [{ ...propertyExample }] }
+                ) as ISchema;
+                const res = await SchemaManager.getById(schema._id as string) as ISchema;
+
+                expect(res).to.exist;
+                expect(res).to.have.property('schemaName', NEW_NAME);
+                expect(res.schemaProperties.length).to.equals(1);
+
+                const resProperty = await PropertyManager.getById(String(res.schemaProperties[0])) as IProperty;
+
+                expect(String(resProperty._id)).to.not.equals(String(property._id));
+                expect(resProperty).to.have.property('propertyName', propertyExample.propertyName);
+                expect(resProperty).to.have.property('propertyType', propertyExample.propertyType);
+                expect(resProperty).to.have.property('defaultValue', propertyExample.defaultValue);
+                expect(resProperty).to.have.property('propertyRef', propertyExample.propertyRef);
+                expect(JSON.stringify(resProperty.enum))
+                    .to.equals(JSON.stringify(propertyExample.enum));
+                expect(resProperty).to.have.property('isUnique', propertyExample.isUnique);
+                expect(resProperty).to.have.property('index', propertyExample.index);
+                expect(resProperty).to.have.property('required', propertyExample.required);
+                expect(JSON.stringify(resProperty.createdAt))
+                    .to.equals(JSON.stringify(propertyExample.createdAt));
+                expect(JSON.stringify(resProperty.updatedAt))
+                    .to.equals(JSON.stringify(propertyExample.updatedAt));
+                expect(resProperty).to.have.property('permissions', propertyExample.permissions);
+            });
+
+         /*   it('Should update schema and update property', async () => {
+                await SchemaManager.updateById(
+                    schema._id as string,
+                    {
+                        ...newSchema,
+                        schemaProperties: [{
+                            ...property,
+                            _id : String(property._id),
+                            propertyName: NEW_NAME
+                        }]
+                    }
+                ) as ISchema;
+                const res = await SchemaManager.getById(schema._id as string) as ISchema;
+
+                expect(res).to.exist;
+                expect(res).to.have.property('schemaName', NEW_NAME);
+                expect(res.schemaProperties.length).to.equals(1);
+        
+                const resProperty = await PropertyManager.getById(String(res.schemaProperties[0])) as IProperty;
+
+                expect(String(resProperty._id)).to.equals(String(property._id));
+
+                expect(resProperty).to.have.property('propertyName', propertyExample.propertyName);
+                expect(resProperty).to.have.property('propertyType', propertyExample.propertyType);
+                expect(resProperty).to.have.property('defaultValue', propertyExample.defaultValue);
+                expect(resProperty).to.have.property('propertyRef', propertyExample.propertyRef);
+                expect(JSON.stringify(resProperty.enum))
+                    .to.equals(JSON.stringify(propertyExample.enum));
+                expect(resProperty).to.have.property('isUnique', propertyExample.isUnique);
+                expect(resProperty).to.have.property('index', propertyExample.index);
+                expect(resProperty).to.have.property('required', propertyExample.required);
+                expect(JSON.stringify(resProperty.createdAt))
+                    .to.equals(JSON.stringify(propertyExample.createdAt));
+                expect(JSON.stringify(resProperty.updatedAt))
+                    .to.equals(JSON.stringify(propertyExample.updatedAt));
+                expect(resProperty).to.have.property('permissions', propertyExample.permissions);
+            });*/
         });
 
         context('Invalid schema id', () => {
@@ -336,7 +405,6 @@ describe('Schema Manager', () => {
                 }
             });
         });
-
 
         context('Schema that not exist', () => {
             it('Should throw an error', async () => {

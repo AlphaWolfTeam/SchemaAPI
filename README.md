@@ -5,7 +5,7 @@
 | HTTP REQUEST | DEFINITION            | 
 | ----------- | --------------- |
 | GET /api/schema/[id]     |  Get schema by id          |
-| GET /api/schemas       | Get schemas list |
+| GET /api/schema       | Get schemas list |
 | POST /api/schema       | Create schema |
 | PUT /api/schema/[id]       | Update schema |
 | DELETE /api/schema/[id]       | Delete schema by id |
@@ -65,7 +65,7 @@ Response body:
         "__v": 0
     }
     
-### GET /api/schemas
+### GET /api/schema
 
 Response body:
 

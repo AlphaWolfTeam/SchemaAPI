@@ -1,8 +1,8 @@
 import SchemaModel from './schema.model';
 import ISchema from './schema.interface';
 
-export default class SchemaRepository{
-  static create(schema: ISchema): Promise<ISchema | null> {
+export default class SchemaRepository {
+    static create(schema: ISchema): Promise<ISchema> {
         return SchemaModel.create(schema);
     }
 
@@ -15,7 +15,11 @@ export default class SchemaRepository{
     }
 
     static updateById(_id: string, schema: Partial<ISchema>): Promise<ISchema | null> {
-        return SchemaModel.findOneAndUpdate({ _id }, { $set: schema }, { upsert: true }).exec();
+        return SchemaModel.findOneAndUpdate(
+            { _id },
+            { $set: schema },
+            { upsert: true }
+        ).exec();
     }
 
     static getAll(): Promise<ISchema[] | null> {

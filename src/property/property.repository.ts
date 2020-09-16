@@ -1,4 +1,7 @@
-import { SchemaNotFoundError, InvalidValueInProperty } from './../utils/errors/user';
+import {
+    SchemaNotFoundError,
+    InvalidValueInProperty
+} from './../utils/errors/user';
 import PropertyModel from './property.model';
 import IProperty from './property.interface';
 import moment from 'moment';
