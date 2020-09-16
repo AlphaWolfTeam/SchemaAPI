@@ -351,14 +351,14 @@ describe('Schema Manager', () => {
                 expect(resProperty).to.have.property('permissions', propertyExample.permissions);
             });
 
-         /*   it('Should update schema and update property', async () => {
+            it('Should update schema and update property', async () => {
                 await SchemaManager.updateById(
                     schema._id as string,
                     {
                         ...newSchema,
                         schemaProperties: [{
-                            ...property,
-                            _id : String(property._id),
+                            ...property["_doc"],
+                            _id: String(property._id),
                             propertyName: NEW_NAME
                         }]
                     }
@@ -368,12 +368,12 @@ describe('Schema Manager', () => {
                 expect(res).to.exist;
                 expect(res).to.have.property('schemaName', NEW_NAME);
                 expect(res.schemaProperties.length).to.equals(1);
-        
+
                 const resProperty = await PropertyManager.getById(String(res.schemaProperties[0])) as IProperty;
 
                 expect(String(resProperty._id)).to.equals(String(property._id));
 
-                expect(resProperty).to.have.property('propertyName', propertyExample.propertyName);
+                expect(resProperty).to.have.property('propertyName', NEW_NAME);
                 expect(resProperty).to.have.property('propertyType', propertyExample.propertyType);
                 expect(resProperty).to.have.property('defaultValue', propertyExample.defaultValue);
                 expect(resProperty).to.have.property('propertyRef', propertyExample.propertyRef);
@@ -387,7 +387,7 @@ describe('Schema Manager', () => {
                 expect(JSON.stringify(resProperty.updatedAt))
                     .to.equals(JSON.stringify(propertyExample.updatedAt));
                 expect(resProperty).to.have.property('permissions', propertyExample.permissions);
-            });*/
+            });
         });
 
         context('Invalid schema id', () => {
