@@ -13,7 +13,7 @@ export default class SchemaManager {
 
   static async create(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
     schema.schemaProperties = [];
-    for await (let property of schemaProperties) {
+    for (let property of schemaProperties) {
       const createdProperty = await PropertyManager.create(property) as IProperty;
       schema.schemaProperties.push(createdProperty as IProperty);
     }

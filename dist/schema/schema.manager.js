@@ -25,23 +25,11 @@ const property_manager_1 = __importDefault(require("../property/property.manager
 const user_2 = require("../utils/errors/user");
 class SchemaManager {
     static create(schema, schemaProperties) {
-        var schemaProperties_1, schemaProperties_1_1;
-        var e_1, _a;
         return __awaiter(this, void 0, void 0, function* () {
             schema.schemaProperties = [];
-            try {
-                for (schemaProperties_1 = __asyncValues(schemaProperties); schemaProperties_1_1 = yield schemaProperties_1.next(), !schemaProperties_1_1.done;) {
-                    let property = schemaProperties_1_1.value;
-                    const createdProperty = yield property_manager_1.default.create(property);
-                    schema.schemaProperties.push(createdProperty);
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (schemaProperties_1_1 && !schemaProperties_1_1.done && (_a = schemaProperties_1.return)) yield _a.call(schemaProperties_1);
-                }
-                finally { if (e_1) throw e_1.error; }
+            for (let property of schemaProperties) {
+                const createdProperty = yield property_manager_1.default.create(property);
+                schema.schemaProperties.push(createdProperty);
             }
             return schema_repository_1.default.create(schema).catch(() => {
                 throw new user_2.InvalidValueInSchema();
@@ -107,7 +95,7 @@ class SchemaManager {
         });
     }
     static updateById(id, schema) {
-        var e_2, _a, e_3, _b;
+        var e_1, _a, e_2, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const prevSchema = yield this.getById(id);
             const newProperties = [...schema.schemaProperties];
@@ -125,12 +113,12 @@ class SchemaManager {
                     }
                 }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
                     if (_d && !_d.done && (_a = _c.return)) yield _a.call(_c);
                 }
-                finally { if (e_2) throw e_2.error; }
+                finally { if (e_1) throw e_1.error; }
             }
             try {
                 for (var newProperties_1 = __asyncValues(newProperties), newProperties_1_1; newProperties_1_1 = yield newProperties_1.next(), !newProperties_1_1.done;) {
@@ -142,12 +130,12 @@ class SchemaManager {
                     }
                 }
             }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
                     if (newProperties_1_1 && !newProperties_1_1.done && (_b = newProperties_1.return)) yield _b.call(newProperties_1);
                 }
-                finally { if (e_3) throw e_3.error; }
+                finally { if (e_2) throw e_2.error; }
             }
             return schema_repository_1.default.updateById(id, schema);
         });

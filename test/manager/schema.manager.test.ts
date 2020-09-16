@@ -369,7 +369,8 @@ describe('Schema Manager', () => {
                 expect(res).to.have.property('schemaName', NEW_NAME);
                 expect(res.schemaProperties.length).to.equals(1);
 
-                const resProperty = await PropertyManager.getById(String(res.schemaProperties[0])) as IProperty;
+                const resProperty =
+                    await PropertyManager.getById(String(res.schemaProperties[0])) as IProperty;
 
                 expect(String(resProperty._id)).to.equals(String(property._id));
 
