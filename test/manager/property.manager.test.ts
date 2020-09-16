@@ -130,4 +130,47 @@ describe('Property Manager', () => {
             });
         });
     });
+
+    describe('Update property', () => {
+        let property: IProperty;
+        const NEW_NAME: string = 'new';
+        const newProperty: IProperty = { ...propertyExample, propertyName: NEW_NAME };;
+
+        beforeEach(async () => {
+            property = await PropertyManager.create({ ...propertyExample }) as IProperty;
+        });
+
+        afterEach(async () => {
+            await PropertyModel.deleteMany({}).exec();
+        });
+
+        context('Valid id', () => {
+            it('Should update property', async () => {
+                await PropertyManager.updateById(
+                    property._id as string,
+                    newProperty
+                ) as IProperty;
+                const res = await PropertyManager.getById(property._id as string);
+
+                expect(res).to.exist;
+                expect(res).to.have.property('propertyName', NEW_NAME);
+            });
+        });
+
+        context('Invalid property id', () => {
+            it('Should throw an error', async () => {
+                let functionError: Object = {};
+                try {
+                    await PropertyManager.updateById(
+                        INVALID_ID,
+                        newProperty
+                    ) as IProperty;
+                } catch (error) {
+                    functionError = error;
+                } finally {
+                    expect(functionError instanceof InvalidId).to.be.true;
+                }
+            });
+        });
+    });
 });

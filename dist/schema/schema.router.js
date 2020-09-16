@@ -12,6 +12,6 @@ schemaRouter.put('/api/schema/:id', wrapper_1.wrapAsync(schema_controller_1.defa
 schemaRouter.delete('/api/schema/:id', wrapper_1.wrapAsync(schema_controller_1.default.deleteSchema));
 schemaRouter.delete('/api/schema/:id/:propertyId', wrapper_1.wrapAsync(schema_controller_1.default.deleteProperty));
 schemaRouter.get('/api/schema/:id', wrapper_1.wrapAsync(schema_controller_1.default.getById));
-schemaRouter.get('/api/schemas', wrapper_1.wrapAsync(schema_controller_1.default.getAll));
+schemaRouter.get('/api/schema', wrapper_1.wrapAsync(schema_controller_1.default.getAll));
 exports.default = schemaRouter;
 //# sourceMappingURL=schema.router.js.map

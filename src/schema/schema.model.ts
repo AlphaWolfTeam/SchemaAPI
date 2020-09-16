@@ -1,14 +1,9 @@
 import * as mongoose from 'mongoose';
-import  ISchema  from './schema.interface';
+import ISchema from './schema.interface';
 import config from '../config/index';
 
 const SchemaSchema = new mongoose.Schema({
-    // schemaId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     required: true,
-    //     unique: true
-    // },
-    schemaName:{
+    schemaName: {
         type: String,
         required: true
     },
@@ -16,21 +11,24 @@ const SchemaSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Property',
         required: true
-      }],
-    permissions:{
+    }],
+    permissions: {
         type: String,
         required: true
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         required: true
-    }, 
-    updatedAt:{
+    },
+    updatedAt: {
         type: Date,
         required: true
     },
 });
 
-const SchemaModel = mongoose.model<ISchema & mongoose.Document>(config.mongo.schemaCollectionName, SchemaSchema);
+const SchemaModel = mongoose.model<ISchema & mongoose.Document>(
+    config.mongo.schemaCollectionName,
+    SchemaSchema
+);
 
 export default SchemaModel;
