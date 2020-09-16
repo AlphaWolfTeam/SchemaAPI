@@ -34,7 +34,7 @@ export default class PropertyRepository {
     static async convertValue(value: any, newType: String): Promise<any> {
         switch (newType) {
             case 'String':
-                return new String(value);
+                return String(value);
             case 'Number':
                 if (isNaN(value)) {
                     throw new InvalidValueInProperty();
