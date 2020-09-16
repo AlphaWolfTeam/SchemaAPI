@@ -15,19 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const server_1 = __importDefault(require("./server"));
 const index_1 = __importDefault(require("./config/index"));
+const rabbit_1 = require("./utils/rabbitmq/rabbit");
 const { mongo, service } = index_1.default;
 const initializeMongo = () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Connecting to Mongo...');
+    console.log("Connecting to Mongo...");
     yield mongoose_1.default.connect(mongo.uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
-        useCreateIndex: true
+        useCreateIndex: true,
     });
-    console.log('Mongo connection established');
+    console.log("Mongo connection established");
 });
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield initializeMongo();
+    yield rabbit_1.initRabbit();
     const server = new server_1.default(service.port);
     yield server.start();
     console.log(`Server started on port: ${service.port}`);
