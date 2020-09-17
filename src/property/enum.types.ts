@@ -1,5 +1,4 @@
 const Types = [
-  'Array',
   'Boolean',
   'Date',
   'Number',

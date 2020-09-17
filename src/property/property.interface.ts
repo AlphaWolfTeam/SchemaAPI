@@ -11,5 +11,4 @@ export default interface IProperty {
     validateFunctions?: Function[],
     createdAt: Date,
     updatedAt: Date,
-    permissions?: string
 }

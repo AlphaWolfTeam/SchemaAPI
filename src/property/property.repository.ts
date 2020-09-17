@@ -1,6 +1,6 @@
 import {
     SchemaNotFoundError,
-    InvalidValueInProperty
+    InvalidValueInPropertyError
 } from './../utils/errors/user';
 import PropertyModel from './property.model';
 import IProperty from './property.interface';
@@ -10,7 +10,7 @@ import mongoose from 'mongoose';
 export default class PropertyRepository {
     static async create(property: IProperty): Promise<IProperty | null> {
         const createdProperty = await PropertyModel.create(property).catch(() => {
-            throw new InvalidValueInProperty();
+            throw new InvalidValueInPropertyError();
         });
         if (createdProperty.defaultValue) {
             createdProperty.defaultValue = await this.convertValue(
@@ -25,7 +25,7 @@ export default class PropertyRepository {
         }
         if (createdProperty.defaultValue && createdProperty.enum) {
             if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
-                throw new InvalidValueInProperty();
+                throw new InvalidValueInPropertyError();
             }
         }
         return await this.updateById(createdProperty._id as string, createdProperty);
@@ -37,7 +37,7 @@ export default class PropertyRepository {
                 return String(value);
             case 'Number':
                 if (isNaN(value)) {
-                    throw new InvalidValueInProperty();
+                    throw new InvalidValueInPropertyError();
                 } else {
                     return Number(value);
                 }
@@ -45,23 +45,17 @@ export default class PropertyRepository {
                 if (this.isValidBoolean(value)) {
                     return Boolean(value);
                 } else {
-                    throw new InvalidValueInProperty();
+                    throw new InvalidValueInPropertyError();
                 }
             case 'Date':
                 if (moment(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
                     return Date.parse(value);
                 } else {
-                    throw new InvalidValueInProperty();
-                }
-            case 'Array':
-                if (!Array.isArray(value)) {
-                    return Array(value);
-                } else {
-                    return value;
+                    throw new InvalidValueInPropertyError();
                 }
             case 'ObjectId':
                 if (!mongoose.Types.ObjectId.isValid(value)) {
-                    throw new InvalidValueInProperty();
+                    throw new InvalidValueInPropertyError();
                 } else if (!(await this.isSchemaExist(value))) {
                     throw new SchemaNotFoundError();
                 } else {

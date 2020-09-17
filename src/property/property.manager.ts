@@ -1,4 +1,4 @@
-import { PropertyNotFoundError, InvalidId } from './../utils/errors/user';
+import { PropertyNotFoundError, InvalidIdError } from './../utils/errors/user';
 import PropertyRepository from './property.repository';
 import IProperty from './property.interface';
 
@@ -11,7 +11,7 @@ export default class PropertyManager {
 
     static async getById(id: string): Promise<IProperty | null> {
         const property = await PropertyRepository.getById(id).catch(() => {
-            throw new InvalidId();
+            throw new InvalidIdError();
         });
         if (property === null) {
             throw new PropertyNotFoundError();
@@ -21,7 +21,7 @@ export default class PropertyManager {
 
     static async deleteById(id: string): Promise<IProperty | null> {
         const property = await PropertyRepository.deleteById(id).catch(() => {
-            throw new InvalidId();
+            throw new InvalidIdError();
         });
         if (property === null) {
             throw new PropertyNotFoundError();
@@ -31,7 +31,7 @@ export default class PropertyManager {
 
     static async updateById(id: string, newProperty: IProperty): Promise<IProperty | null> {
         const property = await PropertyRepository.updateById(id, newProperty).catch(() => {
-            throw new InvalidId();
+            throw new InvalidIdError();
         });
         if (property === null) {
             throw new PropertyNotFoundError();

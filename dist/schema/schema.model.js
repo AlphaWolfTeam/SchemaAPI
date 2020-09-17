@@ -27,7 +27,8 @@ const index_1 = __importDefault(require("../config/index"));
 const SchemaSchema = new mongoose.Schema({
     schemaName: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     schemaProperties: [{
             type: mongoose.Schema.Types.ObjectId,

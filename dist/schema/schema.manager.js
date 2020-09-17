@@ -16,23 +16,30 @@ const user_1 = require("./../utils/errors/user");
 const schema_repository_1 = __importDefault(require("./schema.repository"));
 const property_manager_1 = __importDefault(require("../property/property.manager"));
 const user_2 = require("../utils/errors/user");
+const MONGO_UNIQUE_NAME_CODE = 11000;
 class SchemaManager {
     static create(schema, schemaProperties) {
         return __awaiter(this, void 0, void 0, function* () {
             schema.schemaProperties = [];
+            if (!this.isAllPropertiesUnique(schemaProperties)) {
+                throw new user_1.DuplicatePropertyNameError();
+            }
             for (let property of schemaProperties) {
                 const createdProperty = (yield property_manager_1.default.create(property));
                 schema.schemaProperties.push(createdProperty);
             }
-            return schema_repository_1.default.create(schema).catch(() => {
-                throw new user_2.InvalidValueInSchema();
+            return schema_repository_1.default.create(schema).catch((error) => {
+                if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
+                    throw new user_1.DuplicateSchemaNameError();
+                }
+                throw new user_2.InvalidValueInSchemaError();
             });
         });
     }
     static deleteSchema(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const schema = yield schema_repository_1.default.deleteById(id).catch(() => {
-                throw new user_2.InvalidId();
+                throw new user_2.InvalidIdError();
             });
             if (schema) {
                 schema.schemaProperties.forEach((property) => __awaiter(this, void 0, void 0, function* () {
@@ -42,39 +49,28 @@ class SchemaManager {
             else {
                 throw new user_2.SchemaNotFoundError();
             }
-            return schema;
         });
     }
     static deleteProperty(schemaId, propertyId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let hasPropertyFound = false;
-            const schema = yield this.getById(schemaId);
-            const property = yield property_manager_1.default.getById(propertyId);
-            if (schema) {
-                schema.schemaProperties = schema.schemaProperties.filter((property) => {
-                    if (String(property) === propertyId) {
-                        hasPropertyFound = true;
-                        return false;
-                    }
-                    return true;
-                });
-            }
-            else {
-                throw new user_2.SchemaNotFoundError();
-            }
-            if (!hasPropertyFound) {
-                throw new user_1.PropertyNotInSchemaError();
-            }
-            if (property) {
+            const schema = (yield this.getById(schemaId));
+            const propertyIndex = schema.schemaProperties
+                .map((property) => String(property))
+                .indexOf(propertyId);
+            if (propertyIndex > -1) {
+                schema.schemaProperties.splice(propertyIndex, 1);
                 yield property_manager_1.default.deleteById(propertyId);
             }
-            return schema_repository_1.default.updateById(schemaId, schema);
+            else {
+                throw new user_1.PropertyNotInSchemaError();
+            }
+            schema_repository_1.default.updateById(schemaId, schema);
         });
     }
     static getById(schemaId) {
         return __awaiter(this, void 0, void 0, function* () {
             const schema = yield schema_repository_1.default.getById(schemaId).catch(() => {
-                throw new user_2.InvalidId();
+                throw new user_2.InvalidIdError();
             });
             if (schema === null) {
                 throw new user_2.SchemaNotFoundError();
@@ -92,6 +88,9 @@ class SchemaManager {
             const prevSchema = (yield this.getById(id));
             const newProperties = [...schema.schemaProperties];
             schema.schemaProperties = [];
+            if (!this.isAllPropertiesUnique(newProperties)) {
+                throw new user_1.PropertyNameAlreadyExistError();
+            }
             for (let prevProperty of prevSchema.schemaProperties) {
                 let newPropertyIndex = newProperties
                     .map((newProperty) => newProperty._id)
@@ -115,6 +114,10 @@ class SchemaManager {
             }
             return schema_repository_1.default.updateById(id, schema);
         });
+    }
+    static isAllPropertiesUnique(propertyList) {
+        const nameArray = propertyList.map((property) => property.propertyName);
+        return nameArray.every((name) => nameArray.indexOf(name) === nameArray.lastIndexOf(name));
     }
 }
 exports.default = SchemaManager;

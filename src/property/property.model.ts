@@ -49,10 +49,6 @@ const PropertySchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    permissions: {
-        type: String,
-        required: false
-    }
 });
 
 const PropertyModel = mongoose.model<IProperty & mongoose.Document>(

@@ -18,20 +18,38 @@ export class PropertyNotInSchemaError extends UserError {
     }
 }
 
-export class InvalidId extends UserError {
+export class InvalidIdError extends UserError {
     constructor() {
         super('Invalid id', 404);
     }
 }
 
-export class InvalidValueInProperty extends UserError {
+export class InvalidValueInPropertyError extends UserError {
     constructor() {
         super('Invalid value in property', 404);
     }
 }
 
-export class InvalidValueInSchema extends UserError {
+export class InvalidValueInSchemaError extends UserError {
     constructor() {
         super('Invalid value in schema', 404);
+    }
+}
+
+export class PropertyNameAlreadyExistError extends UserError {
+    constructor() {
+        super('Property name is already exist in this schema', 404);
+    }
+}
+
+export class DuplicatePropertyNameError extends UserError {
+    constructor() {
+        super('Property names are not unique in schema properties', 404);
+    }
+}
+
+export class DuplicateSchemaNameError extends UserError {
+    constructor() {
+        super('There is already exist schema with this name', 404);
     }
 }

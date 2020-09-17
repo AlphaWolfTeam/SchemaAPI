@@ -20,7 +20,7 @@ class PropertyRepository {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
             const createdProperty = yield property_model_1.default.create(property).catch(() => {
-                throw new user_1.InvalidValueInProperty();
+                throw new user_1.InvalidValueInPropertyError();
             });
             if (createdProperty.defaultValue) {
                 createdProperty.defaultValue = yield this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
@@ -32,7 +32,7 @@ class PropertyRepository {
             }
             if (createdProperty.defaultValue && createdProperty.enum) {
                 if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
-                    throw new user_1.InvalidValueInProperty();
+                    throw new user_1.InvalidValueInPropertyError();
                 }
             }
             return yield this.updateById(createdProperty._id, createdProperty);
@@ -45,7 +45,7 @@ class PropertyRepository {
                     return String(value);
                 case 'Number':
                     if (isNaN(value)) {
-                        throw new user_1.InvalidValueInProperty();
+                        throw new user_1.InvalidValueInPropertyError();
                     }
                     else {
                         return Number(value);
@@ -55,25 +55,18 @@ class PropertyRepository {
                         return Boolean(value);
                     }
                     else {
-                        throw new user_1.InvalidValueInProperty();
+                        throw new user_1.InvalidValueInPropertyError();
                     }
                 case 'Date':
                     if (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
                         return Date.parse(value);
                     }
                     else {
-                        throw new user_1.InvalidValueInProperty();
-                    }
-                case 'Array':
-                    if (!Array.isArray(value)) {
-                        return Array(value);
-                    }
-                    else {
-                        return value;
+                        throw new user_1.InvalidValueInPropertyError();
                     }
                 case 'ObjectId':
                     if (!mongoose_1.default.Types.ObjectId.isValid(value)) {
-                        throw new user_1.InvalidValueInProperty();
+                        throw new user_1.InvalidValueInPropertyError();
                     }
                     else if (!(yield this.isSchemaExist(value))) {
                         throw new user_1.SchemaNotFoundError();

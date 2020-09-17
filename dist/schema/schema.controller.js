@@ -51,8 +51,9 @@ class SchemaController {
     static deleteSchema(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const deleted = yield schema_manager_1.default.deleteSchema(req.params.id);
-                rabbit_1.sendDataToRabbit({ method: 'delete schema', schemaName: deleted.schemaName });
+                const schemaToDelete = yield schema_manager_1.default.getById(req.params.id);
+                yield schema_manager_1.default.deleteSchema(req.params.id);
+                rabbit_1.sendDataToRabbit({ method: 'delete schema', schemaName: schemaToDelete.schemaName });
                 res.end();
             }
             catch (error) {
@@ -63,8 +64,9 @@ class SchemaController {
     static deleteProperty(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const schema = yield schema_manager_1.default.getById(req.params.id);
                 const property = yield property_manager_1.default.getById(req.params.propertyId);
-                const schema = yield schema_manager_1.default.deleteProperty(req.params.id, req.params.propertyId);
+                yield schema_manager_1.default.deleteProperty(req.params.id, req.params.propertyId);
                 rabbit_1.sendDataToRabbit({ method: 'delete property', schemaName: schema.schemaName, propertyName: property.propertyName });
                 res.end();
             }
