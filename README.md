@@ -45,7 +45,6 @@
 * Boolean
 * Date
 * ObjectId
-* Array
 
 ## Request & Response Examples
   
@@ -115,8 +114,7 @@ Request body:
            "index":true,
            "required":true,
            "createdAt":"2013-10-01T00:00:00.000Z",
-           "updatedAt":"2013-10-01T00:00:00.000Z",
-           "permissions":"property premissions"
+           "updatedAt":"2013-10-01T00:00:00.000Z"
         }
       ],
       "permissions":"schema premissions",
@@ -145,8 +143,7 @@ Request body:
            "index":true,
            "required":true,
            "createdAt":"2013-10-01T00:00:00.000Z",
-           "updatedAt":"2013-10-01T00:00:00.000Z",
-           "permissions":"property premissions"
+           "updatedAt":"2013-10-01T00:00:00.000Z"
         }
       ],
       "permissions":"schema premissions",

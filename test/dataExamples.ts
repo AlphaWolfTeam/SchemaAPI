@@ -19,7 +19,6 @@ export const propertyExample: IProperty = {
   required: true,
   createdAt: new Date("2013-10-01T00:00:00.000Z"),
   updatedAt: new Date("2013-10-01T00:00:00.000Z"),
-  permissions: "property premissions"
 };
 export const ID_NOT_EXIST = '111111111111111111111111';
 export const INVALID_ID = 'invalidId';

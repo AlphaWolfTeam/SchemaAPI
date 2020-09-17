@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Types = [
-    'Array',
     'Boolean',
     'Date',
     'Number',

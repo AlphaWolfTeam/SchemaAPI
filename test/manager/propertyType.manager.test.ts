@@ -6,7 +6,7 @@ import PropertyManager from "../../src/property/property.manager";
 import IProperty from "../../src/property/property.interface";
 import { propertyExample, ID_NOT_EXIST, INVALID_ID } from "../dataExamples";
 import {
-  InvalidValueInProperty,
+  InvalidValueInPropertyError,
   SchemaNotFoundError,
 } from "../../src/utils/errors/user";
 
@@ -68,15 +68,11 @@ describe("Property Type Manager", () => {
         expect(JSON.stringify(res.updatedAt)).to.equals(
           JSON.stringify(propertyExample.updatedAt)
         );
-        expect(res).to.have.property(
-          "permissions",
-          propertyExample.permissions
-        );
       });
     });
 
     context("Default value not exist in enum", () => {
-      it("Should throw an invalid value error", async () => {
+      it("Should throw an InvalidValueInPropertyError", async () => {
         let functionError: Object = {};
         try {
           const invalidProperty: IProperty = {
@@ -89,14 +85,14 @@ describe("Property Type Manager", () => {
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof InvalidValueInProperty).to.be.true;
+          expect(functionError instanceof InvalidValueInPropertyError).to.be.true;
         }
       });
     });
 
     context("Invalid types-", () => {
       context("Invalid field value-", () => {
-        it("Should throw an invalid value error", async () => {
+        it("Should throw an InvalidValueInPropertyError", async () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
@@ -107,12 +103,12 @@ describe("Property Type Manager", () => {
           } catch (error) {
             functionError = error;
           } finally {
-            expect(functionError instanceof InvalidValueInProperty).to.be.true;
+            expect(functionError instanceof InvalidValueInPropertyError).to.be.true;
           }
         });
 
         context("Invalid field value-", () => {
-          it("Should throw an invalid value error", async () => {
+          it("Should throw an InvalidValueInPropertyError", async () => {
             let functionError: Object = {};
             try {
               const invalidProperty: IProperty = {
@@ -123,14 +119,14 @@ describe("Property Type Manager", () => {
             } catch (error) {
               functionError = error;
             } finally {
-              expect(functionError instanceof InvalidValueInProperty).to.be
+              expect(functionError instanceof InvalidValueInPropertyError).to.be
                 .true;
             }
           });
 
           context("Invalid number-", () => {
             context("Invalid default value", () => {
-              it("Should throw an invalid value error", async () => {
+              it("Should throw an InvalidValueInPropertyError", async () => {
                 let functionError: Object = {};
                 try {
                   const invalidProperty: IProperty = {
@@ -143,14 +139,14 @@ describe("Property Type Manager", () => {
                 } catch (error) {
                   functionError = error;
                 } finally {
-                  expect(functionError instanceof InvalidValueInProperty).to.be
+                  expect(functionError instanceof InvalidValueInPropertyError).to.be
                     .true;
                 }
               });
             });
 
             context("Invalid enum", () => {
-              it("Should throw an invalid value error", async () => {
+              it("Should throw an InvalidValueInPropertyError", async () => {
                 let functionError: Object = {};
                 try {
                   const invalidProperty: IProperty = {
@@ -163,7 +159,7 @@ describe("Property Type Manager", () => {
                 } catch (error) {
                   functionError = error;
                 } finally {
-                  expect(functionError instanceof InvalidValueInProperty).to.be
+                  expect(functionError instanceof InvalidValueInPropertyError).to.be
                     .true;
                 }
               });
@@ -172,7 +168,7 @@ describe("Property Type Manager", () => {
 
           context("Invalid boolean-", () => {
             context("Invalid default value", () => {
-              it("Should throw an invalid value error", async () => {
+              it("Should throw an InvalidValueInPropertyError", async () => {
                 let functionError: Object = {};
                 try {
                   const invalidProperty: IProperty = {
@@ -185,7 +181,7 @@ describe("Property Type Manager", () => {
                 } catch (error) {
                   functionError = error;
                 } finally {
-                  expect(functionError instanceof InvalidValueInProperty).to.be
+                  expect(functionError instanceof InvalidValueInPropertyError).to.be
                     .true;
                 }
               });
@@ -195,7 +191,7 @@ describe("Property Type Manager", () => {
 
         context("Invalid date-", () => {
           context("Invalid default value", () => {
-            it("Should throw an invalid value error", async () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
               let functionError: Object = {};
               try {
                 const invalidProperty: IProperty = {
@@ -208,13 +204,13 @@ describe("Property Type Manager", () => {
               } catch (error) {
                 functionError = error;
               } finally {
-                expect(functionError instanceof InvalidValueInProperty).to.be
+                expect(functionError instanceof InvalidValueInPropertyError).to.be
                   .true;
               }
             });
           });
           context("Invalid enum", () => {
-            it("Should throw an invalid value error", async () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
               let functionError: Object = {};
               try {
                 const invalidProperty: IProperty = {
@@ -227,7 +223,7 @@ describe("Property Type Manager", () => {
               } catch (error) {
                 functionError = error;
               } finally {
-                expect(functionError instanceof InvalidValueInProperty).to.be
+                expect(functionError instanceof InvalidValueInPropertyError).to.be
                   .true;
               }
             });
@@ -248,7 +244,7 @@ describe("Property Type Manager", () => {
           });
 
           context("Invalid default value", () => {
-            it("Should throw an invalid value error", async () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
               let functionError: Object = {};
               try {
                 const invalidProperty: IProperty = {
@@ -261,11 +257,11 @@ describe("Property Type Manager", () => {
               } catch (error) {
                 functionError = error;
               } finally {
-                expect(functionError instanceof InvalidValueInProperty).to.be
+                expect(functionError instanceof InvalidValueInPropertyError).to.be
                   .true;
               }
             });
-            it("Should throw an schema not exist error", async () => {
+            it("Should throw an SchemaNotFoundError", async () => {
               let functionError: Object = {};
               try {
                 const invalidProperty: IProperty = {
@@ -283,7 +279,7 @@ describe("Property Type Manager", () => {
             });
           });
           context("Invalid enum", () => {
-            it("Should throw an invalid value error", async () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
               let functionError: Object = {};
               try {
                 const invalidProperty: IProperty = {
@@ -296,11 +292,11 @@ describe("Property Type Manager", () => {
               } catch (error) {
                 functionError = error;
               } finally {
-                expect(functionError instanceof InvalidValueInProperty).to.be
+                expect(functionError instanceof InvalidValueInPropertyError).to.be
                   .true;
               }
             });
-            it("Should throw an schema not exist error", async () => {
+            it("Should throw an SchemaNotFoundError", async () => {
               let functionError: Object = {};
               try {
                 const invalidProperty: IProperty = {

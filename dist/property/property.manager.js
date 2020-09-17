@@ -25,7 +25,7 @@ class PropertyManager {
     static getById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const property = yield property_repository_1.default.getById(id).catch(() => {
-                throw new user_1.InvalidId();
+                throw new user_1.InvalidIdError();
             });
             if (property === null) {
                 throw new user_1.PropertyNotFoundError();
@@ -36,7 +36,7 @@ class PropertyManager {
     static deleteById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const property = yield property_repository_1.default.deleteById(id).catch(() => {
-                throw new user_1.InvalidId();
+                throw new user_1.InvalidIdError();
             });
             if (property === null) {
                 throw new user_1.PropertyNotFoundError();
@@ -47,7 +47,7 @@ class PropertyManager {
     static updateById(id, newProperty) {
         return __awaiter(this, void 0, void 0, function* () {
             const property = yield property_repository_1.default.updateById(id, newProperty).catch(() => {
-                throw new user_1.InvalidId();
+                throw new user_1.InvalidIdError();
             });
             if (property === null) {
                 throw new user_1.PropertyNotFoundError();
