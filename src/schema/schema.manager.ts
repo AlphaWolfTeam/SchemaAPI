@@ -1,34 +1,45 @@
-import { PropertyNotInSchemaError } from "./../utils/errors/user";
+import {
+  DuplicatePropertyNameError,
+  DuplicateSchemaNameError,
+  PropertyNameAlreadyExistError,
+  PropertyNotInSchemaError,
+} from "./../utils/errors/user";
 import SchemaRepository from "./schema.repository";
 import PropertyManager from "../property/property.manager";
 import ISchema from "./schema.interface";
 import IProperty from "../property/property.interface";
 import {
-  InvalidId,
+  InvalidIdError,
   SchemaNotFoundError,
-  InvalidValueInSchema,
+  InvalidValueInSchemaError,
 } from "../utils/errors/user";
 
+const MONGO_UNIQUE_NAME_CODE: number = 11000;
 export default class SchemaManager {
-  static async create(
-    schema: ISchema,
-    schemaProperties: IProperty[]
-  ): Promise<ISchema | null> {
+  static async create(schema: ISchema,schemaProperties: IProperty[]): Promise<ISchema | null> {
     schema.schemaProperties = [];
+    if (!this.isAllPropertiesUnique(schemaProperties)) {
+      throw new DuplicatePropertyNameError();
+    }
     for (let property of schemaProperties) {
       const createdProperty = (await PropertyManager.create(
         property
       )) as IProperty;
       schema.schemaProperties.push(createdProperty as IProperty);
     }
-    return SchemaRepository.create(schema).catch(() => {
-      throw new InvalidValueInSchema();
+    return SchemaRepository.create(schema).catch((error: Object) => {
+      if(error["code"] === MONGO_UNIQUE_NAME_CODE){
+        throw new DuplicateSchemaNameError();
+      }
+    
+      throw new InvalidValueInSchemaError();
+      
     });
   }
 
-  static async deleteSchema(id: string): Promise<ISchema | null> {
+  static async deleteSchema(id: string): Promise<void> {
     const schema = await SchemaRepository.deleteById(id).catch(() => {
-      throw new InvalidId();
+      throw new InvalidIdError();
     });
 
     if (schema) {
@@ -38,46 +49,28 @@ export default class SchemaManager {
     } else {
       throw new SchemaNotFoundError();
     }
-
-    return schema;
   }
 
   static async deleteProperty(
     schemaId: string,
     propertyId: string
-  ): Promise<ISchema | null> {
-    let hasPropertyFound = false;
-    const schema = await this.getById(schemaId);
-    const property = await PropertyManager.getById(propertyId);
-
-    if (schema) {
-      schema.schemaProperties = schema.schemaProperties.filter(
-        (property: IProperty) => {
-          if (String(property) === propertyId) {
-            hasPropertyFound = true;
-            return false;
-          }
-          return true;
-        }
-      );
+  ): Promise<void> {
+    const schema: ISchema = (await this.getById(schemaId)) as ISchema;
+    const propertyIndex = schema.schemaProperties
+      .map((property) => String(property))
+      .indexOf(propertyId);
+    if (propertyIndex > -1) {
+      schema.schemaProperties.splice(propertyIndex, 1);
+      await PropertyManager.deleteById(propertyId);
     } else {
-      throw new SchemaNotFoundError();
-    }
-
-    if (!hasPropertyFound) {
       throw new PropertyNotInSchemaError();
     }
-
-    if (property) {
-      await PropertyManager.deleteById(propertyId);
-    }
-
-    return SchemaRepository.updateById(schemaId, schema as ISchema);
+    SchemaRepository.updateById(schemaId, schema as ISchema);
   }
 
   static async getById(schemaId: string): Promise<ISchema | null> {
     const schema = await SchemaRepository.getById(schemaId).catch(() => {
-      throw new InvalidId();
+      throw new InvalidIdError();
     });
     if (schema === null) {
       throw new SchemaNotFoundError();
@@ -97,6 +90,9 @@ export default class SchemaManager {
     const newProperties = [...schema.schemaProperties];
     schema.schemaProperties = [];
 
+    if (!this.isAllPropertiesUnique(newProperties)) {
+      throw new PropertyNameAlreadyExistError();
+    }
     for (let prevProperty of prevSchema.schemaProperties) {
       let newPropertyIndex = newProperties
         .map((newProperty) => newProperty._id)
@@ -125,5 +121,12 @@ export default class SchemaManager {
     }
 
     return SchemaRepository.updateById(id, schema);
+  }
+
+  static isAllPropertiesUnique(propertyList: IProperty[]): boolean {
+    const nameArray = propertyList.map((property) => property.propertyName);
+    return nameArray.every(
+      (name) => nameArray.indexOf(name) === nameArray.lastIndexOf(name)
+    );
   }
 }

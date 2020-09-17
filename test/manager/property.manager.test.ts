@@ -1,5 +1,5 @@
 import {
-    InvalidId,
+    InvalidIdError,
     PropertyNotFoundError
 } from './../../src/utils/errors/user';
 import chai from 'chai';
@@ -14,7 +14,6 @@ const { expect } = chai;
 const { mongo } = config;
 
 describe('Property Manager', () => {
-
     before(async () => {
         await mongoose.connect(mongo.testUri, {
             useNewUrlParser: true,
@@ -54,25 +53,24 @@ describe('Property Manager', () => {
                 expect(res).to.have.property('required', property.required);
                 expect(JSON.stringify(res.createdAt)).to.equals(JSON.stringify(property.createdAt));
                 expect(JSON.stringify(res.updatedAt)).to.equals(JSON.stringify(property.updatedAt));
-                expect(res).to.have.property('permissions', property.permissions);
             });
         });
 
         context('Invalid id', () => {
-            it('Should throw an error', async () => {
+            it('Should throw an InvalidIdError', async () => {
                 let functionError: Object = {};
                 try {
                     await PropertyManager.getById(INVALID_ID);
                 } catch (error) {
                     functionError = error;
                 } finally {
-                    expect(functionError instanceof InvalidId).to.be.true;
+                    expect(functionError instanceof InvalidIdError).to.be.true;
                 }
             });
         });
 
         context('Property that not exist', () => {
-            it('Should throw an error', async () => {
+            it('Should throw an PropertyNotFoundError', async () => {
                 let functionError: Object = {};
                 try {
                     await PropertyManager.getById(ID_NOT_EXIST);
@@ -105,20 +103,20 @@ describe('Property Manager', () => {
         });
 
         context('Invalid id', () => {
-            it('Should throw an error', async () => {
+            it('Should throw an InvalidIdError', async () => {
                 let functionError: Object = {};
                 try {
                     await PropertyManager.deleteById(INVALID_ID);
                 } catch (error) {
                     functionError = error;
                 } finally {
-                    expect(functionError instanceof InvalidId).to.be.true;
+                    expect(functionError instanceof InvalidIdError).to.be.true;
                 }
             });
         });
 
         context('Property that not exist', () => {
-            it('Should throw an error', async () => {
+            it('Should throw an PropertyNotFoundError', async () => {
                 let functionError: Object = {};
                 try {
                     await PropertyManager.deleteById(ID_NOT_EXIST);
@@ -158,7 +156,7 @@ describe('Property Manager', () => {
         });
 
         context('Invalid property id', () => {
-            it('Should throw an error', async () => {
+            it('Should throw an InvalidIdError', async () => {
                 let functionError: Object = {};
                 try {
                     await PropertyManager.updateById(
@@ -168,7 +166,7 @@ describe('Property Manager', () => {
                 } catch (error) {
                     functionError = error;
                 } finally {
-                    expect(functionError instanceof InvalidId).to.be.true;
+                    expect(functionError instanceof InvalidIdError).to.be.true;
                 }
             });
         });
