@@ -6,6 +6,7 @@ import PropertyModel from './property.model';
 import IProperty from './property.interface';
 import moment from 'moment';
 import mongoose from 'mongoose';
+// import IValidationNumber from './validationInterfaces/number.validation';
 
 export default class PropertyRepository {
     static async create(property: IProperty): Promise<IProperty | null> {
@@ -28,8 +29,21 @@ export default class PropertyRepository {
                 throw new InvalidValueInPropertyError();
             }
         }
+     /*   if(createdProperty.validation && !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)){
+            throw new InvalidValueInPropertyError();
+         }*/
         return await this.updateById(createdProperty._id as string, createdProperty);
     }
+
+    /*static isValidationObjValid(propertyType: string, validationObj: Object): boolean {
+        switch (propertyType) {
+            case 'Number':
+                return validationObj instanceof IValidationNumber
+            default:
+                return false  
+        }
+            
+    }*/
 
     static async convertValue(value: any, newType: String): Promise<any> {
         switch (newType) {
@@ -88,3 +102,4 @@ export default class PropertyRepository {
             { upsert: true }).exec();
     }
 }
+

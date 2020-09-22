@@ -32,7 +32,7 @@
         isUnique: boolean,
         index?: boolean,
         required?: boolean,
-        validateFunctions?: Function[],
+        validation?: validation,
         createdAt: Date,
         updatedAt: Date,
         permissions?: string

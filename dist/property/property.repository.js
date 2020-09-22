@@ -35,8 +35,22 @@ class PropertyRepository {
                     throw new user_1.InvalidValueInPropertyError();
                 }
             }
+            if (createdProperty.validation && !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)) {
+                throw new user_1.InvalidValueInPropertyError();
+            }
             return yield this.updateById(createdProperty._id, createdProperty);
         });
+    }
+    static isValidationObjValid(propertyType, validationObj) {
+        switch (propertyType) {
+            case 'Number':
+                console.log('propertyType', propertyType);
+                console.log('validationObj', validationObj);
+                console.log('ValidationNumber', ValidationNumber);
+                return validationObj instanceof ValidationNumber;
+            default:
+                return false;
+        }
     }
     static convertValue(value, newType) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -97,4 +111,6 @@ class PropertyRepository {
     }
 }
 exports.default = PropertyRepository;
+class ValidationNumber {
+}
 //# sourceMappingURL=property.repository.js.map
