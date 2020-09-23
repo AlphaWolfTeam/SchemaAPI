@@ -16,6 +16,11 @@ const user_1 = require("./../utils/errors/user");
 const property_model_1 = __importDefault(require("./property.model"));
 const moment_1 = __importDefault(require("moment"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const number_validation_1 = require("./validationSchemas/number.validation");
+const jsonschema_1 = require("jsonschema");
+const string_validation_1 = require("./validationSchemas/string.validation");
+const date_validation_1 = require("./validationSchemas/date.validation");
+const validator = new jsonschema_1.Validator();
 class PropertyRepository {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -35,19 +40,23 @@ class PropertyRepository {
                     throw new user_1.InvalidValueInPropertyError();
                 }
             }
-            if (createdProperty.validation && !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)) {
+            console.log(this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation));
+            if (createdProperty.validation &&
+                !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)) {
                 throw new user_1.InvalidValueInPropertyError();
             }
             return yield this.updateById(createdProperty._id, createdProperty);
         });
     }
     static isValidationObjValid(propertyType, validationObj) {
+        console.log("validationObj", validationObj);
         switch (propertyType) {
-            case 'Number':
-                console.log('propertyType', propertyType);
-                console.log('validationObj', validationObj);
-                console.log('ValidationNumber', ValidationNumber);
-                return validationObj instanceof ValidationNumber;
+            case "Number":
+                return validator.validate(validationObj, number_validation_1.numberValidationSchema).valid;
+            case "String":
+                return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
+            case "Date":
+                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid;
             default:
                 return false;
         }
@@ -55,30 +64,30 @@ class PropertyRepository {
     static convertValue(value, newType) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (newType) {
-                case 'String':
+                case "String":
                     return String(value);
-                case 'Number':
+                case "Number":
                     if (isNaN(value)) {
                         throw new user_1.InvalidValueInPropertyError();
                     }
                     else {
                         return Number(value);
                     }
-                case 'Boolean':
+                case "Boolean":
                     if (this.isValidBoolean(value)) {
                         return Boolean(value);
                     }
                     else {
                         throw new user_1.InvalidValueInPropertyError();
                     }
-                case 'Date':
+                case "Date":
                     if (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
                         return Date.parse(value);
                     }
                     else {
                         throw new user_1.InvalidValueInPropertyError();
                     }
-                case 'ObjectId':
+                case "ObjectId":
                     if (!mongoose_1.default.Types.ObjectId.isValid(value)) {
                         throw new user_1.InvalidValueInPropertyError();
                     }
@@ -92,7 +101,7 @@ class PropertyRepository {
         });
     }
     static isValidBoolean(value) {
-        return String(value) === 'false' || String(value) === 'true';
+        return String(value) === "false" || String(value) === "true";
     }
     static isSchemaExist(objectId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -111,6 +120,4 @@ class PropertyRepository {
     }
 }
 exports.default = PropertyRepository;
-class ValidationNumber {
-}
 //# sourceMappingURL=property.repository.js.map
