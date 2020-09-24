@@ -28,10 +28,12 @@ export default class SchemaManager {
       schema.schemaProperties.push(createdProperty as IProperty);
     }
     return SchemaRepository.create(schema).catch((error: Object) => {
+      schema.schemaProperties.forEach(property => {
+        PropertyManager.deleteById(property._id as string);
+      });
       if(error["code"] === MONGO_UNIQUE_NAME_CODE){
         throw new DuplicateSchemaNameError();
       }
-    
       throw new InvalidValueInSchemaError();
       
     });

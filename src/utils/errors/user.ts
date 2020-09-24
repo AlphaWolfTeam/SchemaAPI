@@ -25,8 +25,8 @@ export class InvalidIdError extends UserError {
 }
 
 export class InvalidValueInPropertyError extends UserError {
-    constructor() {
-        super('Invalid value in property', 404);
+    constructor(propertyName: string) {
+        super(`Invalid value in property: ${propertyName}`, 404);
     }
 }
 
