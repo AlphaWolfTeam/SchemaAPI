@@ -3,21 +3,29 @@ export const dateValidationSchema = {
   "properties": {
     "before": {
       "type": "string",
-      "format": "date"
+      "format": "date-time"
     },
     "after": {
       "type": "string",
-      "format": "date"
+      "format": "date-time"
     },
     "equalsTo": {
       "type": "string",
-      "format": "date"
+      "format": "date-time"
+    },
+
+    "differFrom": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "date-time"
+      }
     },
     "between": {
       "type": "array",
       "items": {
         "type": "string",
-        "format": "date"
+        "format": "date-time"
       }
     },
     "minDay": { "type": "number" },
@@ -41,5 +49,6 @@ export const dateValidationSchema = {
       "type": "array",
       "items": { "type": "number" }
     },
-  }
+  },
+  "additionalProperties": false
 }

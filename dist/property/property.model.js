@@ -37,7 +37,7 @@ const PropertySchema = new mongoose.Schema({
     },
     defaultValue: {
         type: mongoose.Schema.Types.Mixed,
-        required: true,
+        required: false,
     },
     propertyRef: {
         type: String,

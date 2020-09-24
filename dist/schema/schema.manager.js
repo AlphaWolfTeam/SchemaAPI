@@ -29,6 +29,9 @@ class SchemaManager {
                 schema.schemaProperties.push(createdProperty);
             }
             return schema_repository_1.default.create(schema).catch((error) => {
+                schema.schemaProperties.forEach(property => {
+                    property_manager_1.default.deleteById(property._id);
+                });
                 if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
                     throw new user_1.DuplicateSchemaNameError();
                 }

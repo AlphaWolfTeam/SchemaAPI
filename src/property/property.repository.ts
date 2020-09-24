@@ -19,14 +19,10 @@ export default class PropertyRepository {
       throw new InvalidValueInPropertyError();
     });
     if (createdProperty.defaultValue) {
-      createdProperty.defaultValue = await this.convertValue(
-        createdProperty.defaultValue,
-        createdProperty.propertyType
-      );
+      createdProperty.defaultValue = await this.convertValue(createdProperty.defaultValue,createdProperty.propertyType);
     }
     if (createdProperty.enum) {
-      createdProperty.enum = await Promise.all(
-        createdProperty.enum.map((value) => {
+      createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
           return this.convertValue(value, createdProperty.propertyType);
         })
       );
@@ -37,12 +33,6 @@ export default class PropertyRepository {
       }
     }
 
-    console.log(
-      this.isValidationObjValid(
-        createdProperty.propertyType,
-        createdProperty.validation as Object
-      )
-    );
     if (
       createdProperty.validation &&
       !this.isValidationObjValid(
@@ -63,7 +53,6 @@ export default class PropertyRepository {
     propertyType: string,
     validationObj: Object
   ): boolean {
-    console.log("validationObj", validationObj);
     switch (propertyType) {
       case "Number":
         return validator.validate(validationObj, numberValidationSchema).valid;
@@ -94,8 +83,8 @@ export default class PropertyRepository {
           throw new InvalidValueInPropertyError();
         }
       case "Date":
-        if (moment(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
-          return Date.parse(value);
+        if (moment(value, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
+          return value;
         } else {
           throw new InvalidValueInPropertyError();
         }

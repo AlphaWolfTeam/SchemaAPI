@@ -40,7 +40,6 @@ class PropertyRepository {
                     throw new user_1.InvalidValueInPropertyError();
                 }
             }
-            console.log(this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation));
             if (createdProperty.validation &&
                 !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)) {
                 throw new user_1.InvalidValueInPropertyError();
@@ -49,7 +48,6 @@ class PropertyRepository {
         });
     }
     static isValidationObjValid(propertyType, validationObj) {
-        console.log("validationObj", validationObj);
         switch (propertyType) {
             case "Number":
                 return validator.validate(validationObj, number_validation_1.numberValidationSchema).valid;
@@ -81,8 +79,8 @@ class PropertyRepository {
                         throw new user_1.InvalidValueInPropertyError();
                     }
                 case "Date":
-                    if (moment_1.default(value, "dddd, MMMM Do YYYY, h:mm:ss a", true).isValid()) {
-                        return Date.parse(value);
+                    if (moment_1.default(value, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
+                        return value;
                     }
                     else {
                         throw new user_1.InvalidValueInPropertyError();

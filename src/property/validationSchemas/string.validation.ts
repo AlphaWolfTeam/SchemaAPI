@@ -12,7 +12,10 @@ export const stringValidationSchema = {
     "startsWith": { "type": "string" },
     "endsWith": { "type": "string" },
     "includes": { "type": "string" },
-    "pattern": { "type": "string" },
+    "pattern": { 
+      "type": "string", 
+      "format":"regex" 
+    },
     "requiredChars": {
       "type": "array",
       "items": { "type": "string" }
@@ -21,5 +24,6 @@ export const stringValidationSchema = {
       "type": "array",
       "items": { "type": "string" }
     },
-  }
+  },
+  "additionalProperties": false
 };

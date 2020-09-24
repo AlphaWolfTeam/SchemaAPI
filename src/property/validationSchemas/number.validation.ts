@@ -8,10 +8,13 @@ export const numberValidationSchema = {
       "type": "array",
       "items": { "type": "number" }
     },
+    "minDigitsAmount": { "type": "number" },
+    "maxDigitsAmount": { "type": "number" },
     "digitsAmount": { "type": "number" },
     "isEven": { "type": "boolean" },
     "isPositive": { "type": "number" },
     "isPrime": { "type": "number" },
     "isDecimal": { "type": "number" },
   },
+  "additionalProperties": false
 };
