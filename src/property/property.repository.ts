@@ -11,25 +11,26 @@ import { numberValidationSchema } from "./validationSchemas/number.validation";
 import { Validator } from "jsonschema";
 import { stringValidationSchema } from "./validationSchemas/string.validation";
 import { dateValidationSchema } from "./validationSchemas/date.validation";
+import SchemaRepository from "../schema/schema.repository";
 const validator = new Validator();
 
 export default class PropertyRepository {
   static async create(property: IProperty): Promise<IProperty | null> {
     const createdProperty = await PropertyModel.create(property).catch(() => {
-      throw new InvalidValueInPropertyError();
+      throw new InvalidValueInPropertyError(property.propertyName);
     });
     if (createdProperty.defaultValue) {
-      createdProperty.defaultValue = await this.convertValue(createdProperty.defaultValue,createdProperty.propertyType);
+      createdProperty.defaultValue = await this.convertValue(createdProperty.defaultValue,createdProperty.propertyType, createdProperty.propertyName );
     }
     if (createdProperty.enum) {
       createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
-          return this.convertValue(value, createdProperty.propertyType);
+          return this.convertValue(value, createdProperty.propertyType,createdProperty.propertyName);
         })
       );
     }
     if (createdProperty.defaultValue && createdProperty.enum) {
       if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
-        throw new InvalidValueInPropertyError();
+        throw new InvalidValueInPropertyError(createdProperty.propertyName);
       }
     }
 
@@ -40,7 +41,7 @@ export default class PropertyRepository {
         createdProperty.validation
       )
     ) {
-      throw new InvalidValueInPropertyError();
+      throw new InvalidValueInPropertyError(createdProperty.propertyName);
     }
 
     return await this.updateById(
@@ -66,13 +67,13 @@ export default class PropertyRepository {
     }
   }
 
-  static async convertValue(value: any, newType: String): Promise<any> {
+  static async convertValue(value: any, newType: String, propertyName: string): Promise<any> {
     switch (newType) {
       case "String":
         return String(value);
       case "Number":
         if (isNaN(value)) {
-          throw new InvalidValueInPropertyError();
+          throw new InvalidValueInPropertyError(propertyName);
         } else {
           return Number(value);
         }
@@ -80,17 +81,17 @@ export default class PropertyRepository {
         if (this.isValidBoolean(value)) {
           return Boolean(value);
         } else {
-          throw new InvalidValueInPropertyError();
+          throw new InvalidValueInPropertyError(propertyName);
         }
       case "Date":
         if (moment(value, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
           return value;
         } else {
-          throw new InvalidValueInPropertyError();
+          throw new InvalidValueInPropertyError(propertyName);
         }
       case "ObjectId":
         if (!mongoose.Types.ObjectId.isValid(value)) {
-          throw new InvalidValueInPropertyError();
+          throw new InvalidValueInPropertyError(propertyName);
         } else if (!(await this.isSchemaExist(value))) {
           throw new SchemaNotFoundError();
         } else {
@@ -106,7 +107,7 @@ export default class PropertyRepository {
   static async isSchemaExist(
     objectId: mongoose.Types.ObjectId
   ): Promise<boolean> {
-    const returnedSchema = await PropertyRepository.getById(String(objectId));
+    const returnedSchema = await SchemaRepository.getById(String(objectId));
     return returnedSchema !== null;
   }
 

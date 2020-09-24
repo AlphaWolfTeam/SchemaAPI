@@ -27,8 +27,8 @@ class InvalidIdError extends application_1.UserError {
 }
 exports.InvalidIdError = InvalidIdError;
 class InvalidValueInPropertyError extends application_1.UserError {
-    constructor() {
-        super('Invalid value in property', 404);
+    constructor(propertyName) {
+        super(`Invalid value in property: ${propertyName}`, 404);
     }
 }
 exports.InvalidValueInPropertyError = InvalidValueInPropertyError;

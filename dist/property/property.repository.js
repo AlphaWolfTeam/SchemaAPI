@@ -25,24 +25,24 @@ class PropertyRepository {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
             const createdProperty = yield property_model_1.default.create(property).catch(() => {
-                throw new user_1.InvalidValueInPropertyError();
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
             });
             if (createdProperty.defaultValue) {
-                createdProperty.defaultValue = yield this.convertValue(createdProperty.defaultValue, createdProperty.propertyType);
+                createdProperty.defaultValue = yield this.convertValue(createdProperty.defaultValue, createdProperty.propertyType, createdProperty.propertyName);
             }
             if (createdProperty.enum) {
                 createdProperty.enum = yield Promise.all(createdProperty.enum.map((value) => {
-                    return this.convertValue(value, createdProperty.propertyType);
+                    return this.convertValue(value, createdProperty.propertyType, createdProperty.propertyName);
                 }));
             }
             if (createdProperty.defaultValue && createdProperty.enum) {
                 if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
-                    throw new user_1.InvalidValueInPropertyError();
+                    throw new user_1.InvalidValueInPropertyError(createdProperty.propertyName);
                 }
             }
             if (createdProperty.validation &&
                 !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)) {
-                throw new user_1.InvalidValueInPropertyError();
+                throw new user_1.InvalidValueInPropertyError(createdProperty.propertyName);
             }
             return yield this.updateById(createdProperty._id, createdProperty);
         });
@@ -59,14 +59,14 @@ class PropertyRepository {
                 return false;
         }
     }
-    static convertValue(value, newType) {
+    static convertValue(value, newType, propertyName) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (newType) {
                 case "String":
                     return String(value);
                 case "Number":
                     if (isNaN(value)) {
-                        throw new user_1.InvalidValueInPropertyError();
+                        throw new user_1.InvalidValueInPropertyError(propertyName);
                     }
                     else {
                         return Number(value);
@@ -76,20 +76,21 @@ class PropertyRepository {
                         return Boolean(value);
                     }
                     else {
-                        throw new user_1.InvalidValueInPropertyError();
+                        throw new user_1.InvalidValueInPropertyError(propertyName);
                     }
                 case "Date":
                     if (moment_1.default(value, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
                         return value;
                     }
                     else {
-                        throw new user_1.InvalidValueInPropertyError();
+                        throw new user_1.InvalidValueInPropertyError(propertyName);
                     }
                 case "ObjectId":
                     if (!mongoose_1.default.Types.ObjectId.isValid(value)) {
-                        throw new user_1.InvalidValueInPropertyError();
+                        throw new user_1.InvalidValueInPropertyError(propertyName);
                     }
                     else if (!(yield this.isSchemaExist(value))) {
+                        console.log('function returnnnnnnnnnnnnnnnnn', (yield this.isSchemaExist(value)));
                         throw new user_1.SchemaNotFoundError();
                     }
                     else {

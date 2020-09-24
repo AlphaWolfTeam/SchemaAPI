@@ -8,7 +8,7 @@ import config from '../../src/config/index';
 import PropertyModel from '../../src/property/property.model';
 import PropertyManager from '../../src/property/property.manager';
 import IProperty from '../../src/property/property.interface';
-import { propertyExample, ID_NOT_EXIST, INVALID_ID } from '../dataExamples';
+import { propertyNumberExample, ID_NOT_EXIST, INVALID_ID } from '../dataExamples';
 
 const { expect } = chai;
 const { mongo } = config;
@@ -30,7 +30,7 @@ describe('Property Manager', () => {
         let property: IProperty;
 
         beforeEach(async () => {
-            property = await PropertyManager.create({ ...propertyExample }) as IProperty;
+            property = await PropertyManager.create({ ...propertyNumberExample }) as IProperty;
         });
 
         afterEach(async () => {
@@ -87,7 +87,7 @@ describe('Property Manager', () => {
         let property: IProperty;
 
         beforeEach(async () => {
-            property = await PropertyManager.create({ ...propertyExample }) as IProperty;
+            property = await PropertyManager.create({ ...propertyNumberExample }) as IProperty;
         });
 
         afterEach(async () => {
@@ -132,10 +132,10 @@ describe('Property Manager', () => {
     describe('Update property', () => {
         let property: IProperty;
         const NEW_NAME: string = 'new';
-        const newProperty: IProperty = { ...propertyExample, propertyName: NEW_NAME };;
+        const newProperty: IProperty = { ...propertyNumberExample, propertyName: NEW_NAME };;
 
         beforeEach(async () => {
-            property = await PropertyManager.create({ ...propertyExample }) as IProperty;
+            property = await PropertyManager.create({ ...propertyNumberExample }) as IProperty;
         });
 
         afterEach(async () => {

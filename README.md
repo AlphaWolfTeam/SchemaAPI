@@ -18,7 +18,7 @@
         schemaProperties: IProperty[],
         permissions: string,
         createdAt: Date,
-        updatedAt: Date,
+        updatedAt: Date
     }
 
 ## Property Interface
@@ -32,7 +32,7 @@
         isUnique: boolean,
         index?: boolean,
         required?: boolean,
-        validation?: validation,
+        validation?: validationSchema,
         createdAt: Date,
         updatedAt: Date,
         permissions?: string
@@ -45,6 +45,119 @@
 * Boolean
 * Date
 * ObjectId
+
+## Validation Schemas
+
+### Number Validation Schema
+
+    {
+    "type": "object",
+    "properties": {
+        "biggerThan": { "type": "number" },
+        "smallerThan": { "type": "number" },
+        "equalsTo": { "type": "number" },
+        "differFrom": {
+        "type": "array",
+        "items": { "type": "number" }
+        },
+        "minDigitsAmount": { "type": "number" },
+        "maxDigitsAmount": { "type": "number" },
+        "digitsAmount": { "type": "number" },
+        "isEven": { "type": "boolean" },
+        "isPositive": { "type": "number" },
+        "isPrime": { "type": "number" },
+        "isDecimal": { "type": "number" },
+    },
+    "additionalProperties": false
+    }
+
+### String Validation Schema
+
+    {
+    "type": "object",
+    "properties": {
+        "longerThan": { "type": "number" },
+        "shorterThan": { "type": "number" },
+        "length": { "type": "number" },
+        "equalsTo": { "type": "string" },
+        "differFrom": {
+        "type": "array",
+        "items": { "type": "string" }
+        },
+        "startsWith": { "type": "string" },
+        "endsWith": { "type": "string" },
+        "includes": { "type": "string" },
+        "pattern": { 
+        "type": "string", 
+        "format":"regex" 
+        },
+        "requiredChars": {
+        "type": "array",
+        "items": { "type": "string" }
+        },
+        "mustNotIncludeChars": {
+        "type": "array",
+        "items": { "type": "string" }
+        },
+    },
+    "additionalProperties": false
+    }
+
+### Date Validation Schema
+
+    {
+    "type": "object",
+    "properties": {
+        "before": {
+        "type": "string",
+        "format": "date-time"
+        },
+        "after": {
+        "type": "string",
+        "format": "date-time"
+        },
+        "equalsTo": {
+        "type": "string",
+        "format": "date-time"
+        },
+        "differFrom": {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "format": "date-time"
+        }
+        },
+        "between": {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "format": "date-time"
+        }
+        },
+        "minDay": { "type": "number" },
+        "maxDay": { "type": "number" },
+        "specificDay": { "type": "number" },
+        "dayBetweens": {
+        "type": "array",
+        "items": { "type": "number" }
+        },
+        "minMonth": { "type": "number" },
+        "maxMonth": { "type": "number" },
+        "specificMonth": { "type": "number" },
+        "monthBetweens": {
+        "type": "array",
+        "items": { "type": "number" }
+        },
+        "minYear": { "type": "number" },
+        "maxYear": { "type": "number" },
+        "specificYear": { "type": "number" },
+        "yearBetweens": {
+        "type": "array",
+        "items": { "type": "number" }
+        },
+    },
+    "additionalProperties": false
+    }
 
 ## Request & Response Examples
   
@@ -113,6 +226,7 @@ Request body:
            "isUnique":true,
            "index":true,
            "required":true,
+           "validation":{ "biggerThan" : 0 },
            "createdAt":"2013-10-01T00:00:00.000Z",
            "updatedAt":"2013-10-01T00:00:00.000Z"
         }
@@ -142,6 +256,7 @@ Request body:
            "isUnique":true,
            "index":true,
            "required":true,
+           "validation":{ "biggerThan" : 0 },
            "createdAt":"2013-10-01T00:00:00.000Z",
            "updatedAt":"2013-10-01T00:00:00.000Z"
         }
@@ -166,3 +281,5 @@ Error codes and meanings:
 * 400 - Bad Request
 * 404 - User Error
 * 500 - Internal Server Error
+
+

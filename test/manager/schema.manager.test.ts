@@ -12,7 +12,7 @@ import ISchema from "../../src/schema/schema.interface";
 import { InvalidIdError } from "../../src/utils/errors/user";
 import {
   schemaExample,
-  propertyExample,
+  propertyNumberExample,
   ID_NOT_EXIST,
   INVALID_ID,
 } from "../dataExamples";
@@ -69,7 +69,7 @@ describe("Schema Manager", () => {
       it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
-          await SchemaManager.create({ ...schemaExample },[{ ...propertyExample }, { ...propertyExample }]);
+          await SchemaManager.create({ ...schemaExample },[{ ...propertyNumberExample }, { ...propertyNumberExample }]);
         } catch (error) {
           functionError = error;
         } finally {
@@ -237,7 +237,7 @@ describe("Schema Manager", () => {
 
     beforeEach(async () => {
       schema = (await SchemaManager.create({ ...schemaExample }, [
-        { ...propertyExample },
+        { ...propertyNumberExample },
       ])) as ISchema;
     });
 
@@ -294,7 +294,7 @@ describe("Schema Manager", () => {
 
       beforeEach(async () => {
         property = (await PropertyManager.create({
-          ...propertyExample,
+          ...propertyNumberExample,
         })) as IProperty;
       });
 
@@ -325,7 +325,7 @@ describe("Schema Manager", () => {
 
     beforeEach(async () => {
       schema = (await SchemaManager.create({ ...schemaExample }, [
-        { ...propertyExample },
+        { ...propertyNumberExample },
       ])) as ISchema;
       property = (await PropertyManager.getById(
         String(schema.schemaProperties[0])
@@ -351,7 +351,7 @@ describe("Schema Manager", () => {
       it("Should update schema and create property", async () => {
         (await SchemaManager.updateById(schema._id as string, {
           ...newSchema,
-          schemaProperties: [{ ...propertyExample }],
+          schemaProperties: [{ ...propertyNumberExample }],
         })) as ISchema;
         const res = (await SchemaManager.getById(
           schema._id as string
@@ -368,37 +368,37 @@ describe("Schema Manager", () => {
         expect(String(resProperty._id)).to.not.equals(String(property._id));
         expect(resProperty).to.have.property(
           "propertyName",
-          propertyExample.propertyName
+          propertyNumberExample.propertyName
         );
         expect(resProperty).to.have.property(
           "propertyType",
-          propertyExample.propertyType
+          propertyNumberExample.propertyType
         );
         expect(resProperty).to.have.property(
           "defaultValue",
-          propertyExample.defaultValue
+          propertyNumberExample.defaultValue
         );
         expect(resProperty).to.have.property(
           "propertyRef",
-          propertyExample.propertyRef
+          propertyNumberExample.propertyRef
         );
         expect(JSON.stringify(resProperty.enum)).to.equals(
-          JSON.stringify(propertyExample.enum)
+          JSON.stringify(propertyNumberExample.enum)
         );
         expect(resProperty).to.have.property(
           "isUnique",
-          propertyExample.isUnique
+          propertyNumberExample.isUnique
         );
-        expect(resProperty).to.have.property("index", propertyExample.index);
+        expect(resProperty).to.have.property("index", propertyNumberExample.index);
         expect(resProperty).to.have.property(
           "required",
-          propertyExample.required
+          propertyNumberExample.required
         );
         expect(JSON.stringify(resProperty.createdAt)).to.equals(
-          JSON.stringify(propertyExample.createdAt)
+          JSON.stringify(propertyNumberExample.createdAt)
         );
         expect(JSON.stringify(resProperty.updatedAt)).to.equals(
-          JSON.stringify(propertyExample.updatedAt)
+          JSON.stringify(propertyNumberExample.updatedAt)
         );
       });
 
@@ -430,33 +430,33 @@ describe("Schema Manager", () => {
         expect(resProperty).to.have.property("propertyName", NEW_NAME);
         expect(resProperty).to.have.property(
           "propertyType",
-          propertyExample.propertyType
+          propertyNumberExample.propertyType
         );
         expect(resProperty).to.have.property(
           "defaultValue",
-          propertyExample.defaultValue
+          propertyNumberExample.defaultValue
         );
         expect(resProperty).to.have.property(
           "propertyRef",
-          propertyExample.propertyRef
+          propertyNumberExample.propertyRef
         );
         expect(JSON.stringify(resProperty.enum)).to.equals(
-          JSON.stringify(propertyExample.enum)
+          JSON.stringify(propertyNumberExample.enum)
         );
         expect(resProperty).to.have.property(
           "isUnique",
-          propertyExample.isUnique
+          propertyNumberExample.isUnique
         );
-        expect(resProperty).to.have.property("index", propertyExample.index);
+        expect(resProperty).to.have.property("index", propertyNumberExample.index);
         expect(resProperty).to.have.property(
           "required",
-          propertyExample.required
+          propertyNumberExample.required
         );
         expect(JSON.stringify(resProperty.createdAt)).to.equals(
-          JSON.stringify(propertyExample.createdAt)
+          JSON.stringify(propertyNumberExample.createdAt)
         );
         expect(JSON.stringify(resProperty.updatedAt)).to.equals(
-          JSON.stringify(propertyExample.updatedAt)
+          JSON.stringify(propertyNumberExample.updatedAt)
         );
       });
     });
@@ -465,7 +465,7 @@ describe("Schema Manager", () => {
       it("Should throw an PropertyNameAlreadyExist", async () => {
         let functionError: Object = {};
         try {
-          (await SchemaManager.updateById(schema._id as string, {...newSchema, schemaProperties: [{ ...propertyExample }, { ...propertyExample }]})) as ISchema
+          (await SchemaManager.updateById(schema._id as string, {...newSchema, schemaProperties: [{ ...propertyNumberExample }, { ...propertyNumberExample }]})) as ISchema
         } catch (error) {
           functionError = error;
         } finally {
@@ -505,7 +505,7 @@ describe("Schema Manager", () => {
         let functionError: Object = {};
         try {
           const invalidProperty: IProperty = {
-              ...propertyExample,
+              ...propertyNumberExample,
               propertyType: "f",
             },
             schemaWithInvalidProp: ISchema = {
