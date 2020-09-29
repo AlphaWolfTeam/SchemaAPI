@@ -304,10 +304,7 @@ describe("Property Type Manager", () => {
         it("Should throw an InvalidValueInPropertyError", async () => {
           let functionError: Object = {};
           try {
-            const invalidProperty: IProperty = {
-              ...propertyStringExample,
-              validation: { length: "hello" },
-            };
+            const invalidProperty: IProperty = {...propertyStringExample,validation: { length: "hello" },};
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
             functionError = error;

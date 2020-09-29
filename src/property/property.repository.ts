@@ -1,53 +1,76 @@
 import {
   SchemaNotFoundError,
   InvalidValueInPropertyError,
+  DefaultValueIsNotValid,
+  EnumValuesAreNotValid,
 } from "./../utils/errors/user";
 import PropertyModel from "./property.model";
 import IProperty from "./property.interface";
 import moment from "moment";
 import mongoose from "mongoose";
-import { numberValidationSchema } from "./validationSchemas/number.validation";
-
+import {
+  isNumberValueValid,
+  numberValidationSchema,
+} from "./validation/number.validation";
 import { Validator } from "jsonschema";
-import { stringValidationSchema } from "./validationSchemas/string.validation";
-import { dateValidationSchema } from "./validationSchemas/date.validation";
+import {
+  isStringValueValid,
+  stringValidationSchema,
+} from "./validation/string.validation";
+import { dateValidationSchema, isDateValueValid } from "./validation/date.validation";
 import SchemaRepository from "../schema/schema.repository";
 const validator = new Validator();
 
 export default class PropertyRepository {
   static async create(property: IProperty): Promise<IProperty | null> {
-    const createdProperty = await PropertyModel.create(property).catch(() => {
+    if (property.validation &&!this.isValidationObjValid(property.propertyType, property.validation)) {
       throw new InvalidValueInPropertyError(property.propertyName);
-    });
-    if (createdProperty.defaultValue) {
-      createdProperty.defaultValue = await this.convertValue(createdProperty.defaultValue,createdProperty.propertyType, createdProperty.propertyName );
     }
-    if (createdProperty.enum) {
-      createdProperty.enum = await Promise.all(createdProperty.enum.map((value) => {
-          return this.convertValue(value, createdProperty.propertyType,createdProperty.propertyName);
-        })
+    if (property.defaultValue !== undefined) {
+      property.defaultValue = await this.convertValue(
+        property.defaultValue,
+        property.propertyType,
+        property.propertyName
       );
-    }
-    if (createdProperty.defaultValue && createdProperty.enum) {
-      if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
-        throw new InvalidValueInPropertyError(createdProperty.propertyName);
+      if (property.validation &&!this.isValueValid(property.validation,property.propertyType,property.defaultValue)) {
+        throw new DefaultValueIsNotValid(property.propertyName);
       }
     }
-
+    if (property.enum) {
+      property.enum = await Promise.all(
+        property.enum.map((value) => {
+          return this.convertValue(
+            value,
+            property.propertyType,
+            property.propertyName
+          );
+        })
+      );
+      if (property.validation) {
+        property.enum.forEach((value: any) => {
+          if (
+            !this.isValueValid(
+              property.validation as Object,
+              property.propertyType,
+              value
+            )
+          ) {
+            throw new EnumValuesAreNotValid(property.propertyName);
+          }
+        });
+      }
+    }
     if (
-      createdProperty.validation &&
-      !this.isValidationObjValid(
-        createdProperty.propertyType,
-        createdProperty.validation
-      )
+      property.defaultValue !== undefined &&
+      property.enum &&
+      !property.enum.includes(property.defaultValue)
     ) {
-      throw new InvalidValueInPropertyError(createdProperty.propertyName);
+      throw new InvalidValueInPropertyError(property.propertyName);
     }
 
-    return await this.updateById(
-      createdProperty._id as string,
-      createdProperty
-    );
+    return await PropertyModel.create(property).catch(() => {
+      throw new InvalidValueInPropertyError(property.propertyName);
+    });
   }
 
   static isValidationObjValid(
@@ -67,7 +90,11 @@ export default class PropertyRepository {
     }
   }
 
-  static async convertValue(value: any, newType: String, propertyName: string): Promise<any> {
+  static async convertValue(
+    value: any,
+    newType: String,
+    propertyName: string
+  ): Promise<any> {
     switch (newType) {
       case "String":
         return String(value);
@@ -128,5 +155,18 @@ export default class PropertyRepository {
       { $set: property },
       { upsert: true }
     ).exec();
+  }
+
+  static isValueValid(validateObj: Object,propertyType: any,value: any): boolean {
+    switch (propertyType) {
+      case "Number":
+        return isNumberValueValid(value, validateObj);
+      case "String":
+        return isStringValueValid(value, validateObj);
+      case "Date":
+        return isDateValueValid(value, validateObj);
+      default:
+        return false;
+    }
   }
 }

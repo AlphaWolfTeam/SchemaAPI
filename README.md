@@ -64,9 +64,9 @@
         "maxDigitsAmount": { "type": "number" },
         "digitsAmount": { "type": "number" },
         "isEven": { "type": "boolean" },
-        "isPositive": { "type": "number" },
-        "isPrime": { "type": "number" },
-        "isDecimal": { "type": "number" },
+        "isPositive": { "type": "boolean" },
+        "isPrime": { "type": "boolean" },
+        "isDecimal": { "type": "boolean" },
     },
     "additionalProperties": false
     }
@@ -87,10 +87,6 @@
         "startsWith": { "type": "string" },
         "endsWith": { "type": "string" },
         "includes": { "type": "string" },
-        "pattern": { 
-        "type": "string", 
-        "format":"regex" 
-        },
         "requiredChars": {
         "type": "array",
         "items": { "type": "string" }
@@ -99,6 +95,8 @@
         "type": "array",
         "items": { "type": "string" }
         },
+        "isPhoneNumber" : { "type": "boolean" },
+        "isEmail" : { "type": "boolean" }
     },
     "additionalProperties": false
     }
@@ -126,35 +124,7 @@
             "type": "string",
             "format": "date-time"
         }
-        },
-        "between": {
-        "type": "array",
-        "items": {
-            "type": "string",
-            "format": "date-time"
         }
-        },
-        "minDay": { "type": "number" },
-        "maxDay": { "type": "number" },
-        "specificDay": { "type": "number" },
-        "dayBetweens": {
-        "type": "array",
-        "items": { "type": "number" }
-        },
-        "minMonth": { "type": "number" },
-        "maxMonth": { "type": "number" },
-        "specificMonth": { "type": "number" },
-        "monthBetweens": {
-        "type": "array",
-        "items": { "type": "number" }
-        },
-        "minYear": { "type": "number" },
-        "maxYear": { "type": "number" },
-        "specificYear": { "type": "number" },
-        "yearBetweens": {
-        "type": "array",
-        "items": { "type": "number" }
-        },
     },
     "additionalProperties": false
     }
