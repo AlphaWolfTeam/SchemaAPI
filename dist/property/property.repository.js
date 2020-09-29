@@ -16,35 +16,46 @@ const user_1 = require("./../utils/errors/user");
 const property_model_1 = __importDefault(require("./property.model"));
 const moment_1 = __importDefault(require("moment"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const number_validation_1 = require("./validationSchemas/number.validation");
+const number_validation_1 = require("./validation/number.validation");
 const jsonschema_1 = require("jsonschema");
-const string_validation_1 = require("./validationSchemas/string.validation");
-const date_validation_1 = require("./validationSchemas/date.validation");
+const string_validation_1 = require("./validation/string.validation");
+const date_validation_1 = require("./validation/date.validation");
+const schema_repository_1 = __importDefault(require("../schema/schema.repository"));
 const validator = new jsonschema_1.Validator();
 class PropertyRepository {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
-            const createdProperty = yield property_model_1.default.create(property).catch(() => {
-                throw new user_1.InvalidValueInPropertyError(property.propertyName);
-            });
-            if (createdProperty.defaultValue) {
-                createdProperty.defaultValue = yield this.convertValue(createdProperty.defaultValue, createdProperty.propertyType, createdProperty.propertyName);
-            }
-            if (createdProperty.enum) {
-                createdProperty.enum = yield Promise.all(createdProperty.enum.map((value) => {
-                    return this.convertValue(value, createdProperty.propertyType, createdProperty.propertyName);
-                }));
-            }
-            if (createdProperty.defaultValue && createdProperty.enum) {
-                if (!createdProperty.enum.includes(createdProperty.defaultValue)) {
-                    throw new user_1.InvalidValueInPropertyError(createdProperty.propertyName);
+            if (property.defaultValue !== undefined) {
+                property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
+                if (property.validation &&
+                    !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
+                    throw new user_1.DefaultValueIsNotValid(property.propertyName);
                 }
             }
-            if (createdProperty.validation &&
-                !this.isValidationObjValid(createdProperty.propertyType, createdProperty.validation)) {
-                throw new user_1.InvalidValueInPropertyError(createdProperty.propertyName);
+            if (property.enum) {
+                property.enum = yield Promise.all(property.enum.map((value) => {
+                    return this.convertValue(value, property.propertyType, property.propertyName);
+                }));
+                if (property.validation) {
+                    property.enum.forEach((value) => {
+                        if (!this.isValueValid(property.validation, property.propertyType, value)) {
+                            throw new user_1.EnumValuesAreNotValid(property.propertyName);
+                        }
+                    });
+                }
             }
-            return yield this.updateById(createdProperty._id, createdProperty);
+            if (property.defaultValue !== undefined &&
+                property.enum &&
+                !property.enum.includes(property.defaultValue)) {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
+            if (property.validation &&
+                !this.isValidationObjValid(property.propertyType, property.validation)) {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
+            return yield property_model_1.default.create(property).catch(() => {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            });
         });
     }
     static isValidationObjValid(propertyType, validationObj) {
@@ -90,7 +101,6 @@ class PropertyRepository {
                         throw new user_1.InvalidValueInPropertyError(propertyName);
                     }
                     else if (!(yield this.isSchemaExist(value))) {
-                        console.log('function returnnnnnnnnnnnnnnnnn', (yield this.isSchemaExist(value)));
                         throw new user_1.SchemaNotFoundError();
                     }
                     else {
@@ -104,7 +114,7 @@ class PropertyRepository {
     }
     static isSchemaExist(objectId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const returnedSchema = yield PropertyRepository.getById(String(objectId));
+            const returnedSchema = yield schema_repository_1.default.getById(String(objectId));
             return returnedSchema !== null;
         });
     }
@@ -116,6 +126,18 @@ class PropertyRepository {
     }
     static updateById(_id, property) {
         return property_model_1.default.findOneAndUpdate({ _id }, { $set: property }, { upsert: true }).exec();
+    }
+    static isValueValid(validateObj, propertyType, value) {
+        switch (propertyType) {
+            case "Number":
+                return number_validation_1.isNumberValueValid(value, validateObj);
+            case "String":
+                return string_validation_1.isStringValueValid(value, validateObj);
+            case "Date":
+                return date_validation_1.isDateValueValid(value, validateObj);
+            default:
+                return false;
+        }
     }
 }
 exports.default = PropertyRepository;

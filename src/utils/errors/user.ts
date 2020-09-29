@@ -53,3 +53,15 @@ export class DuplicateSchemaNameError extends UserError {
         super('There is already exist schema with this name', 404);
     }
 }
+
+export class DefaultValueIsNotValid extends UserError {
+    constructor(propertyName: String) {
+        super(`Invalid default value in property: ${propertyName}`, 404);
+    }
+}
+
+export class EnumValuesAreNotValid extends UserError {
+    constructor(propertyName: String) {
+        super(`Invalid enum values in property: ${propertyName}`, 404);
+    }
+}
