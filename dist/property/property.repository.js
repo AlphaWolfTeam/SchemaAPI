@@ -25,10 +25,12 @@ const validator = new jsonschema_1.Validator();
 class PropertyRepository {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (property.validation && !this.isValidationObjValid(property.propertyType, property.validation)) {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
             if (property.defaultValue !== undefined) {
                 property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
-                if (property.validation &&
-                    !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
+                if (property.validation && !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
                     throw new user_1.DefaultValueIsNotValid(property.propertyName);
                 }
             }
@@ -47,10 +49,6 @@ class PropertyRepository {
             if (property.defaultValue !== undefined &&
                 property.enum &&
                 !property.enum.includes(property.defaultValue)) {
-                throw new user_1.InvalidValueInPropertyError(property.propertyName);
-            }
-            if (property.validation &&
-                !this.isValidationObjValid(property.propertyType, property.validation)) {
                 throw new user_1.InvalidValueInPropertyError(property.propertyName);
             }
             return yield property_model_1.default.create(property).catch(() => {
