@@ -17,7 +17,7 @@ import {
   isStringValueValid,
   stringValidationSchema,
 } from "./validation/string.validation";
-import { dateValidationSchema, isDateValueValid } from "./validation/date.validation";
+import { dateValidationSchema, isDateValueValid, isDateValidationObjValid } from "./validation/date.validation";
 import SchemaRepository from "../schema/schema.repository";
 const validator = new Validator();
 
@@ -83,7 +83,7 @@ export default class PropertyRepository {
       case "String":
         return validator.validate(validationObj, stringValidationSchema).valid;
       case "Date":
-        return validator.validate(validationObj, dateValidationSchema).valid;
+        return validator.validate(validationObj, dateValidationSchema).valid && isDateValidationObjValid(validationObj);
 
       default:
         return false;

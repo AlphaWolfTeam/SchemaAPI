@@ -63,7 +63,7 @@ class PropertyRepository {
             case "String":
                 return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
             case "Date":
-                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid;
+                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid && date_validation_1.isDateValidationObjValid(validationObj);
             default:
                 return false;
         }
