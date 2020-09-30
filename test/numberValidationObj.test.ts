@@ -351,11 +351,6 @@ describe("Number validation object", () => {
       context("Invalid default value ", () => {
         it("Should throw an DefaultValueIsNotValidError", async () => {
           let functionError: Object = {};
-          console.log({
-            ...propertyNumberExample,
-            validation: { isPositive: false },
-            enum: undefined,
-          })
           try {
             const invalidProperty: IProperty = {
               ...propertyNumberExample,
