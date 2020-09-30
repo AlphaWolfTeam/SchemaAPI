@@ -2,23 +2,23 @@ import {
   SchemaNotFoundError,
   PropertyNotInSchemaError,
   InvalidValueInPropertyError,DuplicatePropertyNameError, PropertyNameAlreadyExistError
-} from "./../../src/utils/errors/user";
+} from "../src/utils/errors/user";
 import chai from "chai";
 import mongoose from "mongoose";
-import config from "../../src/config/index";
-import SchemaModel from "../../src/schema/schema.model";
-import SchemaManager from "../../src/schema/schema.manager";
-import ISchema from "../../src/schema/schema.interface";
-import { InvalidIdError } from "../../src/utils/errors/user";
+import config from "../src/config/index";
+import SchemaModel from "../src/schema/schema.model";
+import SchemaManager from "../src/schema/schema.manager";
+import ISchema from "../src/schema/schema.interface";
+import { InvalidIdError } from "../src/utils/errors/user";
 import {
   schemaExample,
   propertyNumberExample,
   ID_NOT_EXIST,
   INVALID_ID,
-} from "../dataExamples";
-import PropertyModel from "../../src/property/property.model";
-import IProperty from "../../src/property/property.interface";
-import PropertyManager from "../../src/property/property.manager";
+} from "./dataExamples";
+import PropertyModel from "../src/property/property.model";
+import IProperty from "../src/property/property.interface";
+import PropertyManager from "../src/property/property.manager";
 
 const { expect } = chai;
 const { mongo } = config;

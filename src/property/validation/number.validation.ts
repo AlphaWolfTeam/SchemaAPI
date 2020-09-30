@@ -23,23 +23,32 @@ export const isNumberValueValid = (
   number: number,
   validateObj: Object
 ): boolean => {
-  if (validateObj["biggerThan"] && number <= validateObj["biggerThan"]) {
-    return false;
-  }
-
-  if (validateObj["smallerThan"] && number >= validateObj["smallerThan"]) {
+  if (
+    validateObj["biggerThan"] !== undefined &&
+    number <= validateObj["biggerThan"]
+  ) {
     return false;
   }
 
   if (
-    validateObj["biggerThan"] &&
-    validateObj["smallerThan"] &&
+    validateObj["smallerThan"] !== undefined &&
+    number >= validateObj["smallerThan"]
+  ) {
+    return false;
+  }
+
+  if (
+    validateObj["biggerThan"] !== undefined &&
+    validateObj["smallerThan"] !== undefined &&
     validateObj["smallerThan"] <= validateObj["biggerThan"]
   ) {
     return false;
   }
 
-  if (validateObj["equalsTo"] && number !== validateObj["equalsTo"]) {
+  if (
+    validateObj["equalsTo"] !== undefined &&
+    number !== validateObj["equalsTo"]
+  ) {
     return false;
   }
 
@@ -52,46 +61,58 @@ export const isNumberValueValid = (
   }
 
   if (
-    validateObj["minDigitsAmount"] &&
-    String(number).length >= validateObj["minDigitsAmount"]
+    validateObj["minDigitsAmount"] !== undefined &&
+    String(number).length < validateObj["minDigitsAmount"]
   ) {
     return false;
   }
 
   if (
-    validateObj["maxDigitsAmount"] &&
-    String(number).length <= validateObj["maxDigitsAmount"]
+    validateObj["maxDigitsAmount"] !== undefined &&
+    String(number).length > validateObj["maxDigitsAmount"]
   ) {
     return false;
   }
 
   if (
-    validateObj["digitsAmount"] &&
+    validateObj["digitsAmount"] !== undefined &&
     String(number).length !== validateObj["digitsAmount"]
   ) {
     return false;
   }
 
   if (
-    validateObj["maxDigitsAmount"] &&
-    validateObj["minDigitsAmount"] &&
+    validateObj["maxDigitsAmount"] !== undefined &&
+    validateObj["minDigitsAmount"] !== undefined &&
     validateObj["minDigitsAmount"] >= validateObj["maxDigitsAmount"]
   ) {
     return false;
   }
-  if (validateObj["isEven"] && number % 2 !== 0) {
+  if (
+    (validateObj["isEven"] && number % 2 !== 0) ||
+    (validateObj["isEven"] === false && number % 2 === 0)
+  ) {
     return false;
   }
 
-  if (validateObj["isPositive"] && number < 0) {
+  if (
+    (validateObj["isPositive"] && number < 0) ||
+    (validateObj["isPositive"] === false && number >= 0)
+  ) {
     return false;
   }
 
-  if (validateObj["isPrime"] && !isPrime(number)) {
+  if (
+    (validateObj["isPrime"] && !isPrime(number)) ||
+    (validateObj["isPrime"] === false && isPrime(number))
+  ) {
     return false;
   }
 
-  if (validateObj["isDecimal"] && number % 1 === 0) {
+  if (
+    (validateObj["isDecimal"] && number % 1 === 0) ||
+    (validateObj["isDecimal"] === false && number % 1 !== 0)
+  ) {
     return false;
   }
 

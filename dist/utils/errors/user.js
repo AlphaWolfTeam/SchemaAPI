@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EnumValuesAreNotValid = exports.DefaultValueIsNotValid = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
+exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
 class SchemaNotFoundError extends application_1.UserError {
     constructor() {
@@ -56,16 +56,16 @@ class DuplicateSchemaNameError extends application_1.UserError {
     }
 }
 exports.DuplicateSchemaNameError = DuplicateSchemaNameError;
-class DefaultValueIsNotValid extends application_1.UserError {
+class DefaultValueIsNotValidError extends application_1.UserError {
     constructor(propertyName) {
         super(`Invalid default value in property: ${propertyName}`, 404);
     }
 }
-exports.DefaultValueIsNotValid = DefaultValueIsNotValid;
-class EnumValuesAreNotValid extends application_1.UserError {
+exports.DefaultValueIsNotValidError = DefaultValueIsNotValidError;
+class EnumValuesAreNotValidError extends application_1.UserError {
     constructor(propertyName) {
         super(`Invalid enum values in property: ${propertyName}`, 404);
     }
 }
-exports.EnumValuesAreNotValid = EnumValuesAreNotValid;
+exports.EnumValuesAreNotValidError = EnumValuesAreNotValidError;
 //# sourceMappingURL=user.js.map

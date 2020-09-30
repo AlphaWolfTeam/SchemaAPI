@@ -1,8 +1,8 @@
 import {
   SchemaNotFoundError,
   InvalidValueInPropertyError,
-  DefaultValueIsNotValid,
-  EnumValuesAreNotValid,
+  DefaultValueIsNotValidError,
+  EnumValuesAreNotValidError,
 } from "./../utils/errors/user";
 import PropertyModel from "./property.model";
 import IProperty from "./property.interface";
@@ -33,7 +33,7 @@ export default class PropertyRepository {
         property.propertyName
       );
       if (property.validation &&!this.isValueValid(property.validation,property.propertyType,property.defaultValue)) {
-        throw new DefaultValueIsNotValid(property.propertyName);
+        throw new DefaultValueIsNotValidError(property.propertyName);
       }
     }
     if (property.enum) {
@@ -55,7 +55,7 @@ export default class PropertyRepository {
               value
             )
           ) {
-            throw new EnumValuesAreNotValid(property.propertyName);
+            throw new EnumValuesAreNotValidError(property.propertyName);
           }
         });
       }

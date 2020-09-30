@@ -31,7 +31,7 @@ class PropertyRepository {
             if (property.defaultValue !== undefined) {
                 property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
                 if (property.validation && !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
-                    throw new user_1.DefaultValueIsNotValid(property.propertyName);
+                    throw new user_1.DefaultValueIsNotValidError(property.propertyName);
                 }
             }
             if (property.enum) {
@@ -41,7 +41,7 @@ class PropertyRepository {
                 if (property.validation) {
                     property.enum.forEach((value) => {
                         if (!this.isValueValid(property.validation, property.propertyType, value)) {
-                            throw new user_1.EnumValuesAreNotValid(property.propertyName);
+                            throw new user_1.EnumValuesAreNotValidError(property.propertyName);
                         }
                     });
                 }

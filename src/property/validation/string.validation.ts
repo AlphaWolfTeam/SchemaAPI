@@ -22,7 +22,7 @@ export const stringValidationSchema = {
     },
     isPhoneNumber: {
       type: "boolean",
-    },  
+    },
     isEmail: {
       type: "boolean",
     },
@@ -34,26 +34,32 @@ export const isStringValueValid = (
   string: string,
   validateObj: Object
 ): boolean => {
-  if (validateObj["longerThan"] && string.length <= validateObj["longerThan"]) {
+  if (
+    validateObj["longerThan"] !== undefined &&
+    string.length <= validateObj["longerThan"]
+  ) {
     return false;
   }
 
   if (
-    validateObj["shorterThan"] &&
+    validateObj["shorterThan"] !== undefined &&
     string.length >= validateObj["shorterThan"]
   ) {
     return false;
   }
 
   if (
-    validateObj["shorterThan"] &&
-    validateObj["longerThan"] &&
+    validateObj["shorterThan"] !== undefined &&
+    validateObj["longerThan"] !== undefined &&
     validateObj["shorterThan"] <= validateObj["longerThan"]
   ) {
     return false;
   }
 
-  if (validateObj["length"] && string.length !== validateObj["length"]) {
+  if (
+    validateObj["length"] !== undefined &&
+    string.length !== validateObj["length"]
+  ) {
     return false;
   }
 
@@ -100,13 +106,20 @@ export const isStringValueValid = (
     }
   }
 
-  if (validateObj["isPhoneNumber"] && !/^\+?(972|0)(\-)?0?(([23489]{1}\d{7})|[5]{1}\d{8})$/.test(string)) {
+  if (
+    (validateObj["isPhoneNumber"] &&
+      !/^\+?(972|0)(\-)?0?(([23489]{1}\d{7})|[5]{1}\d{8})$/.test(string)) ||
+    (validateObj["isPhoneNumber"] === false &&
+      /^\+?(972|0)(\-)?0?(([23489]{1}\d{7})|[5]{1}\d{8})$/.test(string))
+  ) {
     return false;
   }
 
-  if (validateObj["isEmail"] && !/\S+@\S+\.\S+/.test(string)) {
+  if (
+    (validateObj["isEmail"] && !/\S+@\S+\.\S+/.test(string)) ||
+    (validateObj["isEmail"] === false && /\S+@\S+\.\S+/.test(string))
+  ) {
     return false;
   }
   return true;
 };
-
