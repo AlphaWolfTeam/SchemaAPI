@@ -316,7 +316,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{includes:'abcd'},
+              validation:{includes:['b','c']},
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -336,47 +336,7 @@ describe("String validation object", () => {
             const invalidProperty: IProperty = {
               ...propertyStringExample, 
               defaultValue: undefined,
-              validation:{includes:'abcd'},
-            };
-            (await PropertyManager.create(invalidProperty)) as IProperty;
-          } catch (error) {
-            functionError = error;
-          } finally {
-            expect(functionError instanceof EnumValuesAreNotValidError).to.be
-              .true;
-          }
-        });
-      });
-    });
-
-    context("RequiredChars", () => {
-      context("Invalid default value ", () => {
-        it("Should throw an DefaultValueIsNotValidError", async () => {
-          let functionError: Object = {};
-          try {
-            const invalidProperty: IProperty = {
-              ...propertyStringExample,
-              validation:{requiredChars:['b','c']},
-              enum: undefined,
-            };
-            (await PropertyManager.create(invalidProperty)) as IProperty;
-          } catch (error) {
-            functionError = error;
-          } finally {
-            expect(functionError instanceof DefaultValueIsNotValidError).to.be
-              .true;
-          }
-        });
-      });
-
-      context("Invalid enum values ", () => {
-        it("Should throw an EnumValuesAreNotValidError", async () => {
-          let functionError: Object = {};
-          try {
-            const invalidProperty: IProperty = {
-              ...propertyStringExample, 
-              defaultValue: undefined,
-              validation:{requiredChars:['b','c']},
+              validation:{includes:['b','c']},
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {

@@ -86,8 +86,7 @@
         },
         "startsWith": { "type": "string" },
         "endsWith": { "type": "string" },
-        "includes": { "type": "string" },
-        "requiredChars": {
+        "includes": {
         "type": "array",
         "items": { "type": "string" }
         },

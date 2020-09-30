@@ -11,8 +11,7 @@ export const stringValidationSchema = {
     },
     startsWith: { type: "string" },
     endsWith: { type: "string" },
-    includes: { type: "string" },
-    requiredChars: {
+    includes: {
       type: "array",
       items: { type: "string" },
     },
@@ -86,13 +85,9 @@ export const isStringValueValid = (
     return false;
   }
 
-  if (validateObj["includes"] && !string.includes(validateObj["includes"])) {
-    return false;
-  }
-
-  if (validateObj["requiredChars"]) {
-    for (let i = 0; i < validateObj["requiredChars"].length; i++) {
-      if (!string.includes(validateObj["requiredChars"][i])) {
+  if (validateObj["includes"]) {
+    for (let i = 0; i < validateObj["includes"].length; i++) {
+      if (!string.includes(validateObj["includes"][i])) {
         return false;
       }
     }
