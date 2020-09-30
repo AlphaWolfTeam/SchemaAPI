@@ -54,13 +54,13 @@ export class DuplicateSchemaNameError extends UserError {
     }
 }
 
-export class DefaultValueIsNotValid extends UserError {
+export class DefaultValueIsNotValidError extends UserError {
     constructor(propertyName: String) {
         super(`Invalid default value in property: ${propertyName}`, 404);
     }
 }
 
-export class EnumValuesAreNotValid extends UserError {
+export class EnumValuesAreNotValidError extends UserError {
     constructor(propertyName: String) {
         super(`Invalid enum values in property: ${propertyName}`, 404);
     }

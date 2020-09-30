@@ -25,11 +25,13 @@ const validator = new jsonschema_1.Validator();
 class PropertyRepository {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (property.validation && !this.isValidationObjValid(property.propertyType, property.validation)) {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
             if (property.defaultValue !== undefined) {
                 property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
-                if (property.validation &&
-                    !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
-                    throw new user_1.DefaultValueIsNotValid(property.propertyName);
+                if (property.validation && !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
+                    throw new user_1.DefaultValueIsNotValidError(property.propertyName);
                 }
             }
             if (property.enum) {
@@ -39,7 +41,7 @@ class PropertyRepository {
                 if (property.validation) {
                     property.enum.forEach((value) => {
                         if (!this.isValueValid(property.validation, property.propertyType, value)) {
-                            throw new user_1.EnumValuesAreNotValid(property.propertyName);
+                            throw new user_1.EnumValuesAreNotValidError(property.propertyName);
                         }
                     });
                 }
@@ -47,10 +49,6 @@ class PropertyRepository {
             if (property.defaultValue !== undefined &&
                 property.enum &&
                 !property.enum.includes(property.defaultValue)) {
-                throw new user_1.InvalidValueInPropertyError(property.propertyName);
-            }
-            if (property.validation &&
-                !this.isValidationObjValid(property.propertyType, property.validation)) {
                 throw new user_1.InvalidValueInPropertyError(property.propertyName);
             }
             return yield property_model_1.default.create(property).catch(() => {
@@ -65,7 +63,7 @@ class PropertyRepository {
             case "String":
                 return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
             case "Date":
-                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid;
+                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid && date_validation_1.isDateValidationObjValid(validationObj);
             default:
                 return false;
         }

@@ -1,14 +1,14 @@
 import {
     InvalidIdError,
     PropertyNotFoundError
-} from './../../src/utils/errors/user';
+} from '../src/utils/errors/user';
 import chai from 'chai';
 import mongoose from 'mongoose';
-import config from '../../src/config/index';
-import PropertyModel from '../../src/property/property.model';
-import PropertyManager from '../../src/property/property.manager';
-import IProperty from '../../src/property/property.interface';
-import { propertyNumberExample, ID_NOT_EXIST, INVALID_ID } from '../dataExamples';
+import config from '../src/config/index';
+import PropertyModel from '../src/property/property.model';
+import PropertyManager from '../src/property/property.manager';
+import IProperty from '../src/property/property.interface';
+import { propertyNumberExample, ID_NOT_EXIST, INVALID_ID } from './dataExamples';
 
 const { expect } = chai;
 const { mongo } = config;

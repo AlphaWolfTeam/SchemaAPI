@@ -1,8 +1,8 @@
 import {
   SchemaNotFoundError,
   InvalidValueInPropertyError,
-  DefaultValueIsNotValid,
-  EnumValuesAreNotValid,
+  DefaultValueIsNotValidError,
+  EnumValuesAreNotValidError,
 } from "./../utils/errors/user";
 import PropertyModel from "./property.model";
 import IProperty from "./property.interface";
@@ -17,7 +17,7 @@ import {
   isStringValueValid,
   stringValidationSchema,
 } from "./validation/string.validation";
-import { dateValidationSchema, isDateValueValid } from "./validation/date.validation";
+import { dateValidationSchema, isDateValueValid, isDateValidationObjValid } from "./validation/date.validation";
 import SchemaRepository from "../schema/schema.repository";
 const validator = new Validator();
 
@@ -33,7 +33,7 @@ export default class PropertyRepository {
         property.propertyName
       );
       if (property.validation &&!this.isValueValid(property.validation,property.propertyType,property.defaultValue)) {
-        throw new DefaultValueIsNotValid(property.propertyName);
+        throw new DefaultValueIsNotValidError(property.propertyName);
       }
     }
     if (property.enum) {
@@ -55,7 +55,7 @@ export default class PropertyRepository {
               value
             )
           ) {
-            throw new EnumValuesAreNotValid(property.propertyName);
+            throw new EnumValuesAreNotValidError(property.propertyName);
           }
         });
       }
@@ -83,7 +83,7 @@ export default class PropertyRepository {
       case "String":
         return validator.validate(validationObj, stringValidationSchema).valid;
       case "Date":
-        return validator.validate(validationObj, dateValidationSchema).valid;
+        return validator.validate(validationObj, dateValidationSchema).valid && isDateValidationObjValid(validationObj);
 
       default:
         return false;
