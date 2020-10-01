@@ -26,6 +26,44 @@ const validator = new Validator();
 
 export default class PropertyManager {
     static async create(property: IProperty): Promise<IProperty | null> {
+        await this.validateProperty(property);
+        return PropertyRepository.create({ ...property, createdAt: new Date(), updatedAt: new Date() }).catch((error) => {
+            throw error;
+        });
+    }
+
+    static async getById(id: string): Promise<IProperty | null> {
+        const property = await PropertyRepository.getById(id).catch(() => {
+            throw new InvalidIdError();
+        });
+        if (property === null) {
+            throw new PropertyNotFoundError();
+        }
+        return property;
+    }
+
+    static async deleteById(id: string): Promise<IProperty | null> {
+        const property = await PropertyRepository.deleteById(id).catch(() => {
+            throw new InvalidIdError();
+        });
+        if (property === null) {
+            throw new PropertyNotFoundError();
+        }
+        return property;
+    }
+
+    static async updateById(id: string, newProperty: IProperty): Promise<IProperty | null> {
+        await this.validateProperty(newProperty);
+        const property = await PropertyRepository.updateById(id, { ...newProperty, updatedAt: new Date() }).catch(() => {
+            throw new InvalidIdError();
+        });
+        if (property === null) {
+            throw new PropertyNotFoundError();
+        }
+        return property;
+    }
+
+    static async validateProperty(property: IProperty): Promise<void> {
         if (property.validation && !this.isValidationObjValid(property.propertyType, property.validation)) {
             throw new InvalidValueInPropertyError(property.propertyName);
         }
@@ -70,40 +108,6 @@ export default class PropertyManager {
         ) {
             throw new InvalidValueInPropertyError(property.propertyName);
         }
-
-        return PropertyRepository.create({ ...property, createdAt: new Date(), updatedAt: new Date()}).catch((error) => {
-            throw error;
-        });
-    }
-
-    static async getById(id: string): Promise<IProperty | null> {
-        const property = await PropertyRepository.getById(id).catch(() => {
-            throw new InvalidIdError();
-        });
-        if (property === null) {
-            throw new PropertyNotFoundError();
-        }
-        return property;
-    }
-
-    static async deleteById(id: string): Promise<IProperty | null> {
-        const property = await PropertyRepository.deleteById(id).catch(() => {
-            throw new InvalidIdError();
-        });
-        if (property === null) {
-            throw new PropertyNotFoundError();
-        }
-        return property;
-    }
-
-    static async updateById(id: string, newProperty: IProperty): Promise<IProperty | null> {
-        const property = await PropertyRepository.updateById(id, { ...newProperty, updatedAt: new Date()}).catch(() => {
-            throw new InvalidIdError();
-        });
-        if (property === null) {
-            throw new PropertyNotFoundError();
-        }
-        return property;
     }
 
     static isValidationObjValid(
