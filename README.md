@@ -2,21 +2,20 @@
 
 ## HTTP Requests
 
-| HTTP REQUEST | DEFINITION            | 
-| ----------- | --------------- |
-| GET /api/schema/[id]     |  Get schema by id          |
-| GET /api/schema       | Get schemas list |
-| POST /api/schema       | Create schema |
-| PUT /api/schema/[id]       | Update schema |
-| DELETE /api/schema/[id]       | Delete schema by id |
-| DELETE /api/schema/[id]/[propertyId]       | Delete property from schema by id |
+| HTTP REQUEST | DEFINITION | PERMISSION |
+| ----------- | --------------- | --------------- |
+| GET /api/schema       | Get schemas list |7|
+| GET /api/schema/[id]     |  Get schema by id | 8| 
+| POST /api/schema       | Create schema |9|
+| PUT /api/schema/[id]       | Update schema |10|
+| DELETE /api/schema/[id]       | Delete schema by id |11|
+| DELETE /api/schema/[id]/[propertyId]       | Delete property from schema by id |12|
 
 ## Schema Interface
 
     {
         schemaName: string,
         schemaProperties: IProperty[],
-        permissions: string,
         createdAt: Date,
         updatedAt: Date
     }
@@ -35,7 +34,6 @@
         validation?: validationSchema,
         createdAt: Date,
         updatedAt: Date,
-        permissions?: string
     }
 
 ## Property Type Options
@@ -130,22 +128,6 @@
 
 ## Request & Response Examples
   
-### GET /api/schema/[id]
-
-Response body:
-
-    {
-        "schemaProperties": [
-            "5f60f0b30f0b504044b149bb"
-        ],
-        "_id": "5f60f0b30f0b504044b149bc",
-        "schemaName": "Schema1",
-        "permissions": "schema premissions",
-        "createdAt": "2013-10-01T00:00:00.000Z",
-        "updatedAt": "2013-10-01T00:00:00.000Z",
-        "__v": 0
-    }
-    
 ### GET /api/schema
 
 Response body:
@@ -157,7 +139,6 @@ Response body:
             ],
             "_id": "5f60f0b30f0b504044b149bc",
             "schemaName": "Schema1",
-            "permissions": "schema premissions",
             "createdAt": "2013-10-01T00:00:00.000Z",
             "updatedAt": "2013-10-01T00:00:00.000Z",
             "__v": 0
@@ -168,13 +149,28 @@ Response body:
             ],
             "_id": "5f60f0b30f0b504044b149bd",
             "schemaName": "Schema2",
-            "permissions": "schema premissions",
             "createdAt": "2013-10-01T00:00:00.000Z",
             "updatedAt": "2013-10-01T00:00:00.000Z",
             "__v": 0
         }
     ]
     
+### GET /api/schema/[id]
+
+Response body:
+
+    {
+        "schemaProperties": [
+            "5f60f0b30f0b504044b149bb"
+        ],
+        "_id": "5f60f0b30f0b504044b149bc",
+        "schemaName": "Schema1",
+        "createdAt": "2013-10-01T00:00:00.000Z",
+        "updatedAt": "2013-10-01T00:00:00.000Z",
+        "__v": 0
+    }
+    
+
 ### POST /api/schema
 
 Request body:
@@ -198,7 +194,6 @@ Request body:
            "validation":{ "biggerThan" : 0 }
         }
       ],
-      "permissions":"schema premissions"
     }
     
 ### PUT /api/schema/[id]
@@ -241,7 +236,6 @@ Request body:
            "validation":{ "biggerThan" : 0 }
         }
       ],
-      "permissions":"schema premissions",
       "createdAt":"2013-10-01T00:00:00.000Z"
     }  
     

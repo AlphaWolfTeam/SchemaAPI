@@ -65,3 +65,21 @@ export class EnumValuesAreNotValidError extends UserError {
         super(`Invalid enum values in property: ${propertyName}`, 404);
     }
 }
+
+export class PermissionDeniedError extends UserError {
+    constructor() {
+        super(`Permission denied`, 404);
+    }
+}
+
+export class PropertyRefNotExistError extends UserError {
+    constructor() {
+        super(`Property ref not exist in this property`, 404);
+    }
+}
+
+export class PropertyRefExistError extends UserError {
+    constructor() {
+        super(`Property ref shouldn't be exist in this property`, 404);
+    }
+}

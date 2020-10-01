@@ -25,32 +25,7 @@ const validator = new jsonschema_1.Validator();
 class PropertyManager {
     static create(property) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (property.validation && !this.isValidationObjValid(property.propertyType, property.validation)) {
-                throw new user_1.InvalidValueInPropertyError(property.propertyName);
-            }
-            if (property.defaultValue !== undefined) {
-                property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
-                if (property.validation && !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
-                    throw new user_1.DefaultValueIsNotValidError(property.propertyName);
-                }
-            }
-            if (property.enum) {
-                property.enum = yield Promise.all(property.enum.map((value) => {
-                    return this.convertValue(value, property.propertyType, property.propertyName);
-                }));
-                if (property.validation) {
-                    property.enum.forEach((value) => {
-                        if (!this.isValueValid(property.validation, property.propertyType, value)) {
-                            throw new user_1.EnumValuesAreNotValidError(property.propertyName);
-                        }
-                    });
-                }
-            }
-            if (property.defaultValue !== undefined &&
-                property.enum &&
-                !property.enum.includes(property.defaultValue)) {
-                throw new user_1.InvalidValueInPropertyError(property.propertyName);
-            }
+            yield this.validateProperty(property);
             return property_repository_1.default.create(Object.assign(Object.assign({}, property), { createdAt: new Date(), updatedAt: new Date() })).catch((error) => {
                 throw error;
             });
@@ -80,6 +55,7 @@ class PropertyManager {
     }
     static updateById(id, newProperty) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.validateProperty(newProperty);
             const property = yield property_repository_1.default.updateById(id, Object.assign(Object.assign({}, newProperty), { updatedAt: new Date() })).catch(() => {
                 throw new user_1.InvalidIdError();
             });
@@ -87,6 +63,36 @@ class PropertyManager {
                 throw new user_1.PropertyNotFoundError();
             }
             return property;
+        });
+    }
+    static validateProperty(property) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (property.validation && !this.isValidationObjValid(property.propertyType, property.validation)) {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
+            if (property.defaultValue !== undefined) {
+                property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
+                if (property.validation && !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
+                    throw new user_1.DefaultValueIsNotValidError(property.propertyName);
+                }
+            }
+            if (property.enum) {
+                property.enum = yield Promise.all(property.enum.map((value) => {
+                    return this.convertValue(value, property.propertyType, property.propertyName);
+                }));
+                if (property.validation) {
+                    property.enum.forEach((value) => {
+                        if (!this.isValueValid(property.validation, property.propertyType, value)) {
+                            throw new user_1.EnumValuesAreNotValidError(property.propertyName);
+                        }
+                    });
+                }
+            }
+            if (property.defaultValue !== undefined &&
+                property.enum &&
+                !property.enum.includes(property.defaultValue)) {
+                throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
         });
     }
     static isValidationObjValid(propertyType, validationObj) {

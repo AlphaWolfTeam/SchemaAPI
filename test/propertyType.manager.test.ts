@@ -13,9 +13,12 @@ import {
   ID_NOT_EXIST,
   INVALID_ID,
   schemaExample,
+  INVALID_REF_NAME,
 } from "./dataExamples";
 import {
   InvalidValueInPropertyError,
+  PropertyRefExistError,
+  PropertyRefNotExistError,
   SchemaNotFoundError,
 } from "../src/utils/errors/user";
 import SchemaManager from "../src/schema/schema.manager";
@@ -240,6 +243,7 @@ describe("Property Type Manager", () => {
             ...propertyObjectIdExample,
             defaultValue: schema._id,
             enum: [schema._id],
+            propertyRef: schemaExample.schemaName,
           })) as IProperty;
 
           expect(createdProperty).to.exist;
@@ -257,7 +261,7 @@ describe("Property Type Manager", () => {
           );
           expect(createdProperty).to.have.property(
             "propertyRef",
-            propertyObjectIdExample.propertyRef
+            schemaExample.schemaName
           );
           expect(JSON.stringify(createdProperty.validation)).to.equals(
             JSON.stringify(propertyObjectIdExample.validation)
@@ -281,77 +285,8 @@ describe("Property Type Manager", () => {
       });
     });
 
-    context("Default value not exist in enum", () => {
-      it("Should throw an InvalidValueInPropertyError", async () => {
-        let functionError: Object = {};
-        try {
-          const invalidProperty: IProperty = {
-            ...propertyNumberExample,
-            defaultValue: "5",
-            enum: [1, 2, 3],
-          };
-          (await PropertyManager.create(invalidProperty)) as IProperty;
-        } catch (error) {
-          functionError = error;
-        } finally {
-          expect(functionError instanceof InvalidValueInPropertyError).to.be
-            .true;
-        }
-      });
-    });
-
-    context("Invalid validation objects", () => {
-      context("Boolean validation", () => {
-        it("Should throw an InvalidValueInPropertyError", async () => {
-          let functionError: Object = {};
-          try {
-            const invalidProperty: IProperty = {
-              ...propertyBooleanExample,
-              validation: { biggerThan: "hello" },
-            };
-            (await PropertyManager.create(invalidProperty)) as IProperty;
-          } catch (error) {
-            functionError = error;
-          } finally {
-            expect(functionError instanceof InvalidValueInPropertyError).to.be
-              .true;
-          }
-        });
-      });
-
-      context("ObjectId validation", () => {
-        let schema: ISchema;
-        beforeEach(async () => {
-          schema = (await SchemaManager.create(
-            { ...schemaExample },
-            []
-          )) as ISchema;
-        });
-        afterEach(async () => {
-          await SchemaModel.deleteMany({}).exec();
-        });
-        it("Should throw an InvalidValueInPropertyError", async () => {
-          let functionError: Object = {};
-          try {
-            const invalidProperty: IProperty = {
-              ...propertyObjectIdExample,
-              defaultValue: schema._id,
-              enum: [schema._id],
-              validation: { biggerThan: "hello" },
-            };
-            (await PropertyManager.create(invalidProperty)) as IProperty;
-          } catch (error) {
-            functionError = error;
-          } finally {
-            expect(functionError instanceof InvalidValueInPropertyError).to.be
-              .true;
-          }
-        });
-      });
-    });
-
-    context("Invalid types-", () => {
-      context("Invalid field value-", () => {
+    context("Invalid types", () => {
+      context("Invalid field value", () => {
         it("Should throw an InvalidValueInPropertyError", async () => {
           let functionError: Object = {};
           try {
@@ -404,6 +339,24 @@ describe("Property Type Manager", () => {
               }
             });
           });
+
+          context("Property ref exist", () => {
+            it("Should throw an PropertyRefExistError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyNumberExample,
+                  propertyRef: INVALID_REF_NAME,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof PropertyRefExistError).to.be
+                  .true;
+              }
+            });
+          });
         });
 
         context("Invalid boolean-", () => {
@@ -424,17 +377,220 @@ describe("Property Type Manager", () => {
               }
             });
           });
+          context("Property ref exist", () => {
+            it("Should throw an PropertyRefExistError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyBooleanExample,
+                  propertyRef: INVALID_REF_NAME,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof PropertyRefExistError).to.be
+                  .true;
+              }
+            });
+          });
+        });
+
+        context("Invalid date-", () => {
+          context("Invalid default value", () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyDateExample,
+                  defaultValue: "g",
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof InvalidValueInPropertyError).to
+                  .be.true;
+              }
+            });
+          });
+          context("Invalid enum", () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyDateExample,
+                  enum: [new Date("2013-10-01T00:00:00.000Z"), "g"],
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof InvalidValueInPropertyError).to
+                  .be.true;
+              }
+            });
+          });
+          context("Property ref exist", () => {
+            it("Should throw an PropertyRefExistError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyDateExample,
+                  propertyRef: INVALID_REF_NAME,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof PropertyRefExistError).to.be
+                  .true;
+              }
+            });
+          });
+        });
+
+        context("Invalid objectId-", () => {
+          let schema: ISchema;
+          beforeEach(async () => {
+            schema = (await SchemaManager.create(
+              { ...schemaExample },
+              []
+            )) as ISchema;
+          });
+
+          afterEach(async () => {
+            await SchemaModel.deleteMany({}).exec();
+          });
+          context("Invalid property ref", () => {
+            it("Should throw an PropertyRefNotExistError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyObjectIdExample,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof PropertyRefNotExistError).to.be
+                  .true;
+              }
+            });
+            it("Should throw an SchemaNotFoundError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyObjectIdExample,
+                  propertyRef: INVALID_REF_NAME,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof SchemaNotFoundError).to.be.true;
+              }
+            });
+          });
+          context("Invalid default value", () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyObjectIdExample,
+                  defaultValue: INVALID_ID,
+                  enum: [schema._id],
+                  propertyRef: schemaExample.schemaName,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof InvalidValueInPropertyError).to
+                  .be.true;
+              }
+            });
+            it("Should throw an SchemaNotFoundError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyObjectIdExample,
+                  defaultValue: ID_NOT_EXIST,
+                  enum: [schema._id],
+                  propertyRef: schemaExample.schemaName,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof SchemaNotFoundError).to.be.true;
+              }
+            });
+          });
+          context("Invalid enum", () => {
+            it("Should throw an InvalidValueInPropertyError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyObjectIdExample,
+                  defaultValue: schema._id,
+                  enum: [INVALID_ID],
+                  propertyRef: schemaExample.schemaName,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof InvalidValueInPropertyError).to
+                  .be.true;
+              }
+            });
+            it("Should throw an SchemaNotFoundError", async () => {
+              let functionError: Object = {};
+              try {
+                const invalidProperty: IProperty = {
+                  ...propertyObjectIdExample,
+                  defaultValue: schema._id,
+                  enum: [ID_NOT_EXIST],
+                  propertyRef: schemaExample.schemaName,
+                };
+                (await PropertyManager.create(invalidProperty)) as IProperty;
+              } catch (error) {
+                functionError = error;
+              } finally {
+                expect(functionError instanceof SchemaNotFoundError).to.be.true;
+              }
+            });
+          });
+        });
+      });
+      context("Default value not exist in enum", () => {
+        it("Should throw an InvalidValueInPropertyError", async () => {
+          let functionError: Object = {};
+          try {
+            const invalidProperty: IProperty = {
+              ...propertyNumberExample,
+              defaultValue: "5",
+              enum: [1, 2, 3],
+            };
+            (await PropertyManager.create(invalidProperty)) as IProperty;
+          } catch (error) {
+            functionError = error;
+          } finally {
+            expect(functionError instanceof InvalidValueInPropertyError).to.be
+              .true;
+          }
         });
       });
 
-      context("Invalid date-", () => {
-        context("Invalid default value", () => {
+      context("Invalid validation objects", () => {
+        context("Boolean validation", () => {
           it("Should throw an InvalidValueInPropertyError", async () => {
             let functionError: Object = {};
             try {
               const invalidProperty: IProperty = {
-                ...propertyDateExample,
-                defaultValue: "g",
+                ...propertyBooleanExample,
+                validation: { biggerThan: "hello" },
               };
               (await PropertyManager.create(invalidProperty)) as IProperty;
             } catch (error) {
@@ -445,79 +601,26 @@ describe("Property Type Manager", () => {
             }
           });
         });
-        context("Invalid enum", () => {
-          it("Should throw an InvalidValueInPropertyError", async () => {
-            let functionError: Object = {};
-            try {
-              const invalidProperty: IProperty = {
-                ...propertyDateExample,
-                enum: [new Date("2013-10-01T00:00:00.000Z"), "g"],
-              };
-              (await PropertyManager.create(invalidProperty)) as IProperty;
-            } catch (error) {
-              functionError = error;
-            } finally {
-              expect(functionError instanceof InvalidValueInPropertyError).to.be
-                .true;
-            }
-          });
-        });
-      });
 
-      context("Invalid objectId-", () => {
-        let schema: ISchema;
-        beforeEach(async () => {
-          schema = (await SchemaManager.create(
-            { ...schemaExample },
-            []
-          )) as ISchema;
-        });
-
-        afterEach(async () => {
-          await SchemaModel.deleteMany({}).exec();
-        });
-
-        context("Invalid default value", () => {
-          it("Should throw an InvalidValueInPropertyError", async () => {
-            let functionError: Object = {};
-            try {
-              const invalidProperty: IProperty = {
-                ...propertyObjectIdExample,
-                defaultValue: INVALID_ID,
-                enum: [schema._id],
-              };
-              (await PropertyManager.create(invalidProperty)) as IProperty;
-            } catch (error) {
-              functionError = error;
-            } finally {
-              expect(functionError instanceof InvalidValueInPropertyError).to.be
-                .true;
-            }
+        context("ObjectId validation", () => {
+          let schema: ISchema;
+          beforeEach(async () => {
+            schema = (await SchemaManager.create(
+              { ...schemaExample },
+              []
+            )) as ISchema;
           });
-          it("Should throw an SchemaNotFoundError", async () => {
-            let functionError: Object = {};
-            try {
-              const invalidProperty: IProperty = {
-                ...propertyObjectIdExample,
-                defaultValue: ID_NOT_EXIST,
-                enum: [schema._id],
-              };
-              (await PropertyManager.create(invalidProperty)) as IProperty;
-            } catch (error) {
-              functionError = error;
-            } finally {
-              expect(functionError instanceof SchemaNotFoundError).to.be.true;
-            }
+          afterEach(async () => {
+            await SchemaModel.deleteMany({}).exec();
           });
-        });
-        context("Invalid enum", () => {
           it("Should throw an InvalidValueInPropertyError", async () => {
             let functionError: Object = {};
             try {
               const invalidProperty: IProperty = {
                 ...propertyObjectIdExample,
                 defaultValue: schema._id,
-                enum: [INVALID_ID],
+                enum: [schema._id],
+                validation: { biggerThan: "hello" },
               };
               (await PropertyManager.create(invalidProperty)) as IProperty;
             } catch (error) {
@@ -525,21 +628,6 @@ describe("Property Type Manager", () => {
             } finally {
               expect(functionError instanceof InvalidValueInPropertyError).to.be
                 .true;
-            }
-          });
-          it("Should throw an SchemaNotFoundError", async () => {
-            let functionError: Object = {};
-            try {
-              const invalidProperty: IProperty = {
-                ...propertyObjectIdExample,
-                defaultValue: schema._id,
-                enum: [ID_NOT_EXIST],
-              };
-              (await PropertyManager.create(invalidProperty)) as IProperty;
-            } catch (error) {
-              functionError = error;
-            } finally {
-              expect(functionError instanceof SchemaNotFoundError).to.be.true;
             }
           });
         });
