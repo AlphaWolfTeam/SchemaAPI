@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
+exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
 class SchemaNotFoundError extends application_1.UserError {
     constructor() {
@@ -68,4 +68,10 @@ class EnumValuesAreNotValidError extends application_1.UserError {
     }
 }
 exports.EnumValuesAreNotValidError = EnumValuesAreNotValidError;
+class PermissionDeniedError extends application_1.UserError {
+    constructor() {
+        super(`Permission denied`, 404);
+    }
+}
+exports.PermissionDeniedError = PermissionDeniedError;
 //# sourceMappingURL=user.js.map

@@ -12,7 +12,6 @@ export default class SchemaController {
             const schema: ISchema = {
                 schemaName: req.body.schemaName,
                 schemaProperties: [],
-                permissions: req.body.permissions,
                 createdAt: req.body.createdAt,
                 updatedAt: req.body.updatedAt,
             }

@@ -55,7 +55,6 @@ describe("Schema Manager", () => {
         expect(JSON.stringify(res.schemaProperties)).to.equals(
           JSON.stringify(schemaExample.schemaProperties)
         );
-        expect(res).to.have.property("permissions", schemaExample.permissions);
       });
     });
 
@@ -99,7 +98,6 @@ describe("Schema Manager", () => {
         expect(JSON.stringify(res.schemaProperties)).to.equals(
           JSON.stringify(schema.schemaProperties)
         );
-        expect(res).to.have.property("permissions", schema.permissions);
         expect(JSON.stringify(res.createdAt)).to.equals(
           JSON.stringify(schema.createdAt)
         );
@@ -166,7 +164,6 @@ describe("Schema Manager", () => {
         expect(JSON.stringify(schema.schemaProperties)).to.equals(
           JSON.stringify(schema.schemaProperties)
         );
-        expect(schema).to.have.property("permissions", schema.permissions);
         expect(JSON.stringify(schema.createdAt)).to.equals(
           JSON.stringify(schema.createdAt)
         );
