@@ -5,6 +5,6 @@ export default interface ISchema {
     schemaName: string,
     schemaProperties: IProperty[],
     permissions: string,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt?: Date,
+    updatedAt?: Date,
 }

@@ -86,12 +86,6 @@ describe("Property Type Manager", () => {
             "required",
             propertyNumberExample.required
           );
-          expect(JSON.stringify(createdProperty.createdAt)).to.equals(
-            JSON.stringify(propertyNumberExample.createdAt)
-          );
-          expect(JSON.stringify(createdProperty.updatedAt)).to.equals(
-            JSON.stringify(propertyNumberExample.updatedAt)
-          );
         });
       });
 
@@ -136,12 +130,6 @@ describe("Property Type Manager", () => {
           expect(createdProperty).to.have.property(
             "required",
             propertyStringExample.required
-          );
-          expect(JSON.stringify(createdProperty.createdAt)).to.equals(
-            JSON.stringify(propertyStringExample.createdAt)
-          );
-          expect(JSON.stringify(createdProperty.updatedAt)).to.equals(
-            JSON.stringify(propertyStringExample.updatedAt)
           );
         });
       });
@@ -188,12 +176,6 @@ describe("Property Type Manager", () => {
             "required",
             propertyDateExample.required
           );
-          expect(JSON.stringify(createdProperty.createdAt)).to.equals(
-            JSON.stringify(propertyDateExample.createdAt)
-          );
-          expect(JSON.stringify(createdProperty.updatedAt)).to.equals(
-            JSON.stringify(propertyDateExample.updatedAt)
-          );
         });
       });
 
@@ -238,12 +220,6 @@ describe("Property Type Manager", () => {
           expect(createdProperty).to.have.property(
             "required",
             propertyBooleanExample.required
-          );
-          expect(JSON.stringify(createdProperty.createdAt)).to.equals(
-            JSON.stringify(propertyBooleanExample.createdAt)
-          );
-          expect(JSON.stringify(createdProperty.updatedAt)).to.equals(
-            JSON.stringify(propertyBooleanExample.updatedAt)
           );
         });
       });
@@ -300,12 +276,6 @@ describe("Property Type Manager", () => {
           expect(createdProperty).to.have.property(
             "required",
             propertyObjectIdExample.required
-          );
-          expect(JSON.stringify(createdProperty.createdAt)).to.equals(
-            JSON.stringify(propertyObjectIdExample.createdAt)
-          );
-          expect(JSON.stringify(createdProperty.updatedAt)).to.equals(
-            JSON.stringify(propertyObjectIdExample.updatedAt)
           );
         });
       });

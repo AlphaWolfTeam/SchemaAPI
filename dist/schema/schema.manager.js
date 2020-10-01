@@ -28,7 +28,7 @@ class SchemaManager {
                 const createdProperty = (yield property_manager_1.default.create(property));
                 schema.schemaProperties.push(createdProperty);
             }
-            return schema_repository_1.default.create(schema).catch((error) => {
+            return schema_repository_1.default.create(Object.assign(Object.assign({}, schema), { createdAt: new Date(), updatedAt: new Date() })).catch((error) => {
                 schema.schemaProperties.forEach(property => {
                     property_manager_1.default.deleteById(property._id);
                 });
@@ -115,7 +115,7 @@ class SchemaManager {
                     schema.schemaProperties.push(createdProperty);
                 }
             }
-            return schema_repository_1.default.updateById(id, schema);
+            return schema_repository_1.default.updateById(id, Object.assign(Object.assign({}, schema), { updatedAt: new Date() }));
         });
     }
     static isAllPropertiesUnique(propertyList) {

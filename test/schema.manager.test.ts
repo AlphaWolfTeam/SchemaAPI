@@ -56,12 +56,6 @@ describe("Schema Manager", () => {
           JSON.stringify(schemaExample.schemaProperties)
         );
         expect(res).to.have.property("permissions", schemaExample.permissions);
-        expect(JSON.stringify(res.createdAt)).to.equals(
-          JSON.stringify(schemaExample.createdAt)
-        );
-        expect(JSON.stringify(res.updatedAt)).to.equals(
-          JSON.stringify(schemaExample.updatedAt)
-        );
       });
     });
 
@@ -394,12 +388,6 @@ describe("Schema Manager", () => {
           "required",
           propertyNumberExample.required
         );
-        expect(JSON.stringify(resProperty.createdAt)).to.equals(
-          JSON.stringify(propertyNumberExample.createdAt)
-        );
-        expect(JSON.stringify(resProperty.updatedAt)).to.equals(
-          JSON.stringify(propertyNumberExample.updatedAt)
-        );
       });
 
       it("Should update schema and update property", async () => {
@@ -451,12 +439,6 @@ describe("Schema Manager", () => {
         expect(resProperty).to.have.property(
           "required",
           propertyNumberExample.required
-        );
-        expect(JSON.stringify(resProperty.createdAt)).to.equals(
-          JSON.stringify(propertyNumberExample.createdAt)
-        );
-        expect(JSON.stringify(resProperty.updatedAt)).to.equals(
-          JSON.stringify(propertyNumberExample.updatedAt)
         );
       });
     });

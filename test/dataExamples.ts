@@ -4,9 +4,7 @@ import IProperty from '../src/property/property.interface';
 export const schemaExample: ISchema = {
   schemaName: 'schema name',
   schemaProperties: [],
-  permissions: 'schema premissions',
-  createdAt: new Date("2013-10-01T00:00:00.000Z"),
-  updatedAt: new Date("2013-10-01T00:00:00.000Z")
+  permissions: 'schema premissions'
 };
 export const propertyNumberExample: IProperty = {
   propertyName: "property name",
@@ -17,9 +15,7 @@ export const propertyNumberExample: IProperty = {
   isUnique: true,
   index: true,
   required: true,
-  validation: {biggerThan: 0},
-  createdAt: new Date("2013-10-01T00:00:00.000Z"),
-  updatedAt: new Date("2013-10-01T00:00:00.000Z"),
+  validation: {biggerThan: 0}
 };
 
 export const propertyStringExample: IProperty = {
@@ -31,9 +27,7 @@ export const propertyStringExample: IProperty = {
   isUnique: true,
   index: true,
   required: true,
-  validation: {length: 5},
-  createdAt: new Date("2013-10-01T00:00:00.000Z"),
-  updatedAt: new Date("2013-10-01T00:00:00.000Z"),
+  validation: {length: 5}
 };
 
 export const propertyDateExample: IProperty = {
@@ -45,9 +39,7 @@ export const propertyDateExample: IProperty = {
   isUnique: true,
   index: true,
   required: true,
-  validation: {after: "2000-10-01T00:00:00.000Z"},
-  createdAt: new Date("2013-10-01T00:00:00.000Z"),
-  updatedAt: new Date("2013-10-01T00:00:00.000Z"),
+  validation: {after: "2000-10-01T00:00:00.000Z"}
 };
 
 export const propertyBooleanExample: IProperty = {
@@ -58,9 +50,7 @@ export const propertyBooleanExample: IProperty = {
   enum: [true, false],
   isUnique: true,
   index: true,
-  required: true,
-  createdAt: new Date("2013-10-01T00:00:00.000Z"),
-  updatedAt: new Date("2013-10-01T00:00:00.000Z"),
+  required: true
 };
 
 export const propertyObjectIdExample: IProperty = {
@@ -69,9 +59,7 @@ export const propertyObjectIdExample: IProperty = {
   propertyRef: "property ref",
   isUnique: true,
   index: true,
-  required: true,
-  createdAt: new Date("2013-10-01T00:00:00.000Z"),
-  updatedAt: new Date("2013-10-01T00:00:00.000Z"),
+  required: true
 };
 export const ID_NOT_EXIST = '111111111111111111111111';
 export const INVALID_ID = 'invalidId';
