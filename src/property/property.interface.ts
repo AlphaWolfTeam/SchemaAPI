@@ -9,7 +9,7 @@ export default interface IProperty {
     index?: boolean,
     required?: boolean,
     validation?: Object,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt?: Date,
+    updatedAt?: Date,
 }
 

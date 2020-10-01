@@ -16,7 +16,7 @@ import {
 
 const MONGO_UNIQUE_NAME_CODE: number = 11000;
 export default class SchemaManager {
-  static async create(schema: ISchema,schemaProperties: IProperty[]): Promise<ISchema | null> {
+  static async create(schema: ISchema, schemaProperties: IProperty[]): Promise<ISchema | null> {
     schema.schemaProperties = [];
     if (!this.isAllPropertiesUnique(schemaProperties)) {
       throw new DuplicatePropertyNameError();
@@ -27,15 +27,15 @@ export default class SchemaManager {
       )) as IProperty;
       schema.schemaProperties.push(createdProperty as IProperty);
     }
-    return SchemaRepository.create(schema).catch((error: Object) => {
+    return SchemaRepository.create({ ...schema, createdAt: new Date(), updatedAt: new Date()}).catch((error: Object) => {
       schema.schemaProperties.forEach(property => {
         PropertyManager.deleteById(property._id as string);
       });
-      if(error["code"] === MONGO_UNIQUE_NAME_CODE){
+      if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
         throw new DuplicateSchemaNameError();
       }
       throw new InvalidValueInSchemaError();
-      
+
     });
   }
 
@@ -122,7 +122,7 @@ export default class SchemaManager {
       }
     }
 
-    return SchemaRepository.updateById(id, schema);
+    return SchemaRepository.updateById(id, { ...schema, updatedAt: new Date()});
   }
 
   static isAllPropertiesUnique(propertyList: IProperty[]): boolean {

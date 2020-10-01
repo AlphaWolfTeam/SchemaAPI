@@ -71,7 +71,7 @@ export default class PropertyManager {
             throw new InvalidValueInPropertyError(property.propertyName);
         }
 
-        return PropertyRepository.create(property).catch((error) => {
+        return PropertyRepository.create({ ...property, createdAt: new Date(), updatedAt: new Date()}).catch((error) => {
             throw error;
         });
     }
@@ -97,7 +97,7 @@ export default class PropertyManager {
     }
 
     static async updateById(id: string, newProperty: IProperty): Promise<IProperty | null> {
-        const property = await PropertyRepository.updateById(id, newProperty).catch(() => {
+        const property = await PropertyRepository.updateById(id, { ...newProperty, updatedAt: new Date()}).catch(() => {
             throw new InvalidIdError();
         });
         if (property === null) {

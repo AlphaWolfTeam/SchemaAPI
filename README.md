@@ -195,14 +195,10 @@ Request body:
            "isUnique":true,
            "index":true,
            "required":true,
-           "validation":{ "biggerThan" : 0 },
-           "createdAt":"2013-10-01T00:00:00.000Z",
-           "updatedAt":"2013-10-01T00:00:00.000Z"
+           "validation":{ "biggerThan" : 0 }
         }
       ],
-      "permissions":"schema premissions",
-      "createdAt":"2013-10-01T00:00:00.000Z",
-      "updatedAt":"2013-10-01T00:00:00.000Z"
+      "permissions":"schema premissions"
     }
     
 ### PUT /api/schema/[id]
@@ -213,7 +209,8 @@ Request body:
      "schemaName": "NewSchema1",
      "schemaProperties":[
         {
-           "propertyName":"newProperty1",
+            "_id":"5f75b813d797f412546efbbd",
+           "propertyName":"updateProperty",
            "propertyType":"Number",
            "defaultValue":1,
            "propertyRef":"property ref",
@@ -226,13 +223,26 @@ Request body:
            "index":true,
            "required":true,
            "validation":{ "biggerThan" : 0 },
-           "createdAt":"2013-10-01T00:00:00.000Z",
-           "updatedAt":"2013-10-01T00:00:00.000Z"
+           "createdAt":"2013-10-01T00:00:00.000Z"
+        },
+        {
+           "propertyName":"newProperty",
+           "propertyType":"Number",
+           "defaultValue":1,
+           "propertyRef":"property ref",
+           "enum":[
+              1,
+              2,
+              3
+           ],
+           "isUnique":true,
+           "index":true,
+           "required":true,
+           "validation":{ "biggerThan" : 0 }
         }
       ],
       "permissions":"schema premissions",
-      "createdAt":"2013-10-01T00:00:00.000Z",
-      "updatedAt":"2013-10-01T00:00:00.000Z"
+      "createdAt":"2013-10-01T00:00:00.000Z"
     }  
     
 ## Http Errors
