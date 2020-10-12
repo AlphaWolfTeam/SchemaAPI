@@ -27,15 +27,18 @@ export const dateValidationSchema = {
 };
 
 export const isDateValidationObjValid = (validateObj: Object): boolean => {
-  if (validateObj["before"] && !moment(validateObj["before"], "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
+  if (validateObj["before"] &&
+    !moment(validateObj["before"], "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
     return false;
   }
 
-  if (validateObj["after"] && !moment(validateObj["after"], "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
+  if (validateObj["after"] &&
+    !moment(validateObj["after"], "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
     return false;
   }
 
-  if (validateObj["equalsTo"] && !moment(validateObj["equalsTo"], "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
+  if (validateObj["equalsTo"] &&
+    !moment(validateObj["equalsTo"], "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]").isValid()) {
     return false;
   }
 
@@ -59,7 +62,8 @@ export const isDateValueValid = (date: Date, validateObj: Object): boolean => {
     return false;
   }
 
-  if (validateObj["before"] && validateObj["after"] && validateObj["before"] <= validateObj["after"]) {
+  if (validateObj["before"] && validateObj["after"] &&
+    validateObj["before"] <= validateObj["after"]) {
     return false;
   }
 
