@@ -10,8 +10,6 @@ import {
   propertyDateExample,
   propertyBooleanExample,
   propertyObjectIdExample,
-  ID_NOT_EXIST,
-  INVALID_ID,
   schemaExample,
   INVALID_REF_NAME,
 } from "./dataExamples";
@@ -451,17 +449,6 @@ describe("Property Type Manager", () => {
         });
 
         context("Invalid objectId-", () => {
-          let schema: ISchema;
-          beforeEach(async () => {
-            schema = (await SchemaManager.create(
-              { ...schemaExample },
-              []
-            )) as ISchema;
-          });
-
-          afterEach(async () => {
-            await SchemaModel.deleteMany({}).exec();
-          });
           context("Invalid property ref", () => {
             it("Should throw an PropertyRefNotExistError", async () => {
               let functionError: Object = {};
@@ -492,78 +479,9 @@ describe("Property Type Manager", () => {
               }
             });
           });
-          context("Invalid default value", () => {
-            it("Should throw an InvalidValueInPropertyError", async () => {
-              let functionError: Object = {};
-              try {
-                const invalidProperty: IProperty = {
-                  ...propertyObjectIdExample,
-                  defaultValue: INVALID_ID,
-                  enum: [schema._id],
-                  propertyRef: schemaExample.schemaName,
-                };
-                (await PropertyManager.create(invalidProperty)) as IProperty;
-              } catch (error) {
-                functionError = error;
-              } finally {
-                expect(functionError instanceof InvalidValueInPropertyError).to
-                  .be.true;
-              }
-            });
-            it("Should throw an SchemaNotFoundError", async () => {
-              let functionError: Object = {};
-              try {
-                const invalidProperty: IProperty = {
-                  ...propertyObjectIdExample,
-                  defaultValue: ID_NOT_EXIST,
-                  enum: [schema._id],
-                  propertyRef: schemaExample.schemaName,
-                };
-                (await PropertyManager.create(invalidProperty)) as IProperty;
-              } catch (error) {
-                functionError = error;
-              } finally {
-                expect(functionError instanceof SchemaNotFoundError).to.be.true;
-              }
-            });
-          });
-          context("Invalid enum", () => {
-            it("Should throw an InvalidValueInPropertyError", async () => {
-              let functionError: Object = {};
-              try {
-                const invalidProperty: IProperty = {
-                  ...propertyObjectIdExample,
-                  defaultValue: schema._id,
-                  enum: [INVALID_ID],
-                  propertyRef: schemaExample.schemaName,
-                };
-                (await PropertyManager.create(invalidProperty)) as IProperty;
-              } catch (error) {
-                functionError = error;
-              } finally {
-                expect(functionError instanceof InvalidValueInPropertyError).to
-                  .be.true;
-              }
-            });
-            it("Should throw an SchemaNotFoundError", async () => {
-              let functionError: Object = {};
-              try {
-                const invalidProperty: IProperty = {
-                  ...propertyObjectIdExample,
-                  defaultValue: schema._id,
-                  enum: [ID_NOT_EXIST],
-                  propertyRef: schemaExample.schemaName,
-                };
-                (await PropertyManager.create(invalidProperty)) as IProperty;
-              } catch (error) {
-                functionError = error;
-              } finally {
-                expect(functionError instanceof SchemaNotFoundError).to.be.true;
-              }
-            });
-          });
         });
       });
+
       context("Default value not exist in enum", () => {
         it("Should throw an InvalidValueInPropertyError", async () => {
           let functionError: Object = {};

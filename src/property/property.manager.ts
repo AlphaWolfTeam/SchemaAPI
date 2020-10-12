@@ -25,7 +25,6 @@ import {
   isDateValueValid,
   isDateValidationObjValid,
 } from "./validation/date.validation";
-import SchemaRepository from "../schema/schema.repository";
 import SchemaManager from "../schema/schema.manager";
 import ISchema from "../schema/schema.interface";
 
@@ -85,7 +84,7 @@ export default class PropertyManager {
         if(!property.propertyRef){
             throw new PropertyRefNotExistError()
         }
-        else if(!await this.isSchemaNameExist(property.propertyRef)){
+        else if(!await this.isSchemaExist(property.propertyRef)){
             throw new SchemaNotFoundError()
         }
       }
@@ -193,8 +192,6 @@ export default class PropertyManager {
       case "ObjectId":
         if (!mongoose.Types.ObjectId.isValid(value)) {
           throw new InvalidValueInPropertyError(propertyName);
-        } else if (!(await this.isSchemaIdExist(value))) {
-          throw new SchemaNotFoundError();
         } else {
           return value;
         }
@@ -222,14 +219,7 @@ export default class PropertyManager {
     return String(value) === "false" || String(value) === "true";
   }
 
-  static async isSchemaIdExist(
-    objectId: mongoose.Types.ObjectId
-  ): Promise<boolean> {
-    const returnedSchema = await SchemaRepository.getById(String(objectId));
-    return returnedSchema !== null;
-  }
-
-  static async isSchemaNameExist(name: string): Promise<boolean> {
+  static async isSchemaExist(name: string): Promise<boolean> {
       const schemasList: ISchema[] = await SchemaManager.getAll() as ISchema[];
       return schemasList.map((schema)=>schema.schemaName).includes(name)
   }
