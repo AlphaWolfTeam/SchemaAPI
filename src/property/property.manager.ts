@@ -62,7 +62,7 @@ export default class PropertyManager {
     return property;
   }
 
-  static async updateById(id: string,newProperty: IProperty): Promise<IProperty | null> {
+  static async updateById(id: string, newProperty: IProperty): Promise<IProperty | null> {
     await this.validateProperty(newProperty);
     const property = await PropertyRepository.updateById(id, {
       ...newProperty,
@@ -77,39 +77,40 @@ export default class PropertyManager {
   }
 
   static async validateProperty(property: IProperty): Promise<void> {
-    if (property.validation &&!this.isValidationObjValid(property.propertyType, property.validation)) {
+    if (property.validation &&
+      !this.isValidationObjValid(property.propertyType, property.validation)) {
       throw new InvalidValueInPropertyError(property.propertyName);
     }
     if (property.propertyType === "ObjectId") {
-        if(!property.propertyRef){
-            throw new PropertyRefNotExistError()
-        }
-        else if(!await this.isSchemaExist(property.propertyRef)){
-            throw new SchemaNotFoundError()
-        }
+      if (!property.propertyRef) {
+        throw new PropertyRefNotExistError()
       }
+      else if (!await this.isSchemaExist(property.propertyRef)) {
+        throw new SchemaNotFoundError()
+      }
+    }
     else if (property.propertyRef) {
       throw new PropertyRefExistError();
     }
-    
-    if(property)
-    if (property.defaultValue !== undefined) {
-      property.defaultValue = await this.convertValue(
-        property.defaultValue,
-        property.propertyType,
-        property.propertyName
-      );
-      if (
-        property.validation &&
-        !this.isValueValid(
-          property.validation,
+
+    if (property)
+      if (property.defaultValue !== undefined) {
+        property.defaultValue = await this.convertValue(
+          property.defaultValue,
           property.propertyType,
-          property.defaultValue
-        )
-      ) {
-        throw new DefaultValueIsNotValidError(property.propertyName);
+          property.propertyName
+        );
+        if (
+          property.validation &&
+          !this.isValueValid(
+            property.validation,
+            property.propertyType,
+            property.defaultValue
+          )
+        ) {
+          throw new DefaultValueIsNotValidError(property.propertyName);
+        }
       }
-    }
     if (property.enum) {
       property.enum = await Promise.all(
         property.enum.map((value) => {
@@ -220,7 +221,7 @@ export default class PropertyManager {
   }
 
   static async isSchemaExist(name: string): Promise<boolean> {
-      const schemasList: ISchema[] = await SchemaManager.getAll() as ISchema[];
-      return schemasList.map((schema)=>schema.schemaName).includes(name)
+    return (await SchemaManager.getAll() as ISchema[]).map((schema) =>
+      schema.schemaName).includes(name);
   }
 }
