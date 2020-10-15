@@ -76,10 +76,28 @@ export default class PropertyManager {
   }
 
   static async validateProperty(property: IProperty): Promise<void> {
-    if (property.validation &&
-      !this.isValidationObjValid(property.propertyType, property.validation)) {
+    if (property.validation &&!this.isValidationObjValid(property.propertyType, property.validation)) {
       throw new InvalidValueInPropertyError(property.propertyName);
     }
+    await this.objectIdValidation(property);
+    // if (property)
+    await this.defaultValueValidation(property)
+      await this.enumValidation(property);
+    if (property.defaultValue !== undefined && property.enum &&!property.enum.includes(property.defaultValue)) {
+      throw new InvalidValueInPropertyError(property.propertyName);
+    }
+  }
+
+  static async defaultValueValidation(property: IProperty){
+    if (property.defaultValue !== undefined) {
+      property.defaultValue = await this.convertValue(property.defaultValue,property.propertyType,property.propertyName);
+      if (property.validation &&!this.isValueValid(property.validation,property.propertyType,property.defaultValue)) {
+        throw new DefaultValueIsNotValidError(property.propertyName);
+      }
+    }
+  }
+
+  static async objectIdValidation(property: IProperty){
     if (property.propertyType === "ObjectId") {
       if (!property.propertyRef) {
         throw new PropertyRefNotExistError()
@@ -90,26 +108,10 @@ export default class PropertyManager {
     }
     else if (property.propertyRef) {
       throw new PropertyRefExistError();
-    }
+    }  
+  }
 
-    if (property)
-      if (property.defaultValue !== undefined) {
-        property.defaultValue = await this.convertValue(
-          property.defaultValue,
-          property.propertyType,
-          property.propertyName
-        );
-        if (
-          property.validation &&
-          !this.isValueValid(
-            property.validation,
-            property.propertyType,
-            property.defaultValue
-          )
-        ) {
-          throw new DefaultValueIsNotValidError(property.propertyName);
-        }
-      }
+  static async enumValidation(property: IProperty){
     if (property.enum) {
       property.enum = await Promise.all(
         property.enum.map((value) => {
@@ -134,19 +136,9 @@ export default class PropertyManager {
         });
       }
     }
-    if (
-      property.defaultValue !== undefined &&
-      property.enum &&
-      !property.enum.includes(property.defaultValue)
-    ) {
-      throw new InvalidValueInPropertyError(property.propertyName);
-    }
   }
 
-  static isValidationObjValid(
-    propertyType: string,
-    validationObj: Object
-  ): boolean {
+  static isValidationObjValid(propertyType: string, validationObj: Object): boolean {
     switch (propertyType) {
       case "Number":
         return validator.validate(validationObj, numberValidationSchema).valid;
@@ -163,11 +155,7 @@ export default class PropertyManager {
     }
   }
 
-  static async convertValue(
-    value: any,
-    newType: String,
-    propertyName: string
-  ): Promise<any> {
+  static async convertValue(value: any, newType: String, propertyName: string): Promise<any> {
     switch (newType) {
       case "String":
         return String(value);
@@ -198,11 +186,7 @@ export default class PropertyManager {
     }
   }
 
-  static isValueValid(
-    validateObj: Object,
-    propertyType: any,
-    value: any
-  ): boolean {
+  static isValueValid(validateObj: Object, propertyType: any, value: any): boolean {
     switch (propertyType) {
       case "Number":
         return isNumberValueValid(value, validateObj);
