@@ -3,7 +3,7 @@ import {
   PropertyNotInSchemaError,
   InvalidValueInPropertyError,
   DuplicatePropertyNameError,
-  DuplicateSchemaNameError
+  DuplicateSchemaNameError,
 } from "../src/utils/errors/user";
 import chai from "chai";
 import mongoose from "mongoose";
@@ -64,10 +64,9 @@ describe("Schema Manager", () => {
       it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
-          await SchemaManager.create(
-            { ...schemaExample }, [
+          await SchemaManager.create({ ...schemaExample }, [
             { ...propertyNumberExample },
-            { ...propertyNumberExample }
+            { ...propertyNumberExample },
           ]);
         } catch (error) {
           functionError = error;
@@ -415,7 +414,7 @@ describe("Schema Manager", () => {
               ...propertyNumberExample,
               _id: String(property._id),
               propertyName: NEW_NAME,
-              createdAt: property.createdAt
+              createdAt: property.createdAt,
             },
           ],
         })) as ISchema;
@@ -472,13 +471,14 @@ describe("Schema Manager", () => {
             ...newSchema,
             schemaProperties: [
               { ...propertyNumberExample },
-              { ...propertyNumberExample }
-            ]
-          })) as ISchema
+              { ...propertyNumberExample },
+            ],
+          })) as ISchema;
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof DuplicatePropertyNameError).to.be.true;
+          expect(functionError instanceof DuplicatePropertyNameError).to.be
+            .true;
         }
       });
     });
@@ -487,10 +487,13 @@ describe("Schema Manager", () => {
       const ANOTHER_SCHEMA_NAME = "anotherName";
 
       before(async () => {
-        await SchemaManager.create({
-          ...schemaExample,
-          schemaName: ANOTHER_SCHEMA_NAME
-        }, []);
+        await SchemaManager.create(
+          {
+            ...schemaExample,
+            schemaName: ANOTHER_SCHEMA_NAME,
+          },
+          []
+        );
       });
 
       after(async () => {
@@ -502,24 +505,30 @@ describe("Schema Manager", () => {
         try {
           await SchemaManager.updateById(schema._id as string, {
             ...schemaExample,
-            schemaName: ANOTHER_SCHEMA_NAME
+            schemaName: ANOTHER_SCHEMA_NAME,
           });
         } catch (error) {
           functionError = error;
         } finally {
           expect(functionError instanceof DuplicateSchemaNameError).to.be.true;
-          expect((await PropertyModel.find({}).exec()).length).to.equal(schema.schemaProperties.length);
+          expect((await PropertyModel.find({}).exec()).length).to.equal(
+            schema.schemaProperties.length
+          );
           const prevProperty = {
-            ...(await PropertyModel.findById(property._id).exec() as Object)['_doc'],
+            ...((await PropertyModel.findById(property._id).exec()) as Object)[
+              "_doc"
+            ],
             updatedAt: undefined,
-            createdAt: undefined
+            createdAt: undefined,
           };
           const updatedProperty = {
-            ...(schema.schemaProperties[0] as Object)['_doc'],
+            ...(schema.schemaProperties[0] as Object)["_doc"],
             updatedAt: undefined,
-            createdAt: undefined
+            createdAt: undefined,
           };
-          expect(JSON.stringify(prevProperty)).to.equal(JSON.stringify(updatedProperty));
+          expect(JSON.stringify(prevProperty)).to.equal(
+            JSON.stringify(updatedProperty)
+          );
         }
       });
     });
@@ -555,9 +564,9 @@ describe("Schema Manager", () => {
         let functionError: Object = {};
         try {
           const invalidProperty: IProperty = {
-            ...propertyNumberExample,
-            propertyType: "f",
-          },
+              ...propertyNumberExample,
+              propertyType: "f",
+            },
             schemaWithInvalidProp: ISchema = {
               ...newSchema,
               schemaProperties: [invalidProperty],

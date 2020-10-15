@@ -11,5 +11,3 @@ export const checkPermission = async (
     ? next()
     : res.json(new PermissionDeniedError());
 };
-
-
