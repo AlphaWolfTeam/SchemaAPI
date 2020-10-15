@@ -2,23 +2,22 @@
 
 ## HTTP Requests
 
-| HTTP REQUEST | DEFINITION            | 
-| ----------- | --------------- |
-| GET /api/schema/[id]     |  Get schema by id          |
-| GET /api/schema       | Get schemas list |
-| POST /api/schema       | Create schema |
-| PUT /api/schema/[id]       | Update schema |
-| DELETE /api/schema/[id]       | Delete schema by id |
-| DELETE /api/schema/[id]/[propertyId]       | Delete property from schema by id |
+| HTTP REQUEST | DEFINITION | PERMISSION |
+| ----------- | --------------- | --------------- |
+| GET /api/schema       | Get schemas list |7|
+| GET /api/schema/[id]     |  Get schema by id | 8| 
+| POST /api/schema       | Create schema |9|
+| PUT /api/schema/[id]       | Update schema |10|
+| DELETE /api/schema/[id]       | Delete schema by id |11|
+| DELETE /api/schema/[id]/[propertyId]       | Delete property from schema by id |12|
 
 ## Schema Interface
 
     {
         schemaName: string,
         schemaProperties: IProperty[],
-        permissions: string,
         createdAt: Date,
-        updatedAt: Date,
+        updatedAt: Date
     }
 
 ## Property Interface
@@ -32,10 +31,9 @@
         isUnique: boolean,
         index?: boolean,
         required?: boolean,
-        validateFunctions?: Function[],
+        validation?: validationSchema,
         createdAt: Date,
         updatedAt: Date,
-        permissions?: string
     }
 
 ## Property Type Options
@@ -46,24 +44,90 @@
 * Date
 * ObjectId
 
-## Request & Response Examples
-  
-### GET /api/schema/[id]
+## Validation Schemas
 
-Response body:
+### Number Validation Schema
 
     {
-        "schemaProperties": [
-            "5f60f0b30f0b504044b149bb"
-        ],
-        "_id": "5f60f0b30f0b504044b149bc",
-        "schemaName": "Schema1",
-        "permissions": "schema premissions",
-        "createdAt": "2013-10-01T00:00:00.000Z",
-        "updatedAt": "2013-10-01T00:00:00.000Z",
-        "__v": 0
+    "type": "object",
+    "properties": {
+        "biggerThan": { "type": "number" },
+        "smallerThan": { "type": "number" },
+        "equalsTo": { "type": "number" },
+        "differFrom": {
+        "type": "array",
+        "items": { "type": "number" }
+        },
+        "minDigitsAmount": { "type": "number" },
+        "maxDigitsAmount": { "type": "number" },
+        "digitsAmount": { "type": "number" },
+        "isEven": { "type": "boolean" },
+        "isPositive": { "type": "boolean" },
+        "isPrime": { "type": "boolean" },
+        "isDecimal": { "type": "boolean" },
+    },
+    "additionalProperties": false
     }
-    
+
+### String Validation Schema
+
+    {
+    "type": "object",
+    "properties": {
+        "longerThan": { "type": "number" },
+        "shorterThan": { "type": "number" },
+        "length": { "type": "number" },
+        "equalsTo": { "type": "string" },
+        "differFrom": {
+        "type": "array",
+        "items": { "type": "string" }
+        },
+        "startsWith": { "type": "string" },
+        "endsWith": { "type": "string" },
+        "includes": {
+        "type": "array",
+        "items": { "type": "string" }
+        },
+        "mustNotInclude": {
+        "type": "array",
+        "items": { "type": "string" }
+        },
+        "isPhoneNumber" : { "type": "boolean" },
+        "isEmail" : { "type": "boolean" }
+    },
+    "additionalProperties": false
+    }
+
+### Date Validation Schema
+
+    {
+    "type": "object",
+    "properties": {
+        "before": {
+        "type": "string",
+        "format": "date-time"
+        },
+        "after": {
+        "type": "string",
+        "format": "date-time"
+        },
+        "equalsTo": {
+        "type": "string",
+        "format": "date-time"
+        },
+        "differFrom": {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "format": "date-time"
+        }
+        }
+    },
+    "additionalProperties": false
+    }
+
+## Request & Response Examples
+  
 ### GET /api/schema
 
 Response body:
@@ -71,40 +135,79 @@ Response body:
     [
         {
             "schemaProperties": [
-                "5f60f0b30f0b504044b149bb"
+              {
+                "enum": [],
+                "_id": "5f60f0b30f0b504044b149bb",
+                "propertyName": "property1",
+                "propertyType": "Date",
+                "isUnique": true,
+                "index": true,
+                "required": true,
+                "validation": {
+                    "after": "2013-06-30T00:00:00.000Z"
+                },
+                "createdAt": "2020-10-15T13:07:02.134Z",
+                "updatedAt": "2020-10-15T13:07:02.134Z",
+                "__v": 0
+              }
             ],
             "_id": "5f60f0b30f0b504044b149bc",
             "schemaName": "Schema1",
-            "permissions": "schema premissions",
-            "createdAt": "2013-10-01T00:00:00.000Z",
-            "updatedAt": "2013-10-01T00:00:00.000Z",
+            "createdAt": "2020-10-15T13:07:02.134Z",
+            "updatedAt": "2020-10-15T13:07:02.134Z",
             "__v": 0
         },
         {
-            "schemaProperties": [
-                "5f60f0b30f0b504044b149bc"
-            ],
-            "_id": "5f60f0b30f0b504044b149bd",
+            "schemaProperties": [],
+            "_id": "5f60f0b30f0b504044b149be",
             "schemaName": "Schema2",
-            "permissions": "schema premissions",
-            "createdAt": "2013-10-01T00:00:00.000Z",
-            "updatedAt": "2013-10-01T00:00:00.000Z",
+            "createdAt": "2020-10-01T00:00:00.000Z",
+            "updatedAt": "2020-10-01T00:00:00.000Z",
             "__v": 0
         }
     ]
     
+### GET /api/schema/[id]
+
+Response body:
+
+    {
+        "schemaProperties": [
+          {
+            "enum": [],
+            "_id": "5f60f0b30f0b504044b149bb",
+            "propertyName": "property1",
+            "propertyType": "Date",
+            "isUnique": true,
+            "index": true,
+            "required": true,
+            "validation": {
+              "after": "2013-06-30T00:00:00.000Z"
+            },
+            "createdAt": "2020-10-15T13:07:02.134Z",
+            "updatedAt": "2020-10-15T13:07:02.134Z",
+            "__v": 0
+          }
+        ],
+        "_id": "5f60f0b30f0b504044b149bc",
+        "schemaName": "Schema1",
+        "createdAt": "2020-10-15T13:07:02.134Z",
+        "updatedAt": "2020-10-15T13:07:02.134Z",
+        "__v": 0
+    }
+    
+
 ### POST /api/schema
 
 Request body:
 
     {
-     "schemaName": "Schema1",
+     "schemaName": "Schema3",
      "schemaProperties":[
         {
            "propertyName":"property1",
            "propertyType":"Number",
            "defaultValue":1,
-           "propertyRef":"property ref",
            "enum":[
               1,
               2,
@@ -113,13 +216,17 @@ Request body:
            "isUnique":true,
            "index":true,
            "required":true,
-           "createdAt":"2013-10-01T00:00:00.000Z",
-           "updatedAt":"2013-10-01T00:00:00.000Z"
+           "validation":{ "biggerThan" : 0 }
+        },
+        {
+           "propertyName":"property2",
+           "propertyType":"ObjectId",
+           "propertyRef":"Schema1",
+           "isUnique":true,
+           "index":true,
+           "required":true
         }
       ],
-      "permissions":"schema premissions",
-      "createdAt":"2013-10-01T00:00:00.000Z",
-      "updatedAt":"2013-10-01T00:00:00.000Z"
     }
     
 ### PUT /api/schema/[id]
@@ -130,10 +237,10 @@ Request body:
      "schemaName": "NewSchema1",
      "schemaProperties":[
         {
-           "propertyName":"newProperty1",
+           "_id":"5f60f0b30f0b504044b149bb",
+           "propertyName":"updateProperty1",
            "propertyType":"Number",
            "defaultValue":1,
-           "propertyRef":"property ref",
            "enum":[
               1,
               2,
@@ -142,13 +249,25 @@ Request body:
            "isUnique":true,
            "index":true,
            "required":true,
-           "createdAt":"2013-10-01T00:00:00.000Z",
-           "updatedAt":"2013-10-01T00:00:00.000Z"
+           "validation":{ "biggerThan" : 0 },
+           "createdAt":"2013-10-01T00:00:00.000Z"
+        },
+        {
+           "propertyName":"newProperty",
+           "propertyType":"Number",
+           "defaultValue":1,
+           "enum":[
+              1,
+              2,
+              3
+           ],
+           "isUnique":true,
+           "index":true,
+           "required":true,
+           "validation":{ "biggerThan" : 0 }
         }
       ],
-      "permissions":"schema premissions",
-      "createdAt":"2013-10-01T00:00:00.000Z",
-      "updatedAt":"2013-10-01T00:00:00.000Z"
+      "createdAt":"2013-10-01T00:00:00.000Z"
     }  
     
 ## Http Errors
@@ -166,3 +285,5 @@ Error codes and meanings:
 * 400 - Bad Request
 * 404 - User Error
 * 500 - Internal Server Error
+
+
