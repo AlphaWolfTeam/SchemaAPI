@@ -1,7 +1,9 @@
 import {
   SchemaNotFoundError,
   PropertyNotInSchemaError,
-  InvalidValueInPropertyError,DuplicatePropertyNameError, PropertyNameAlreadyExistError
+  InvalidValueInPropertyError,
+  DuplicatePropertyNameError,
+  DuplicateSchemaNameError
 } from "../src/utils/errors/user";
 import chai from "chai";
 import mongoose from "mongoose";
@@ -62,11 +64,29 @@ describe("Schema Manager", () => {
       it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
-          await SchemaManager.create({ ...schemaExample },[{ ...propertyNumberExample }, { ...propertyNumberExample }]);
+          await SchemaManager.create(
+            { ...schemaExample }, [
+            { ...propertyNumberExample },
+            { ...propertyNumberExample }
+          ]);
         } catch (error) {
           functionError = error;
         } finally {
           expect(functionError instanceof DuplicatePropertyNameError).to.be.true;
+        }
+      });
+    });
+
+    context("Duplicate schema names", () => {
+      it("Should throw an DuplicateSchemaNameError", async () => {
+        let functionError: Object = {};
+        try {
+          await SchemaManager.create({ ...schemaExample }, []);
+          await SchemaManager.create({ ...schemaExample }, []);
+        } catch (error) {
+          functionError = error;
+        } finally {
+          expect(functionError instanceof DuplicateSchemaNameError).to.be.true;
         }
       });
     });
@@ -241,7 +261,7 @@ describe("Schema Manager", () => {
       it("Should delete property", async () => {
         await SchemaManager.deleteProperty(
           schema._id as string,
-          String(schema.schemaProperties[0])
+          schema.schemaProperties[0]._id as string
         );
         const propertyList = await PropertyModel.find().exec();
         expect(propertyList.length).to.equal(0);
@@ -319,12 +339,13 @@ describe("Schema Manager", () => {
         { ...propertyNumberExample },
       ])) as ISchema;
       property = (await PropertyManager.getById(
-        String(schema.schemaProperties[0])
+        schema.schemaProperties[0]._id as string
       )) as IProperty;
     });
 
     afterEach(async () => {
       await SchemaModel.deleteMany({}).exec();
+      await PropertyModel.deleteMany({}).exec();
     });
 
     context("Valid id", () => {
@@ -352,9 +373,7 @@ describe("Schema Manager", () => {
         expect(res).to.have.property("schemaName", NEW_NAME);
         expect(res.schemaProperties.length).to.equals(1);
 
-        const resProperty = (await PropertyManager.getById(
-          String(res.schemaProperties[0])
-        )) as IProperty;
+        const resProperty = res.schemaProperties[0];
 
         expect(String(resProperty._id)).to.not.equals(String(property._id));
         expect(resProperty).to.have.property(
@@ -392,9 +411,10 @@ describe("Schema Manager", () => {
           ...newSchema,
           schemaProperties: [
             {
-              ...property["_doc"],
+              ...propertyNumberExample,
               _id: String(property._id),
               propertyName: NEW_NAME,
+              createdAt: property.createdAt
             },
           ],
         })) as ISchema;
@@ -406,12 +426,9 @@ describe("Schema Manager", () => {
         expect(res).to.have.property("schemaName", NEW_NAME);
         expect(res.schemaProperties.length).to.equals(1);
 
-        const resProperty = (await PropertyManager.getById(
-          String(res.schemaProperties[0])
-        )) as IProperty;
+        const resProperty = res.schemaProperties[0];
 
         expect(String(resProperty._id)).to.equals(String(property._id));
-
         expect(resProperty).to.have.property("propertyName", NEW_NAME);
         expect(resProperty).to.have.property(
           "propertyType",
@@ -437,18 +454,68 @@ describe("Schema Manager", () => {
           "required",
           propertyNumberExample.required
         );
+        expect(JSON.stringify(resProperty.createdAt)).to.equals(
+          JSON.stringify(property.createdAt)
+        );
       });
     });
 
-    context("Property name already exist", () => {
-      it("Should throw an PropertyNameAlreadyExist", async () => {
+    context("Duplicate property names", () => {
+      it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
-          (await SchemaManager.updateById(schema._id as string, {...newSchema, schemaProperties: [{ ...propertyNumberExample }, { ...propertyNumberExample }]})) as ISchema
+          (await SchemaManager.updateById(schema._id as string, {
+            ...newSchema,
+            schemaProperties: [
+              { ...propertyNumberExample },
+              { ...propertyNumberExample }
+            ]
+          })) as ISchema
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof PropertyNameAlreadyExistError).to.be.true;
+          expect(functionError instanceof DuplicatePropertyNameError).to.be.true;
+        }
+      });
+    });
+
+    context("Duplicate schema names", () => {
+      const ANOTHER_SCHEMA_NAME = "anotherName";
+
+      before(async () => {
+        await SchemaManager.create({
+          ...schemaExample,
+          schemaName: ANOTHER_SCHEMA_NAME
+        }, []);
+      });
+
+      after(async () => {
+        await SchemaModel.deleteMany({}).exec();
+      });
+
+      it("Should throw an DuplicateSchemaNameError", async () => {
+        let functionError: Object = {};
+        try {
+          await SchemaManager.updateById(schema._id as string, {
+            ...schemaExample,
+            schemaName: ANOTHER_SCHEMA_NAME
+          });
+        } catch (error) {
+          functionError = error;
+        } finally {
+          expect(functionError instanceof DuplicateSchemaNameError).to.be.true;
+          expect((await PropertyModel.find({}).exec()).length).to.equal(schema.schemaProperties.length);
+          const prevProperty = {
+            ...(await PropertyModel.findById(property._id).exec() as Object)['_doc'],
+            updatedAt: undefined,
+            createdAt: undefined
+          };
+          const updatedProperty = {
+            ...(schema.schemaProperties[0] as Object)['_doc'],
+            updatedAt: undefined,
+            createdAt: undefined
+          };
+          expect(JSON.stringify(prevProperty)).to.equal(JSON.stringify(updatedProperty));
         }
       });
     });
@@ -484,9 +551,9 @@ describe("Schema Manager", () => {
         let functionError: Object = {};
         try {
           const invalidProperty: IProperty = {
-              ...propertyNumberExample,
-              propertyType: "f",
-            },
+            ...propertyNumberExample,
+            propertyType: "f",
+          },
             schemaWithInvalidProp: ISchema = {
               ...newSchema,
               schemaProperties: [invalidProperty],

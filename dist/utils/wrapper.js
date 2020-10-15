@@ -6,9 +6,9 @@ exports.wrapAsync = (func) => {
         func(req, res, next).catch(next);
     };
 };
-exports.wrapAsyncPermissions = (func, number) => {
+exports.wrapAsyncPermissions = (func, permission) => {
     return (req, res, next) => {
-        func(req, res, next, number).catch(next);
+        func(req, res, next, permission).catch(next);
     };
 };
 //# sourceMappingURL=wrapper.js.map

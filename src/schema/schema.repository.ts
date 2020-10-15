@@ -6,8 +6,8 @@ export default class SchemaRepository {
         return SchemaModel.create(schema);
     }
 
-    static getById(_id: string): Promise<ISchema | null> {
-        return SchemaModel.findById(_id).exec();
+    static async getById(_id: string): Promise<ISchema | null> {
+        return await SchemaModel.findOne({ _id }).populate('schemaProperties').exec();
     }
 
     static deleteById(_id: string): Promise<ISchema | null> {
@@ -22,7 +22,7 @@ export default class SchemaRepository {
         ).exec();
     }
 
-    static getAll(): Promise<ISchema[] | null> {
-        return SchemaModel.find().exec();
+    static async getAll(): Promise<ISchema[] | null> {
+        return await SchemaModel.find().populate('schemaProperties').exec();
     }
 }

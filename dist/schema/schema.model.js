@@ -32,13 +32,9 @@ const SchemaSchema = new mongoose.Schema({
     },
     schemaProperties: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Property',
+            ref: index_1.default.mongo.propertyCollectionName,
             required: true
         }],
-    permissions: {
-        type: String,
-        required: true
-    },
     createdAt: {
         type: Date,
         required: true

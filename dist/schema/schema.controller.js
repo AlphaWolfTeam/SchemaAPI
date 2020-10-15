@@ -21,13 +21,13 @@ class SchemaController {
             try {
                 const schema = {
                     schemaName: req.body.schemaName,
-                    schemaProperties: [],
-                    permissions: req.body.permissions,
-                    createdAt: req.body.createdAt,
-                    updatedAt: req.body.updatedAt,
+                    schemaProperties: []
                 };
                 const createdSchema = yield schema_manager_1.default.create(schema, req.body.schemaProperties);
-                rabbit_1.sendDataToRabbit({ method: 'create schema', schema: createdSchema });
+                rabbit_1.sendDataToRabbit({
+                    method: 'create schema',
+                    schema: createdSchema
+                });
                 res.json(createdSchema);
             }
             catch (error) {
@@ -40,7 +40,11 @@ class SchemaController {
             try {
                 const prevSchema = yield schema_manager_1.default.getById(req.params.id);
                 const updatedSchema = yield schema_manager_1.default.updateById(req.params.id, req.body);
-                rabbit_1.sendDataToRabbit({ method: 'update schema', schema: updatedSchema, prevSchemaName: prevSchema.schemaName });
+                rabbit_1.sendDataToRabbit({
+                    method: 'update schema',
+                    schema: updatedSchema,
+                    prevSchemaName: prevSchema.schemaName
+                });
                 res.json(updatedSchema);
             }
             catch (error) {
@@ -53,7 +57,10 @@ class SchemaController {
             try {
                 const schemaToDelete = yield schema_manager_1.default.getById(req.params.id);
                 yield schema_manager_1.default.deleteSchema(req.params.id);
-                rabbit_1.sendDataToRabbit({ method: 'delete schema', schemaName: schemaToDelete.schemaName });
+                rabbit_1.sendDataToRabbit({
+                    method: 'delete schema',
+                    schemaName: schemaToDelete.schemaName
+                });
                 res.end();
             }
             catch (error) {
@@ -67,7 +74,11 @@ class SchemaController {
                 const schema = yield schema_manager_1.default.getById(req.params.id);
                 const property = yield property_manager_1.default.getById(req.params.propertyId);
                 yield schema_manager_1.default.deleteProperty(req.params.id, req.params.propertyId);
-                rabbit_1.sendDataToRabbit({ method: 'delete property', schemaName: schema.schemaName, propertyName: property.propertyName });
+                rabbit_1.sendDataToRabbit({
+                    method: 'delete property',
+                    schemaName: schema.schemaName,
+                    propertyName: property.propertyName
+                });
                 res.end();
             }
             catch (error) {

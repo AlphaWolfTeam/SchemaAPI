@@ -349,14 +349,14 @@ describe("String validation object", () => {
       });
     });
 
-    context("MustNotIncludeChars", () => {
+    context("MustNotInclude", () => {
       context("Invalid default value ", () => {
         it("Should throw an DefaultValueIsNotValidError", async () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{mustNotIncludeChars:['h', 'e']},
+              validation:{mustNotInclude:['h', 'e']},
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -376,7 +376,7 @@ describe("String validation object", () => {
             const invalidProperty: IProperty = {
               ...propertyStringExample, 
               defaultValue: undefined,
-              validation:{mustNotIncludeChars:['h', 'e']},
+              validation:{mustNotInclude:['h', 'e']},
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
