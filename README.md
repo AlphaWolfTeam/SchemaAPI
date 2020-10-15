@@ -88,7 +88,7 @@
         "type": "array",
         "items": { "type": "string" }
         },
-        "mustNotIncludeChars": {
+        "mustNotInclude": {
         "type": "array",
         "items": { "type": "string" }
         },
@@ -135,22 +135,34 @@ Response body:
     [
         {
             "schemaProperties": [
-                "5f60f0b30f0b504044b149bb"
+              {
+                "enum": [],
+                "_id": "5f60f0b30f0b504044b149bb",
+                "propertyName": "property1",
+                "propertyType": "Date",
+                "isUnique": true,
+                "index": true,
+                "required": true,
+                "validation": {
+                    "after": "2013-06-30T00:00:00.000Z"
+                },
+                "createdAt": "2020-10-15T13:07:02.134Z",
+                "updatedAt": "2020-10-15T13:07:02.134Z",
+                "__v": 0
+              }
             ],
             "_id": "5f60f0b30f0b504044b149bc",
             "schemaName": "Schema1",
-            "createdAt": "2013-10-01T00:00:00.000Z",
-            "updatedAt": "2013-10-01T00:00:00.000Z",
+            "createdAt": "2020-10-15T13:07:02.134Z",
+            "updatedAt": "2020-10-15T13:07:02.134Z",
             "__v": 0
         },
         {
-            "schemaProperties": [
-                "5f60f0b30f0b504044b149bc"
-            ],
-            "_id": "5f60f0b30f0b504044b149bd",
+            "schemaProperties": [],
+            "_id": "5f60f0b30f0b504044b149be",
             "schemaName": "Schema2",
-            "createdAt": "2013-10-01T00:00:00.000Z",
-            "updatedAt": "2013-10-01T00:00:00.000Z",
+            "createdAt": "2020-10-01T00:00:00.000Z",
+            "updatedAt": "2020-10-01T00:00:00.000Z",
             "__v": 0
         }
     ]
@@ -161,12 +173,26 @@ Response body:
 
     {
         "schemaProperties": [
-            "5f60f0b30f0b504044b149bb"
+          {
+            "enum": [],
+            "_id": "5f60f0b30f0b504044b149bb",
+            "propertyName": "property1",
+            "propertyType": "Date",
+            "isUnique": true,
+            "index": true,
+            "required": true,
+            "validation": {
+              "after": "2013-06-30T00:00:00.000Z"
+            },
+            "createdAt": "2020-10-15T13:07:02.134Z",
+            "updatedAt": "2020-10-15T13:07:02.134Z",
+            "__v": 0
+          }
         ],
         "_id": "5f60f0b30f0b504044b149bc",
         "schemaName": "Schema1",
-        "createdAt": "2013-10-01T00:00:00.000Z",
-        "updatedAt": "2013-10-01T00:00:00.000Z",
+        "createdAt": "2020-10-15T13:07:02.134Z",
+        "updatedAt": "2020-10-15T13:07:02.134Z",
         "__v": 0
     }
     
@@ -176,13 +202,12 @@ Response body:
 Request body:
 
     {
-     "schemaName": "Schema1",
+     "schemaName": "Schema3",
      "schemaProperties":[
         {
            "propertyName":"property1",
            "propertyType":"Number",
            "defaultValue":1,
-           "propertyRef":"property ref",
            "enum":[
               1,
               2,
@@ -192,6 +217,14 @@ Request body:
            "index":true,
            "required":true,
            "validation":{ "biggerThan" : 0 }
+        },
+        {
+           "propertyName":"property2",
+           "propertyType":"ObjectId",
+           "propertyRef":"Schema1",
+           "isUnique":true,
+           "index":true,
+           "required":true
         }
       ],
     }
@@ -204,11 +237,10 @@ Request body:
      "schemaName": "NewSchema1",
      "schemaProperties":[
         {
-            "_id":"5f75b813d797f412546efbbd",
-           "propertyName":"updateProperty",
+           "_id":"5f60f0b30f0b504044b149bb",
+           "propertyName":"updateProperty1",
            "propertyType":"Number",
            "defaultValue":1,
-           "propertyRef":"property ref",
            "enum":[
               1,
               2,
@@ -224,7 +256,6 @@ Request body:
            "propertyName":"newProperty",
            "propertyType":"Number",
            "defaultValue":1,
-           "propertyRef":"property ref",
            "enum":[
               1,
               2,

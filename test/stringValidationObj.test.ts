@@ -2,9 +2,7 @@ import chai from "chai";
 import mongoose from "mongoose";
 import config from "../src/config/index";
 import IProperty from "../src/property/property.interface";
-import {
-  propertyStringExample,
-} from "./dataExamples";
+import { propertyStringExample } from "./dataExamples";
 import PropertyManager from "../src/property/property.manager";
 import {
   DefaultValueIsNotValidError,
@@ -36,7 +34,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{longerThan:8},
+              validation: { longerThan: 8 },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -54,9 +52,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{longerThan:8},
+              validation: { longerThan: 8 },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -76,7 +74,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{shorterThan:1},
+              validation: { shorterThan: 1 },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -94,9 +92,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{shorterThan:1},
+              validation: { shorterThan: 1 },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -116,7 +114,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{length:8},
+              validation: { length: 8 },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -134,9 +132,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{length:8},
+              validation: { length: 8 },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -156,7 +154,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{equalsTo:"b"},
+              validation: { equalsTo: "b" },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -174,9 +172,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{equalsTo:"b"},
+              validation: { equalsTo: "b" },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -196,7 +194,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{differFrom:['hello']},
+              validation: { differFrom: ["hello"] },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -214,9 +212,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{differFrom:['hello']},
+              validation: { differFrom: ["hello"] },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -236,7 +234,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{startsWith:'b'},
+              validation: { startsWith: "b" },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -254,9 +252,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{startsWith:'b'},
+              validation: { startsWith: "b" },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -276,7 +274,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{endsWith:"b"},
+              validation: { endsWith: "b" },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -294,9 +292,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{endsWith:"b"},
+              validation: { endsWith: "b" },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -316,7 +314,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{includes:['b','c']},
+              validation: { includes: ["b", "c"] },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -334,9 +332,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{includes:['b','c']},
+              validation: { includes: ["b", "c"] },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -349,14 +347,14 @@ describe("String validation object", () => {
       });
     });
 
-    context("MustNotIncludeChars", () => {
+    context("MustNotInclude", () => {
       context("Invalid default value ", () => {
         it("Should throw an DefaultValueIsNotValidError", async () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{mustNotIncludeChars:['h', 'e']},
+              validation: { mustNotInclude: ["h", "e"] },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -374,9 +372,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{mustNotIncludeChars:['h', 'e']},
+              validation: { mustNotInclude: ["h", "e"] },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -396,7 +394,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{isPhoneNumber: true},
+              validation: { isPhoneNumber: true },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -414,9 +412,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{isPhoneNumber: true},
+              validation: { isPhoneNumber: true },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -436,7 +434,7 @@ describe("String validation object", () => {
           try {
             const invalidProperty: IProperty = {
               ...propertyStringExample,
-              validation:{isEmail: true},
+              validation: { isEmail: true },
               enum: undefined,
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
@@ -454,9 +452,9 @@ describe("String validation object", () => {
           let functionError: Object = {};
           try {
             const invalidProperty: IProperty = {
-              ...propertyStringExample, 
+              ...propertyStringExample,
               defaultValue: undefined,
-              validation:{isEmail: true},
+              validation: { isEmail: true },
             };
             (await PropertyManager.create(invalidProperty)) as IProperty;
           } catch (error) {
@@ -471,20 +469,19 @@ describe("String validation object", () => {
   });
 
   context("Invalid validation object", () => {
-      it("Should throw an InvalidValueInPropertyError", async () => {
-        let functionError: Object = {};
-        try {
-          const invalidProperty: IProperty = {
-            ...propertyStringExample,
-            validation: { length: "hello" },
-          };
-          (await PropertyManager.create(invalidProperty)) as IProperty;
-        } catch (error) {
-          functionError = error;
-        } finally {
-          expect(functionError instanceof InvalidValueInPropertyError).to.be
-            .true;
-        }
-      });
+    it("Should throw an InvalidValueInPropertyError", async () => {
+      let functionError: Object = {};
+      try {
+        const invalidProperty: IProperty = {
+          ...propertyStringExample,
+          validation: { length: "hello" },
+        };
+        (await PropertyManager.create(invalidProperty)) as IProperty;
+      } catch (error) {
+        functionError = error;
+      } finally {
+        expect(functionError instanceof InvalidValueInPropertyError).to.be.true;
+      }
+    });
   });
 });

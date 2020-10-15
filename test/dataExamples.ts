@@ -1,8 +1,8 @@
-import ISchema from '../src/schema/schema.interface';
-import IProperty from '../src/property/property.interface';
+import ISchema from "../src/schema/schema.interface";
+import IProperty from "../src/property/property.interface";
 
 export const schemaExample: ISchema = {
-  schemaName: 'schema name',
+  schemaName: "schema name",
   schemaProperties: [],
 };
 export const propertyNumberExample: IProperty = {
@@ -13,7 +13,7 @@ export const propertyNumberExample: IProperty = {
   isUnique: true,
   index: true,
   required: true,
-  validation: {biggerThan: 0}
+  validation: { biggerThan: 0 },
 };
 
 export const propertyStringExample: IProperty = {
@@ -24,7 +24,7 @@ export const propertyStringExample: IProperty = {
   isUnique: true,
   index: true,
   required: true,
-  validation: {length: 5}
+  validation: { length: 5 },
 };
 
 export const propertyDateExample: IProperty = {
@@ -35,7 +35,7 @@ export const propertyDateExample: IProperty = {
   isUnique: true,
   index: true,
   required: true,
-  validation: {after: "2000-10-01T00:00:00.000Z"}
+  validation: { after: "2000-10-01T00:00:00.000Z" },
 };
 
 export const propertyBooleanExample: IProperty = {
@@ -45,7 +45,7 @@ export const propertyBooleanExample: IProperty = {
   enum: [true, false],
   isUnique: true,
   index: true,
-  required: true
+  required: true,
 };
 
 export const propertyObjectIdExample: IProperty = {
@@ -53,8 +53,8 @@ export const propertyObjectIdExample: IProperty = {
   propertyType: "ObjectId",
   isUnique: true,
   index: true,
-  required: true
+  required: true,
 };
-export const ID_NOT_EXIST = '111111111111111111111111';
-export const INVALID_ID = 'invalidId';
-export const INVALID_REF_NAME = 'invalid Schema Ref name';
+export const ID_NOT_EXIST = "111111111111111111111111";
+export const INVALID_ID = "invalidId";
+export const INVALID_REF_NAME = "invalid Schema Ref name";

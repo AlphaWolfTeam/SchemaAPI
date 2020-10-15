@@ -15,7 +15,7 @@ export const stringValidationSchema = {
       type: "array",
       items: { type: "string" },
     },
-    mustNotIncludeChars: {
+    mustNotInclude: {
       type: "array",
       items: { type: "string" },
     },
@@ -93,9 +93,9 @@ export const isStringValueValid = (
     }
   }
 
-  if (validateObj["mustNotIncludeChars"]) {
-    for (let i = 0; i < validateObj["mustNotIncludeChars"].length; i++) {
-      if (string.includes(validateObj["mustNotIncludeChars"][i])) {
+  if (validateObj["mustNotInclude"]) {
+    for (let i = 0; i < validateObj["mustNotInclude"].length; i++) {
+      if (string.includes(validateObj["mustNotInclude"][i])) {
         return false;
       }
     }

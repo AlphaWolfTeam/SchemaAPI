@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
+exports.PropertyRefExistError = exports.PropertyRefNotExistError = exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
 class SchemaNotFoundError extends application_1.UserError {
     constructor() {
@@ -38,12 +38,6 @@ class InvalidValueInSchemaError extends application_1.UserError {
     }
 }
 exports.InvalidValueInSchemaError = InvalidValueInSchemaError;
-class PropertyNameAlreadyExistError extends application_1.UserError {
-    constructor() {
-        super('Property name is already exist in this schema', 404);
-    }
-}
-exports.PropertyNameAlreadyExistError = PropertyNameAlreadyExistError;
 class DuplicatePropertyNameError extends application_1.UserError {
     constructor() {
         super('Property names are not unique in schema properties', 404);
@@ -74,4 +68,16 @@ class PermissionDeniedError extends application_1.UserError {
     }
 }
 exports.PermissionDeniedError = PermissionDeniedError;
+class PropertyRefNotExistError extends application_1.UserError {
+    constructor() {
+        super(`Property ref not exist in this property`, 404);
+    }
+}
+exports.PropertyRefNotExistError = PropertyRefNotExistError;
+class PropertyRefExistError extends application_1.UserError {
+    constructor() {
+        super(`Property ref shouldn't be exist in this property`, 404);
+    }
+}
+exports.PropertyRefExistError = PropertyRefExistError;
 //# sourceMappingURL=user.js.map
