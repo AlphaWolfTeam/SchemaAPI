@@ -33,8 +33,7 @@ const validator = new Validator();
 export default class PropertyManager {
   static async create(property: IProperty): Promise<IProperty | null> {
     await this.validateProperty(property);
-    return PropertyRepository.create({
-      ...property,
+    return PropertyRepository.create({...property,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).catch((error) => {
@@ -81,69 +80,79 @@ export default class PropertyManager {
       !this.isValidationObjValid(property.propertyType, property.validation)) {
       throw new InvalidValueInPropertyError(property.propertyName);
     }
-    if (property.propertyType === "ObjectId") {
-      if (!property.propertyRef) {
-        throw new PropertyRefNotExistError()
-      } else if (!await this.isSchemaExist(property.propertyRef)) {
-        throw new SchemaNotFoundError()
-      }
+    
+ if (property.propertyType === "ObjectId") {
+   await this.validateObjectId(property);
     } else if (property.propertyRef) {
       throw new PropertyRefExistError();
     }
+    
     if (property.defaultValue !== undefined) {
-      await this.validateDefaultValue(property);
+    await this.validateDefaultValue(property)
     }
-    if (property.enum) {
+    
+     if (property.enum !== undefined) {
       await this.validateEnum(property);
     }
   }
 
-  private static async validateDefaultValue(property: IProperty): Promise<void> {
-    property.defaultValue = await this.convertValue(
-      property.defaultValue,
-      property.propertyType,
-      property.propertyName
-    );
-    if (
-      property.validation &&
-      !this.isValueValid(
-        property.validation,
-        property.propertyType,
-        property.defaultValue
-      )
-    ) {
-      throw new DefaultValueIsNotValidError(property.propertyName);
-    }
-    if (!property.enum?.includes(property.defaultValue)) {
-      throw new InvalidValueInPropertyError(property.propertyName);
-    }
+  static async validateDefaultValue(property: IProperty): Promise<void>{
+      property.defaultValue = await this.convertValue(property.defaultValue,property.propertyType,property.propertyName);
+      if (property.validation &&!this.isValueValid(property.validation,property.propertyType,property.defaultValue)) {
+        throw new DefaultValueIsNotValidError(property.propertyName);
+      }
+      if (property.enum &&!property.enum.includes(property.defaultValue)) {
+        throw new InvalidValueInPropertyError(property.propertyName);
+      }
   }
 
-  private static async validateEnum(property: IProperty): Promise<void> {
-    property.enum = await Promise.all(
-      (property.enum as any[]).map((value) => {
-        return this.convertValue(
-          value,
-          property.propertyType,
-          property.propertyName
+  static async validateObjectId(property: IProperty): Promise<void>{
+     if (!property.propertyRef) {
+        throw new PropertyRefNotExistError()
+      } else if (!await this.isSchemaExist(property.propertyRef)) {
+        throw new SchemaNotFoundError()
+    }  
+  }
+
+  static async validateEnum(property: IProperty) : Promise<void>{
+      property.enum = await Promise.all(
+        property.enum.map((value) => {
+          return this.convertValue(value, property.propertyType,property.propertyName);
+        })
+      );
+      if (property.validation) {
+        property.enum.forEach((value: any) => {
+          if (
+            !this.isValueValid(
+              property.validation as Object,
+              property.propertyType,
+              value
+            )
+          ) {
+            throw new EnumValuesAreNotValidError(property.propertyName);
+          }
+        });
+      }
+  }
+
+  static isValidationObjValid(propertyType: string, validationObj: Object): boolean {
+    switch (propertyType) {
+      case "Number":
+        return validator.validate(validationObj, numberValidationSchema).valid;
+      case "String":
+        return validator.validate(validationObj, stringValidationSchema).valid;
+      case "Date":
+        return (
+          validator.validate(validationObj, dateValidationSchema).valid &&
+          isDateValidationObjValid(validationObj)
         );
-      })
-    );
-    if (property.validation) {
-      property.enum.forEach((value: any) => {
-        if (
-          !this.isValueValid(
-            property.validation as Object,
-            property.propertyType,
-            value
-          )
-        ) {
-          throw new EnumValuesAreNotValidError(property.propertyName);
-        }
-      });
+
+      default:
+        return false;
     }
   }
 
+ 
   private static async convertValue(
     value: any,
     newType: String,

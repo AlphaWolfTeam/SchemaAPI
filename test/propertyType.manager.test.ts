@@ -47,28 +47,13 @@ describe("Property Type Manager", () => {
     context("Valid types", () => {
       context("Valid number type", () => {
         it("Should create property", async () => {
-          const createdProperty = (await PropertyManager.create({
-            ...propertyNumberExample,
-          })) as IProperty;
-
+          const createdProperty = (await PropertyManager.create(propertyNumberExample)) as IProperty;
           expect(createdProperty).to.exist;
           expect(createdProperty).to.have.property("_id");
-          expect(createdProperty).to.have.property(
-            "propertyName",
-            propertyNumberExample.propertyName
-          );
-          expect(createdProperty).to.have.property(
-            "propertyType",
-            propertyNumberExample.propertyType
-          );
-          expect(createdProperty).to.have.property(
-            "defaultValue",
-            propertyNumberExample.defaultValue
-          );
-          expect(createdProperty).to.have.property(
-            "propertyRef",
-            propertyNumberExample.propertyRef
-          );
+          expect(createdProperty).to.have.property("propertyName",propertyNumberExample.propertyName);
+          expect(createdProperty).to.have.property("propertyType",propertyNumberExample.propertyType);
+          expect(createdProperty).to.have.property("defaultValue",propertyNumberExample.defaultValue);
+          expect(createdProperty).to.have.property("propertyRef",propertyNumberExample.propertyRef);
           expect(JSON.stringify(createdProperty.validation)).to.equals(
             JSON.stringify(propertyNumberExample.validation)
           );
@@ -92,9 +77,7 @@ describe("Property Type Manager", () => {
 
       context("Valid string type", () => {
         it("Should create property", async () => {
-          const createdProperty = (await PropertyManager.create({
-            ...propertyStringExample,
-          })) as IProperty;
+          const createdProperty = (await PropertyManager.create(propertyStringExample)) as IProperty;
 
           expect(createdProperty).to.exist;
           expect(createdProperty).to.have.property("_id");
@@ -137,9 +120,7 @@ describe("Property Type Manager", () => {
 
       context("Valid date type", () => {
         it("Should create property", async () => {
-          const createdProperty = (await PropertyManager.create({
-            ...propertyDateExample,
-          })) as IProperty;
+          const createdProperty = (await PropertyManager.create(propertyDateExample)) as IProperty;
 
           expect(createdProperty).to.exist;
           expect(createdProperty).to.have.property("_id");
@@ -182,9 +163,7 @@ describe("Property Type Manager", () => {
 
       context("Valid boolean type", () => {
         it("Should create property", async () => {
-          const createdProperty = (await PropertyManager.create({
-            ...propertyBooleanExample,
-          })) as IProperty;
+          const createdProperty = (await PropertyManager.create(propertyBooleanExample)) as IProperty;
 
           expect(createdProperty).to.exist;
           expect(createdProperty).to.have.property("_id");
@@ -228,10 +207,7 @@ describe("Property Type Manager", () => {
       context("Valid objectId type", () => {
         let schema: ISchema;
         beforeEach(async () => {
-          schema = (await SchemaManager.create(
-            { ...schemaExample },
-            []
-          )) as ISchema;
+          schema = (await SchemaManager.create(schemaExample ,[])) as ISchema;
         });
         afterEach(async () => {
           await SchemaModel.deleteMany({}).exec();
@@ -523,11 +499,7 @@ describe("Property Type Manager", () => {
         context("ObjectId validation", () => {
           let schema: ISchema;
           beforeEach(async () => {
-            schema = (await SchemaManager.create(
-              { ...schemaExample },
-              []
-            )) as ISchema;
-          });
+            schema = (await SchemaManager.create(schemaExample ,[])) as ISchema});
           afterEach(async () => {
             await SchemaModel.deleteMany({}).exec();
           });

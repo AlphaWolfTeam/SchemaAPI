@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PropertyRefExistError = exports.PropertyRefNotExistError = exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
+exports.PropertyRefExistError = exports.PropertyRefNotExistError = exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
 class SchemaNotFoundError extends application_1.UserError {
     constructor() {

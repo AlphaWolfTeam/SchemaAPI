@@ -63,10 +63,7 @@ export default class SchemaManager {
     }
   }
 
-  static async deleteProperty(
-    schemaId: string,
-    propertyId: string
-  ): Promise<void> {
+  static async deleteProperty(schemaId: string, propertyId: string): Promise<void> {
     const schema: ISchema = (await this.getById(schemaId)) as ISchema;
     const propertyIndex = this.getPropertyIndexInList(schema.schemaProperties, propertyId);
     if (propertyIndex > -1) {
@@ -92,10 +89,7 @@ export default class SchemaManager {
     return await SchemaRepository.getAll();
   }
 
-  static async updateById(
-    id: string,
-    schema: ISchema
-  ): Promise<ISchema | null | void> {
+  static async updateById(id: string,schema: ISchema): Promise<ISchema | null | void> {
     const prevSchema: ISchema = (await this.getById(id)) as ISchema;
     const newProperties: IProperty[] = [...schema.schemaProperties];
     const updatedProperties: IProperty[] = [];
@@ -104,15 +98,8 @@ export default class SchemaManager {
     schema.schemaProperties = [];
 
     this.checkIfAllPropertiesUnique(newProperties);
-    await this.updatePrevProperties(
-      prevSchema,
-      newProperties,
-      schema,
-      updatedProperties,
-      deletedProperties
-    );
-    await this.createNewProperties(prevSchema, newProperties, schema, createdProperties);
-
+    await this.updatePrevProperties(prevSchema, newProperties, schema, updatedProperties,  deletedProperties);
+    await this.createNewProperties(prevSchema, newProperties, schema, createdProperties)
     return SchemaRepository.updateById(id, { ...schema, updatedAt: new Date() })
       .catch(async (error: Object) => {
         await this.revertUpdate(createdProperties, updatedProperties, deletedProperties);
@@ -162,10 +149,8 @@ export default class SchemaManager {
     }));
   }
 
-  private static async revertUpdate(
-    createdProperties: IProperty[],
-    updatedProperties: IProperty[],
-    deletedProperties: IProperty[]): Promise<void> {
+
+  private static async revertUpdate(createdProperties: IProperty[], updatedProperties: IProperty[], deletedProperties: IProperty[]  ){
     await Promise.all(createdProperties.map(async (createdProperty) => {
       await PropertyManager.deleteById(createdProperty._id as string);
     }));

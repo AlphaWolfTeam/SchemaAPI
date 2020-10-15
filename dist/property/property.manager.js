@@ -74,10 +74,15 @@ class PropertyManager {
             if (property.propertyType === "ObjectId") {
                 if (!property.propertyRef) {
                     throw new user_1.PropertyRefNotExistError();
+                else if (!(yield this.isSchemaExist(property.propertyRef))) {
+                    throw new user_1.SchemaNotFoundError();
                 }
                 else if (!(yield this.isSchemaExist(property.propertyRef))) {
                     throw new user_1.SchemaNotFoundError();
                 }
+            }
+            else if (property.propertyRef) {
+                throw new user_1.PropertyRefExistError();
             }
             else if (property.propertyRef) {
                 throw new user_1.PropertyRefExistError();
