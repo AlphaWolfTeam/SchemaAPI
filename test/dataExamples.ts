@@ -3,7 +3,7 @@ import IProperty from '../src/property/property.interface';
 
 export const schemaExample: ISchema = {
   schemaName: 'schema name',
-  schemaProperties: [],
+  schemaProperties: []
 };
 export const propertyNumberExample: IProperty = {
   propertyName: "property name",

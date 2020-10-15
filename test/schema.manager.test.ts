@@ -1,7 +1,8 @@
 import {
   SchemaNotFoundError,
   PropertyNotInSchemaError,
-  InvalidValueInPropertyError,DuplicatePropertyNameError, PropertyNameAlreadyExistError
+  InvalidValueInPropertyError,
+  DuplicatePropertyNameError
 } from "../src/utils/errors/user";
 import chai from "chai";
 import mongoose from "mongoose";
@@ -441,14 +442,14 @@ describe("Schema Manager", () => {
     });
 
     context("Property name already exist", () => {
-      it("Should throw an PropertyNameAlreadyExist", async () => {
+      it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
           (await SchemaManager.updateById(schema._id as string, {...newSchema, schemaProperties: [{ ...propertyNumberExample }, { ...propertyNumberExample }]})) as ISchema
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof PropertyNameAlreadyExistError).to.be.true;
+          expect(functionError instanceof DuplicatePropertyNameError).to.be.true;
         }
       });
     });

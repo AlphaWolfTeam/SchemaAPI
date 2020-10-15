@@ -25,17 +25,24 @@ class SchemaManager {
                 throw new user_1.DuplicatePropertyNameError();
             }
             for (let property of schemaProperties) {
-                const createdProperty = (yield property_manager_1.default.create(property));
-                schema.schemaProperties.push(createdProperty);
+                schema.schemaProperties.push((yield property_manager_1.default.create(property).catch((error) => {
+                    schema.schemaProperties.forEach((property) => {
+                        property_manager_1.default.deleteById(property._id);
+                    });
+                    throw error;
+                })));
             }
-            return schema_repository_1.default.create(Object.assign(Object.assign({}, schema), { createdAt: new Date(), updatedAt: new Date() })).catch((error) => {
-                schema.schemaProperties.forEach(property => {
+            return schema_repository_1.default.create(Object.assign(Object.assign({}, schema), { createdAt: new Date(), updatedAt: new Date() }))
+                .catch((error) => {
+                schema.schemaProperties.forEach((property) => {
                     property_manager_1.default.deleteById(property._id);
                 });
                 if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
                     throw new user_1.DuplicateSchemaNameError();
                 }
-                throw new user_2.InvalidValueInSchemaError();
+                else {
+                    throw new user_2.InvalidValueInSchemaError();
+                }
             });
         });
     }
@@ -45,9 +52,9 @@ class SchemaManager {
                 throw new user_2.InvalidIdError();
             });
             if (schema) {
-                schema.schemaProperties.forEach((property) => __awaiter(this, void 0, void 0, function* () {
+                schema.schemaProperties.forEach((property) => {
                     property_manager_1.default.deleteById(String(property));
-                }));
+                });
             }
             else {
                 throw new user_2.SchemaNotFoundError();
@@ -89,12 +96,15 @@ class SchemaManager {
     static updateById(id, schema) {
         return __awaiter(this, void 0, void 0, function* () {
             const prevSchema = (yield this.getById(id));
+            const prevProperties = [];
             const newProperties = [...schema.schemaProperties];
+            const createdProperties = [];
             schema.schemaProperties = [];
             if (!this.isAllPropertiesUnique(newProperties)) {
                 throw new user_1.PropertyNameAlreadyExistError();
             }
-            for (let prevProperty of prevSchema.schemaProperties) {
+            yield Promise.all(prevSchema.schemaProperties.map((prevProperty) => __awaiter(this, void 0, void 0, function* () {
+                prevProperties.push((yield property_manager_1.default.getById(String(prevProperty)))["_doc"]);
                 let newPropertyIndex = newProperties
                     .map((newProperty) => newProperty._id)
                     .indexOf(String(prevProperty));
@@ -105,17 +115,32 @@ class SchemaManager {
                 else {
                     yield property_manager_1.default.deleteById(String(prevProperty));
                 }
-            }
-            for (let newProperty of newProperties) {
+            })));
+            yield Promise.all(newProperties.map((newProperty) => __awaiter(this, void 0, void 0, function* () {
                 let prevPropertyIndex = prevSchema.schemaProperties
                     .map((prevProperty) => String(prevProperty))
                     .indexOf(newProperty._id);
                 if (prevPropertyIndex === -1) {
                     let createdProperty = (yield property_manager_1.default.create(newProperty));
                     schema.schemaProperties.push(createdProperty);
+                    createdProperties.push(createdProperty);
                 }
-            }
-            return schema_repository_1.default.updateById(id, Object.assign(Object.assign({}, schema), { updatedAt: new Date() }));
+            })));
+            return schema_repository_1.default.updateById(id, Object.assign(Object.assign({}, schema), { updatedAt: new Date() }))
+                .catch((error) => {
+                createdProperties.forEach((createdProperty) => {
+                    property_manager_1.default.deleteById(createdProperty._id);
+                });
+                prevProperties.forEach((prevProperty) => {
+                    property_manager_1.default.updateById(prevProperty._id, prevProperty);
+                });
+                if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
+                    throw new user_1.DuplicateSchemaNameError();
+                }
+                else {
+                    throw new user_2.InvalidValueInSchemaError();
+                }
+            });
         });
     }
     static isAllPropertiesUnique(propertyList) {

@@ -35,10 +35,6 @@ const SchemaSchema = new mongoose.Schema({
             ref: 'Property',
             required: true
         }],
-    permissions: {
-        type: String,
-        required: true
-    },
     createdAt: {
         type: Date,
         required: true

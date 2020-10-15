@@ -1,7 +1,6 @@
 import {
   DuplicatePropertyNameError,
   DuplicateSchemaNameError,
-  PropertyNameAlreadyExistError,
   PropertyNotInSchemaError,
 } from "./../utils/errors/user";
 import SchemaRepository from "./schema.repository";
@@ -15,41 +14,44 @@ import {
 } from "../utils/errors/user";
 
 const MONGO_UNIQUE_NAME_CODE: number = 11000;
+
 export default class SchemaManager {
-  static async create(
-    schema: ISchema,
-    schemaProperties: IProperty[])
-    : Promise<ISchema | null> {
+  static async create(schema: ISchema,schemaProperties: IProperty[]): Promise<ISchema | null | void> {
     schema.schemaProperties = [];
-    if (!this.isAllPropertiesUnique(schemaProperties)) {
-      throw new DuplicatePropertyNameError();
-    }
-    for (let property of schemaProperties) {
-      const createdProperty = (await PropertyManager.create(
-        property
-      )) as IProperty;
-      schema.schemaProperties.push(createdProperty as IProperty);
-    }
+    this.checkIfAllPropertiesUnique(schemaProperties)
+    await this.createSchemaProperties(schemaProperties, schema);
+
     return SchemaRepository.create({ ...schema, createdAt: new Date(), updatedAt: new Date() })
-      .catch((error: Object) => {
-        schema.schemaProperties.forEach(property => {
+      .catch(async (error: Object) => {
+        await this.revertCreation(schema)
+        this.handleCreationError(error);
+      });
+  }
+
+  private static async revertCreation(schema: ISchema){
+    schema.schemaProperties.forEach((property: IProperty) => {
+          PropertyManager.deleteById(property._id as string);
+      });  
+  } 
+ 
+
+  private static async createSchemaProperties(schemaProperties : IProperty[],schema:ISchema ):Promise <void>{
+     for (let property of schemaProperties) {
+      schema.schemaProperties.push((await PropertyManager.create(property).catch((error) => {
+        schema.schemaProperties.forEach((property: IProperty) => {
           PropertyManager.deleteById(property._id as string);
         });
-        if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
-          throw new DuplicateSchemaNameError();
-        }
-        throw new InvalidValueInSchemaError();
-
-      });
+        throw error;
+      })) as IProperty);
+    }
   }
 
   static async deleteSchema(id: string): Promise<void> {
     const schema = await SchemaRepository.deleteById(id).catch(() => {
       throw new InvalidIdError();
     });
-
     if (schema) {
-      schema.schemaProperties.forEach(async (property: IProperty) => {
+      schema.schemaProperties.forEach((property: IProperty) => {
         PropertyManager.deleteById(String(property));
       });
     } else {
@@ -57,13 +59,9 @@ export default class SchemaManager {
     }
   }
 
-  static async deleteProperty(
-    schemaId: string,
-    propertyId: string
-  ): Promise<void> {
+  static async deleteProperty(schemaId: string, propertyId: string): Promise<void> {
     const schema: ISchema = (await this.getById(schemaId)) as ISchema;
-    const propertyIndex = schema.schemaProperties
-      .map((property) => String(property))
+    const propertyIndex = schema.schemaProperties.map((property) => String(property))
       .indexOf(propertyId);
     if (propertyIndex > -1) {
       schema.schemaProperties.splice(propertyIndex, 1);
@@ -88,51 +86,82 @@ export default class SchemaManager {
     return await SchemaRepository.getAll();
   }
 
-  static async updateById(
-    id: string,
-    schema: ISchema
-  ): Promise<ISchema | null> {
+  static async updateById(id: string,schema: ISchema): Promise<ISchema | null | void> {
     const prevSchema: ISchema = (await this.getById(id)) as ISchema;
-    const newProperties = [...schema.schemaProperties];
+    const newProperties: IProperty[] = [...schema.schemaProperties];
+    const updatedProperties: IProperty[] = [];
+    const createdProperties: IProperty[] = [];
+    const deletedProperties: IProperty[] = [];
     schema.schemaProperties = [];
 
-    if (!this.isAllPropertiesUnique(newProperties)) {
-      throw new PropertyNameAlreadyExistError();
-    }
-    for (let prevProperty of prevSchema.schemaProperties) {
-      let newPropertyIndex = newProperties
-        .map((newProperty) => newProperty._id)
-        .indexOf(String(prevProperty));
+    this.checkIfAllPropertiesUnique(newProperties);
+    await this.updatePrevProperties(prevSchema, newProperties, schema, updatedProperties,  deletedProperties);
+    await this.createNewProperties(prevSchema, newProperties, schema, createdProperties)
+
+    return SchemaRepository.updateById(id, { ...schema, updatedAt: new Date() })
+      .catch(async (error: Object) => {
+        await this.revertUpdate(createdProperties, updatedProperties, deletedProperties);
+        this.handleCreationError(error);
+      });
+  }
+
+  private static async updatePrevProperties(prevSchema: ISchema, newProperties: IProperty[], schema: ISchema, updatedProperties: IProperty[], deletedProperties: IProperty[]){
+    await Promise.all(prevSchema.schemaProperties.map(async (prevProperty) => {
+      let newPropertyIndex = newProperties.map((newProperty) => newProperty._id).indexOf(String(prevProperty));
       if (newPropertyIndex !== -1) {
         let updatedProperty = (await PropertyManager.updateById(
           String(prevProperty),
           newProperties[newPropertyIndex]
         )) as IProperty;
         schema.schemaProperties.push(updatedProperty);
+        updatedProperties.push((await PropertyManager.getById(String(prevProperty)) as Object)["_doc"]);
       } else {
-        await PropertyManager.deleteById(String(prevProperty));
+        deletedProperties.push((await PropertyManager.deleteById(String(prevProperty)) as Object)["_doc"]);
       }
-    }
+    }));
+  }
 
-    for (let newProperty of newProperties) {
-      let prevPropertyIndex = prevSchema.schemaProperties
-        .map((prevProperty) => String(prevProperty))
-        .indexOf(newProperty._id as string);
+  private static async createNewProperties(prevSchema: ISchema, newProperties: IProperty[], schema: ISchema, createdProperties: IProperty[]){
+    await Promise.all(newProperties.map(async (newProperty) => {
+      let prevPropertyIndex = prevSchema.schemaProperties.map((prevProperty) => String(prevProperty)).indexOf(newProperty._id as string);
       if (prevPropertyIndex === -1) {
         let createdProperty = (await PropertyManager.create(
           newProperty
         )) as IProperty;
         schema.schemaProperties.push(createdProperty);
+        createdProperties.push(createdProperty);
       }
-    }
-
-    return SchemaRepository.updateById(id, { ...schema, updatedAt: new Date() });
+    }));
   }
 
-  static isAllPropertiesUnique(propertyList: IProperty[]): boolean {
+  private static async revertUpdate(createdProperties: IProperty[], updatedProperties: IProperty[], deletedProperties: IProperty[]  ){
+    await Promise.all(createdProperties.map(async (createdProperty) => {
+      await PropertyManager.deleteById(createdProperty._id as string);
+    }));
+    await Promise.all(updatedProperties.map(async (updatedProperty) => {
+      await PropertyManager.updateById(updatedProperty._id as string, updatedProperty);
+    }));
+    await Promise.all(deletedProperties.map(async (deletedProperty) => {
+      await PropertyManager.create(deletedProperty);
+    }));
+  }
+
+  private static checkIfAllPropertiesUnique(propertyList: IProperty[]): void {
     const nameArray = propertyList.map((property) => property.propertyName);
-    return nameArray.every(
+    const isAllPropertiesUnique = nameArray.every(
       (name) => nameArray.indexOf(name) === nameArray.lastIndexOf(name)
     );
+
+    if(!isAllPropertiesUnique){
+      throw new DuplicatePropertyNameError()
+    }
+  }
+
+  private static handleCreationError(error: Object): void {
+    if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
+      throw new DuplicateSchemaNameError();
+    } else {
+      throw new InvalidValueInSchemaError();
+    }
   }
 }

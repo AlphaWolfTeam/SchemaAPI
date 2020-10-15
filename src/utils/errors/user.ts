@@ -36,12 +36,6 @@ export class InvalidValueInSchemaError extends UserError {
     }
 }
 
-export class PropertyNameAlreadyExistError extends UserError {
-    constructor() {
-        super('Property name is already exist in this schema', 404);
-    }
-}
-
 export class DuplicatePropertyNameError extends UserError {
     constructor() {
         super('Property names are not unique in schema properties', 404);

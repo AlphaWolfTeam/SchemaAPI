@@ -20,7 +20,7 @@ const number_validation_1 = require("./validation/number.validation");
 const jsonschema_1 = require("jsonschema");
 const string_validation_1 = require("./validation/string.validation");
 const date_validation_1 = require("./validation/date.validation");
-const schema_repository_1 = __importDefault(require("../schema/schema.repository"));
+const schema_manager_1 = __importDefault(require("../schema/schema.manager"));
 const validator = new jsonschema_1.Validator();
 class PropertyManager {
     static create(property) {
@@ -67,15 +67,29 @@ class PropertyManager {
     }
     static validateProperty(property) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (property.validation && !this.isValidationObjValid(property.propertyType, property.validation)) {
+            if (property.validation &&
+                !this.isValidationObjValid(property.propertyType, property.validation)) {
                 throw new user_1.InvalidValueInPropertyError(property.propertyName);
             }
-            if (property.defaultValue !== undefined) {
-                property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
-                if (property.validation && !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
-                    throw new user_1.DefaultValueIsNotValidError(property.propertyName);
+            if (property.propertyType === "ObjectId") {
+                if (!property.propertyRef) {
+                    throw new user_1.PropertyRefNotExistError();
+                }
+                else if (!(yield this.isSchemaExist(property.propertyRef))) {
+                    throw new user_1.SchemaNotFoundError();
                 }
             }
+            else if (property.propertyRef) {
+                throw new user_1.PropertyRefExistError();
+            }
+            if (property)
+                if (property.defaultValue !== undefined) {
+                    property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
+                    if (property.validation &&
+                        !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
+                        throw new user_1.DefaultValueIsNotValidError(property.propertyName);
+                    }
+                }
             if (property.enum) {
                 property.enum = yield Promise.all(property.enum.map((value) => {
                     return this.convertValue(value, property.propertyType, property.propertyName);
@@ -102,7 +116,8 @@ class PropertyManager {
             case "String":
                 return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
             case "Date":
-                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid && date_validation_1.isDateValidationObjValid(validationObj);
+                return (validator.validate(validationObj, date_validation_1.dateValidationSchema).valid &&
+                    date_validation_1.isDateValidationObjValid(validationObj));
             default:
                 return false;
         }
@@ -137,9 +152,6 @@ class PropertyManager {
                     if (!mongoose_1.default.Types.ObjectId.isValid(value)) {
                         throw new user_1.InvalidValueInPropertyError(propertyName);
                     }
-                    else if (!(yield this.isSchemaExist(value))) {
-                        throw new user_1.SchemaNotFoundError();
-                    }
                     else {
                         return value;
                     }
@@ -161,10 +173,9 @@ class PropertyManager {
     static isValidBoolean(value) {
         return String(value) === "false" || String(value) === "true";
     }
-    static isSchemaExist(objectId) {
+    static isSchemaExist(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            const returnedSchema = yield schema_repository_1.default.getById(String(objectId));
-            return returnedSchema !== null;
+            return (yield schema_manager_1.default.getAll()).map((schema) => schema.schemaName).includes(name);
         });
     }
 }

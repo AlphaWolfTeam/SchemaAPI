@@ -33,8 +33,7 @@ const validator = new Validator();
 export default class PropertyManager {
   static async create(property: IProperty): Promise<IProperty | null> {
     await this.validateProperty(property);
-    return PropertyRepository.create({
-      ...property,
+    return PropertyRepository.create({...property,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).catch((error) => {

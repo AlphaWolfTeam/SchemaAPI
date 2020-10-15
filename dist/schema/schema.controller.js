@@ -21,10 +21,7 @@ class SchemaController {
             try {
                 const schema = {
                     schemaName: req.body.schemaName,
-                    schemaProperties: [],
-                    permissions: req.body.permissions,
-                    createdAt: req.body.createdAt,
-                    updatedAt: req.body.updatedAt,
+                    schemaProperties: []
                 };
                 const createdSchema = yield schema_manager_1.default.create(schema, req.body.schemaProperties);
                 rabbit_1.sendDataToRabbit({ method: 'create schema', schema: createdSchema });
