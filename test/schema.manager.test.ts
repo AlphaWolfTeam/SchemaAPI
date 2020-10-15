@@ -2,7 +2,7 @@ import {
   SchemaNotFoundError,
   PropertyNotInSchemaError,
   InvalidValueInPropertyError,
-  DuplicatePropertyNameError
+  DuplicatePropertyNameError,
 } from "../src/utils/errors/user";
 import chai from "chai";
 import mongoose from "mongoose";
@@ -43,17 +43,17 @@ describe("Schema Manager", () => {
       await SchemaModel.deleteMany({}).exec();
     });
 
-    context("Valid types", () => {
+    context("Valid Schema", () => {
       it("Should create schema", async () => {
-        const res = (await SchemaManager.create(
+        const schema = (await SchemaManager.create(
           { ...schemaExample },
           []
         )) as ISchema;
 
-        expect(res).to.exist;
-        expect(res).to.have.property("_id");
-        expect(res).to.have.property("schemaName", schemaExample.schemaName);
-        expect(JSON.stringify(res.schemaProperties)).to.equals(
+        expect(schema).to.exist;
+        expect(schema).to.have.property("_id");
+        expect(schema).to.have.property("schemaName", schemaExample.schemaName);
+        expect(JSON.stringify(schema.schemaProperties)).to.equals(
           JSON.stringify(schemaExample.schemaProperties)
         );
       });
@@ -63,11 +63,15 @@ describe("Schema Manager", () => {
       it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
-          await SchemaManager.create({ ...schemaExample },[{ ...propertyNumberExample }, { ...propertyNumberExample }]);
+          await SchemaManager.create({ ...schemaExample }, [
+            { ...propertyNumberExample },
+            { ...propertyNumberExample },
+          ]);
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof DuplicatePropertyNameError).to.be.true;
+          expect(functionError instanceof DuplicatePropertyNameError).to.be
+            .true;
         }
       });
     });
@@ -75,7 +79,6 @@ describe("Schema Manager", () => {
 
   describe("Get by id", () => {
     let schema: ISchema;
-
     beforeEach(async () => {
       schema = (await SchemaManager.create(
         { ...schemaExample },
@@ -89,20 +92,19 @@ describe("Schema Manager", () => {
 
     context("Valid id", () => {
       it("Should return schema", async () => {
-        const res = (await SchemaManager.getById(
+        const newSchema = (await SchemaManager.getById(
           schema._id as string
         )) as ISchema;
-
-        expect(res).to.exist;
-        expect(res).to.have.property("_id");
-        expect(res).to.have.property("schemaName", schema.schemaName);
-        expect(JSON.stringify(res.schemaProperties)).to.equals(
+        expect(newSchema).to.exist;
+        expect(newSchema).to.have.property("_id");
+        expect(newSchema).to.have.property("schemaName", schema.schemaName);
+        expect(JSON.stringify(newSchema.schemaProperties)).to.equals(
           JSON.stringify(schema.schemaProperties)
         );
-        expect(JSON.stringify(res.createdAt)).to.equals(
+        expect(JSON.stringify(newSchema.createdAt)).to.equals(
           JSON.stringify(schema.createdAt)
         );
-        expect(JSON.stringify(res.updatedAt)).to.equals(
+        expect(JSON.stringify(newSchema.updatedAt)).to.equals(
           JSON.stringify(schema.updatedAt)
         );
       });
@@ -121,7 +123,7 @@ describe("Schema Manager", () => {
       });
     });
 
-    context("Schema that not exist", () => {
+    context("Schema not found", () => {
       it("Should throw an SchemaNotFoundError", async () => {
         let functionError: Object = {};
         try {
@@ -156,10 +158,10 @@ describe("Schema Manager", () => {
     });
 
     it("Should return schemas list", async () => {
-      const res = (await SchemaManager.getAll()) as ISchema[];
+      const schemasArray: ISchema[] = (await SchemaManager.getAll()) as ISchema[];
 
-      expect(res).to.exist;
-      res.map((schema: ISchema) => {
+      expect(schemasArray).to.exist;
+      schemasArray.map((schema: ISchema) => {
         expect(schema).to.have.property("_id");
         expect(schema).to.have.property("schemaName", schema.schemaName);
         expect(JSON.stringify(schema.schemaProperties)).to.equals(
@@ -210,7 +212,7 @@ describe("Schema Manager", () => {
       });
     });
 
-    context("Schema that not exist", () => {
+    context("Schema not found", () => {
       it("Should throw an SchemaNotFoundError", async () => {
         let functionError: Object = {};
         try {
@@ -265,7 +267,7 @@ describe("Schema Manager", () => {
       });
     });
 
-    context("Schema that not exist", () => {
+    context("Schema not found", () => {
       it("Should throw an SchemaNotFoundError", async () => {
         let functionError: Object = {};
         try {
@@ -334,10 +336,9 @@ describe("Schema Manager", () => {
           schema._id as string,
           newSchema
         )) as ISchema;
-        const res = await SchemaManager.getById(schema._id as string);
-
-        expect(res).to.exist;
-        expect(res).to.have.property("schemaName", NEW_NAME);
+        const updatedSchema = await SchemaManager.getById(schema._id as string);
+        expect(updatedSchema).to.exist;
+        expect(updatedSchema).to.have.property("schemaName", NEW_NAME);
       });
 
       it("Should update schema and create property", async () => {
@@ -381,7 +382,10 @@ describe("Schema Manager", () => {
           "isUnique",
           propertyNumberExample.isUnique
         );
-        expect(resProperty).to.have.property("index", propertyNumberExample.index);
+        expect(resProperty).to.have.property(
+          "index",
+          propertyNumberExample.index
+        );
         expect(resProperty).to.have.property(
           "required",
           propertyNumberExample.required
@@ -433,7 +437,10 @@ describe("Schema Manager", () => {
           "isUnique",
           propertyNumberExample.isUnique
         );
-        expect(resProperty).to.have.property("index", propertyNumberExample.index);
+        expect(resProperty).to.have.property(
+          "index",
+          propertyNumberExample.index
+        );
         expect(resProperty).to.have.property(
           "required",
           propertyNumberExample.required
@@ -445,11 +452,18 @@ describe("Schema Manager", () => {
       it("Should throw an DuplicatePropertyNameError", async () => {
         let functionError: Object = {};
         try {
-          (await SchemaManager.updateById(schema._id as string, {...newSchema, schemaProperties: [{ ...propertyNumberExample }, { ...propertyNumberExample }]})) as ISchema
+          (await SchemaManager.updateById(schema._id as string, {
+            ...newSchema,
+            schemaProperties: [
+              { ...propertyNumberExample },
+              { ...propertyNumberExample },
+            ],
+          })) as ISchema;
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof DuplicatePropertyNameError).to.be.true;
+          expect(functionError instanceof DuplicatePropertyNameError).to.be
+            .true;
         }
       });
     });
@@ -467,7 +481,7 @@ describe("Schema Manager", () => {
       });
     });
 
-    context("Schema that not exist", () => {
+    context("Schema not found", () => {
       it("Should throw an SchemaNotFoundError", async () => {
         let functionError: Object = {};
         try {
@@ -499,7 +513,8 @@ describe("Schema Manager", () => {
         } catch (error) {
           functionError = error;
         } finally {
-          expect(functionError instanceof InvalidValueInPropertyError).to.be.true;
+          expect(functionError instanceof InvalidValueInPropertyError).to.be
+            .true;
         }
       });
     });
