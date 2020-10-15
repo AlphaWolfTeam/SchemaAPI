@@ -74,6 +74,8 @@ class PropertyManager {
             if (property.propertyType === "ObjectId") {
                 if (!property.propertyRef) {
                     throw new user_1.PropertyRefNotExistError();
+                else if (!(yield this.isSchemaExist(property.propertyRef))) {
+                    throw new user_1.SchemaNotFoundError();
                 }
                 else if (!(yield this.isSchemaExist(property.propertyRef))) {
                     throw new user_1.SchemaNotFoundError();
@@ -82,45 +84,43 @@ class PropertyManager {
             else if (property.propertyRef) {
                 throw new user_1.PropertyRefExistError();
             }
-            if (property)
-                if (property.defaultValue !== undefined) {
-                    property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
-                    if (property.validation &&
-                        !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
-                        throw new user_1.DefaultValueIsNotValidError(property.propertyName);
-                    }
-                }
-            if (property.enum) {
-                property.enum = yield Promise.all(property.enum.map((value) => {
-                    return this.convertValue(value, property.propertyType, property.propertyName);
-                }));
-                if (property.validation) {
-                    property.enum.forEach((value) => {
-                        if (!this.isValueValid(property.validation, property.propertyType, value)) {
-                            throw new user_1.EnumValuesAreNotValidError(property.propertyName);
-                        }
-                    });
-                }
+            else if (property.propertyRef) {
+                throw new user_1.PropertyRefExistError();
             }
-            if (property.defaultValue !== undefined &&
-                property.enum &&
-                !property.enum.includes(property.defaultValue)) {
+            if (property.defaultValue !== undefined) {
+                yield this.validateDefaultValue(property);
+            }
+            if (property.enum) {
+                yield this.validateEnum(property);
+            }
+        });
+    }
+    static validateDefaultValue(property) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
+            if (property.validation &&
+                !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
+                throw new user_1.DefaultValueIsNotValidError(property.propertyName);
+            }
+            if (!((_a = property.enum) === null || _a === void 0 ? void 0 : _a.includes(property.defaultValue))) {
                 throw new user_1.InvalidValueInPropertyError(property.propertyName);
             }
         });
     }
-    static isValidationObjValid(propertyType, validationObj) {
-        switch (propertyType) {
-            case "Number":
-                return validator.validate(validationObj, number_validation_1.numberValidationSchema).valid;
-            case "String":
-                return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
-            case "Date":
-                return (validator.validate(validationObj, date_validation_1.dateValidationSchema).valid &&
-                    date_validation_1.isDateValidationObjValid(validationObj));
-            default:
-                return false;
-        }
+    static validateEnum(property) {
+        return __awaiter(this, void 0, void 0, function* () {
+            property.enum = yield Promise.all(property.enum.map((value) => {
+                return this.convertValue(value, property.propertyType, property.propertyName);
+            }));
+            if (property.validation) {
+                property.enum.forEach((value) => {
+                    if (!this.isValueValid(property.validation, property.propertyType, value)) {
+                        throw new user_1.EnumValuesAreNotValidError(property.propertyName);
+                    }
+                });
+            }
+        });
     }
     static convertValue(value, newType, propertyName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -157,6 +157,19 @@ class PropertyManager {
                     }
             }
         });
+    }
+    static isValidationObjValid(propertyType, validationObj) {
+        switch (propertyType) {
+            case "Number":
+                return validator.validate(validationObj, number_validation_1.numberValidationSchema).valid;
+            case "String":
+                return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
+            case "Date":
+                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid &&
+                    date_validation_1.isDateValidationObjValid(validationObj);
+            default:
+                return false;
+        }
     }
     static isValueValid(validateObj, propertyType, value) {
         switch (propertyType) {

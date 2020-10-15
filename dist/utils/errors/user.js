@@ -38,12 +38,6 @@ class InvalidValueInSchemaError extends application_1.UserError {
     }
 }
 exports.InvalidValueInSchemaError = InvalidValueInSchemaError;
-class PropertyNameAlreadyExistError extends application_1.UserError {
-    constructor() {
-        super('Property name is already exist in this schema', 404);
-    }
-}
-exports.PropertyNameAlreadyExistError = PropertyNameAlreadyExistError;
 class DuplicatePropertyNameError extends application_1.UserError {
     constructor() {
         super('Property names are not unique in schema properties', 404);

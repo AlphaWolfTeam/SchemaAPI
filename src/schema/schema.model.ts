@@ -10,7 +10,7 @@ const SchemaSchema = new mongoose.Schema({
     },
     schemaProperties: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Property',
+        ref: config.mongo.propertyCollectionName,
         required: true
     }],
     createdAt: {

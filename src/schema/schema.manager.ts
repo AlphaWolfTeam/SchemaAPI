@@ -16,27 +16,31 @@ import {
 const MONGO_UNIQUE_NAME_CODE: number = 11000;
 
 export default class SchemaManager {
-  static async create(schema: ISchema,schemaProperties: IProperty[]): Promise<ISchema | null | void> {
+  static async create(
+    schema: ISchema,
+    schemaProperties: IProperty[])
+    : Promise<ISchema | null | void> {
     schema.schemaProperties = [];
-    this.checkIfAllPropertiesUnique(schemaProperties)
+    this.checkIfAllPropertiesUnique(schemaProperties);
     await this.createSchemaProperties(schemaProperties, schema);
 
     return SchemaRepository.create({ ...schema, createdAt: new Date(), updatedAt: new Date() })
       .catch(async (error: Object) => {
-        await this.revertCreation(schema)
+        await this.revertCreation(schema);
         this.handleCreationError(error);
       });
   }
 
-  private static async revertCreation(schema: ISchema){
+  private static async revertCreation(schema: ISchema) {
     schema.schemaProperties.forEach((property: IProperty) => {
-          PropertyManager.deleteById(property._id as string);
-      });  
-  } 
- 
+      PropertyManager.deleteById(property._id as string);
+    });
+  }
 
-  private static async createSchemaProperties(schemaProperties : IProperty[],schema:ISchema ):Promise <void>{
-     for (let property of schemaProperties) {
+  private static async createSchemaProperties(
+    schemaProperties: IProperty[],
+    schema: ISchema): Promise<void> {
+    for (let property of schemaProperties) {
       schema.schemaProperties.push((await PropertyManager.create(property).catch((error) => {
         schema.schemaProperties.forEach((property: IProperty) => {
           PropertyManager.deleteById(property._id as string);
@@ -61,8 +65,7 @@ export default class SchemaManager {
 
   static async deleteProperty(schemaId: string, propertyId: string): Promise<void> {
     const schema: ISchema = (await this.getById(schemaId)) as ISchema;
-    const propertyIndex = schema.schemaProperties.map((property) => String(property))
-      .indexOf(propertyId);
+    const propertyIndex = this.getPropertyIndexInList(schema.schemaProperties, propertyId);
     if (propertyIndex > -1) {
       schema.schemaProperties.splice(propertyIndex, 1);
       await PropertyManager.deleteById(propertyId);
@@ -97,7 +100,6 @@ export default class SchemaManager {
     this.checkIfAllPropertiesUnique(newProperties);
     await this.updatePrevProperties(prevSchema, newProperties, schema, updatedProperties,  deletedProperties);
     await this.createNewProperties(prevSchema, newProperties, schema, createdProperties)
-
     return SchemaRepository.updateById(id, { ...schema, updatedAt: new Date() })
       .catch(async (error: Object) => {
         await this.revertUpdate(createdProperties, updatedProperties, deletedProperties);
@@ -105,25 +107,38 @@ export default class SchemaManager {
       });
   }
 
-  private static async updatePrevProperties(prevSchema: ISchema, newProperties: IProperty[], schema: ISchema, updatedProperties: IProperty[], deletedProperties: IProperty[]){
+  private static async updatePrevProperties(
+    prevSchema: ISchema,
+    newProperties: IProperty[],
+    schema: ISchema,
+    updatedProperties: IProperty[],
+    deletedProperties: IProperty[]): Promise<void> {
     await Promise.all(prevSchema.schemaProperties.map(async (prevProperty) => {
-      let newPropertyIndex = newProperties.map((newProperty) => newProperty._id).indexOf(String(prevProperty));
-      if (newPropertyIndex !== -1) {
-        let updatedProperty = (await PropertyManager.updateById(
-          String(prevProperty),
-          newProperties[newPropertyIndex]
-        )) as IProperty;
-        schema.schemaProperties.push(updatedProperty);
-        updatedProperties.push((await PropertyManager.getById(String(prevProperty)) as Object)["_doc"]);
+      let newPropertyIndex = this.getPropertyIndexInList(newProperties, String(prevProperty._id));
+      if (newPropertyIndex === -1) {
+        deletedProperties.push(
+          (await PropertyManager.deleteById(prevProperty._id as string) as Object)["_doc"]);
       } else {
-        deletedProperties.push((await PropertyManager.deleteById(String(prevProperty)) as Object)["_doc"]);
+        updatedProperties.push(
+          (await PropertyManager.getById(prevProperty._id as string) as Object)["_doc"]);
+        schema.schemaProperties.push(await PropertyManager.updateById(
+          prevProperty._id as string,
+          newProperties[newPropertyIndex]
+        ) as IProperty);
       }
     }));
   }
 
-  private static async createNewProperties(prevSchema: ISchema, newProperties: IProperty[], schema: ISchema, createdProperties: IProperty[]){
+  private static async createNewProperties(
+    prevSchema: ISchema,
+    newProperties: IProperty[],
+    schema: ISchema,
+    createdProperties: IProperty[]): Promise<void> {
     await Promise.all(newProperties.map(async (newProperty) => {
-      let prevPropertyIndex = prevSchema.schemaProperties.map((prevProperty) => String(prevProperty)).indexOf(newProperty._id as string);
+      let prevPropertyIndex = this.getPropertyIndexInList(
+        prevSchema.schemaProperties,
+        newProperty._id as string
+      );
       if (prevPropertyIndex === -1) {
         let createdProperty = (await PropertyManager.create(
           newProperty
@@ -133,6 +148,7 @@ export default class SchemaManager {
       }
     }));
   }
+
 
   private static async revertUpdate(createdProperties: IProperty[], updatedProperties: IProperty[], deletedProperties: IProperty[]  ){
     await Promise.all(createdProperties.map(async (createdProperty) => {
@@ -152,7 +168,7 @@ export default class SchemaManager {
       (name) => nameArray.indexOf(name) === nameArray.lastIndexOf(name)
     );
 
-    if(!isAllPropertiesUnique){
+    if (!isAllPropertiesUnique) {
       throw new DuplicatePropertyNameError()
     }
   }
@@ -163,5 +179,11 @@ export default class SchemaManager {
     } else {
       throw new InvalidValueInSchemaError();
     }
+  }
+
+  private static getPropertyIndexInList(
+    propertiesList: IProperty[],
+    propertyIdToFind: string): number {
+    return propertiesList.map((property) => property._id as string).indexOf(propertyIdToFind);
   }
 }

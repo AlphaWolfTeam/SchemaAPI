@@ -14,7 +14,10 @@ export default class SchemaController {
                 schemaProperties: []
             }
             const createdSchema = await SchemaManager.create(schema, req.body.schemaProperties);
-            sendDataToRabbit({ method:'create schema' ,schema: createdSchema} as IRabbitMessage) 
+            sendDataToRabbit({ 
+                method: 'create schema', 
+                schema: createdSchema 
+            } as IRabbitMessage);
             res.json(createdSchema);
         } catch (error) {
             res.json(error);

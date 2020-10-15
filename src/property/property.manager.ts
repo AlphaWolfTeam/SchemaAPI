@@ -75,51 +75,49 @@ export default class PropertyManager {
     return property;
   }
 
-  static async validateProperty(property: IProperty): Promise<void> {
-    if (property.validation &&!this.isValidationObjValid(property.propertyType, property.validation)) {
+  private static async validateProperty(property: IProperty): Promise<void> {
+    if (property.validation &&
+      !this.isValidationObjValid(property.propertyType, property.validation)) {
       throw new InvalidValueInPropertyError(property.propertyName);
     }
-    await this.objectIdValidation(property);
-    // if (property)
-    await this.defaultValueValidation(property)
-      await this.enumValidation(property);
-    if (property.defaultValue !== undefined && property.enum &&!property.enum.includes(property.defaultValue)) {
-      throw new InvalidValueInPropertyError(property.propertyName);
+    
+ if (property.propertyType === "ObjectId") {
+   await this.validateObjectId(property);
+    } else if (property.propertyRef) {
+      throw new PropertyRefExistError();
+    }
+    
+    if (property.defaultValue !== undefined) {
+    await this.validateDefaultValue(property)
+    }
+    
+     if (property.enum !== undefined) {
+      await this.validateEnum(property);
     }
   }
 
-  static async defaultValueValidation(property: IProperty){
-    if (property.defaultValue !== undefined) {
+  static async validateDefaultValue(property: IProperty): Promise<void>{
       property.defaultValue = await this.convertValue(property.defaultValue,property.propertyType,property.propertyName);
       if (property.validation &&!this.isValueValid(property.validation,property.propertyType,property.defaultValue)) {
         throw new DefaultValueIsNotValidError(property.propertyName);
       }
-    }
+      if (property.enum &&!property.enum.includes(property.defaultValue)) {
+        throw new InvalidValueInPropertyError(property.propertyName);
+      }
   }
 
-  static async objectIdValidation(property: IProperty){
-    if (property.propertyType === "ObjectId") {
-      if (!property.propertyRef) {
+  static async validateObjectId(property: IProperty): Promise<void>{
+     if (!property.propertyRef) {
         throw new PropertyRefNotExistError()
-      }
-      else if (!await this.isSchemaExist(property.propertyRef)) {
+      } else if (!await this.isSchemaExist(property.propertyRef)) {
         throw new SchemaNotFoundError()
-      }
-    }
-    else if (property.propertyRef) {
-      throw new PropertyRefExistError();
     }  
   }
 
-  static async enumValidation(property: IProperty){
-    if (property.enum) {
+  static async validateEnum(property: IProperty) : Promise<void>{
       property.enum = await Promise.all(
         property.enum.map((value) => {
-          return this.convertValue(
-            value,
-            property.propertyType,
-            property.propertyName
-          );
+          return this.convertValue(value, property.propertyType,property.propertyName);
         })
       );
       if (property.validation) {
@@ -135,7 +133,6 @@ export default class PropertyManager {
           }
         });
       }
-    }
   }
 
   static isValidationObjValid(propertyType: string, validationObj: Object): boolean {
@@ -155,7 +152,12 @@ export default class PropertyManager {
     }
   }
 
-  static async convertValue(value: any, newType: String, propertyName: string): Promise<any> {
+ 
+  private static async convertValue(
+    value: any,
+    newType: String,
+    propertyName: string
+  ): Promise<any> {
     switch (newType) {
       case "String":
         return String(value);
@@ -186,7 +188,29 @@ export default class PropertyManager {
     }
   }
 
-  static isValueValid(validateObj: Object, propertyType: any, value: any): boolean {
+  private static isValidationObjValid(
+    propertyType: string,
+    validationObj: Object
+  ): boolean {
+    switch (propertyType) {
+      case "Number":
+        return validator.validate(validationObj, numberValidationSchema).valid;
+      case "String":
+        return validator.validate(validationObj, stringValidationSchema).valid;
+      case "Date":
+        return validator.validate(validationObj, dateValidationSchema).valid &&
+          isDateValidationObjValid(validationObj);
+
+      default:
+        return false;
+    }
+  }
+
+  private static isValueValid(
+    validateObj: Object,
+    propertyType: any,
+    value: any
+  ): boolean {
     switch (propertyType) {
       case "Number":
         return isNumberValueValid(value, validateObj);
@@ -199,11 +223,11 @@ export default class PropertyManager {
     }
   }
 
-  static isValidBoolean(value: any): boolean {
+  private static isValidBoolean(value: any): boolean {
     return String(value) === "false" || String(value) === "true";
   }
 
-  static async isSchemaExist(name: string): Promise<boolean> {
+  private static async isSchemaExist(name: string): Promise<boolean> {
     return (await SchemaManager.getAll() as ISchema[]).map((schema) =>
       schema.schemaName).includes(name);
   }
