@@ -359,9 +359,18 @@ describe("Schema Manager", () => {
       });
 
       it("Should update property ref", async () => {
-        const secondProperty = await PropertyManager.create({...propertyObjectIdExample, propertyRef: schema.schemaName})as IProperty;
-        (await SchemaManager.updateById(schema._id as string , newSchema)) as ISchema;
-        expect((await PropertyManager.getById(secondProperty._id as string))?.propertyRef).to.be.equal(newSchema.schemaName);
+        const secondProperty = (await PropertyManager.create({
+          ...propertyObjectIdExample,
+          propertyRef: schema.schemaName,
+        })) as IProperty;
+        (await SchemaManager.updateById(
+          schema._id as string,
+          newSchema
+        )) as ISchema;
+        expect(
+          (await PropertyManager.getById(secondProperty._id as string))
+            ?.propertyRef
+        ).to.be.equal(newSchema.schemaName);
       });
 
       it("Should update schema and create property", async () => {
@@ -541,18 +550,23 @@ describe("Schema Manager", () => {
 
       it("Should update property ref", async () => {
         let functionError: Object = {};
-        const secondProperty = await PropertyManager.create({...propertyObjectIdExample, propertyRef: schema.schemaName})as IProperty;
+        const secondProperty = (await PropertyManager.create({
+          ...propertyObjectIdExample,
+          propertyRef: schema.schemaName,
+        })) as IProperty;
         try {
           await SchemaManager.updateById(schema._id as string, {
             ...schemaExample,
             schemaName: ANOTHER_SCHEMA_NAME,
           });
-
-        } catch(error){
-          functionError = error
-        }finally {
+        } catch (error) {
+          functionError = error;
+        } finally {
           expect(functionError instanceof DuplicateSchemaNameError).to.be.true;
-          expect((await PropertyManager.getById(secondProperty._id as string))?.propertyRef).to.be.equal(schema.schemaName);
+          expect(
+            (await PropertyManager.getById(secondProperty._id as string))
+              ?.propertyRef
+          ).to.be.equal(schema.schemaName);
         }
       });
     });

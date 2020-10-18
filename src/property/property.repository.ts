@@ -28,8 +28,13 @@ export default class PropertyRepository {
     ).exec();
   }
 
-  static async updatePropertyRef(prevPropertyRef: string, newPropertyRef: string): Promise<void>{
-    await PropertyModel.updateMany({propertyRef: prevPropertyRef}, {$set: {propertyRef : newPropertyRef}}).exec();  
+  static async updatePropertyRef(
+    prevPropertyRef: string,
+    newPropertyRef: string
+  ): Promise<void> {
+    await PropertyModel.updateMany(
+      { propertyRef: prevPropertyRef },
+      { $set: { propertyRef: newPropertyRef } }
+    ).exec();
   }
-
 }

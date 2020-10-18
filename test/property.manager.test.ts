@@ -219,11 +219,15 @@ describe("Property Manager", () => {
     const SECOND_SCHEMA_NAME: string = "second name";
 
     beforeEach(async () => {
-      firstSchema= await SchemaManager.create(schemaExample, []) as ISchema;
-      secondSchema= await SchemaManager.create({...schemaExample,schemaName: SECOND_SCHEMA_NAME}, []) as ISchema;
-      property=(await PropertyManager.create({
-        ...propertyObjectIdExample, propertyRef: firstSchema.schemaName}
-      )) as IProperty;
+      firstSchema = (await SchemaManager.create(schemaExample, [])) as ISchema;
+      secondSchema = (await SchemaManager.create(
+        { ...schemaExample, schemaName: SECOND_SCHEMA_NAME },
+        []
+      )) as ISchema;
+      property = (await PropertyManager.create({
+        ...propertyObjectIdExample,
+        propertyRef: firstSchema.schemaName,
+      })) as IProperty;
     });
 
     afterEach(async () => {
@@ -231,12 +235,20 @@ describe("Property Manager", () => {
       await SchemaModel.deleteMany({}).exec();
     });
 
-      it("Should update property ref", async () => {
-        await PropertyManager.updatePropertyRef(firstSchema.schemaName, secondSchema.schemaName);
-        const updatedProperty = (await PropertyManager.getById(property._id as string));
+    it("Should update property ref", async () => {
+      await PropertyManager.updatePropertyRef(
+        firstSchema.schemaName,
+        secondSchema.schemaName
+      );
+      const updatedProperty = await PropertyManager.getById(
+        property._id as string
+      );
 
-        expect(updatedProperty).to.exist;
-        expect(updatedProperty).to.have.property("propertyRef", secondSchema.schemaName);
-      });
+      expect(updatedProperty).to.exist;
+      expect(updatedProperty).to.have.property(
+        "propertyRef",
+        secondSchema.schemaName
+      );
+    });
   });
 });
