@@ -17,6 +17,7 @@ import {
   propertyNumberExample,
   ID_NOT_EXIST,
   INVALID_ID,
+  propertyObjectIdExample,
 } from "./dataExamples";
 import PropertyModel from "../src/property/property.model";
 import IProperty from "../src/property/property.interface";
@@ -357,6 +358,12 @@ describe("Schema Manager", () => {
         expect(updatedSchema).to.have.property("schemaName", NEW_NAME);
       });
 
+      it("Should update property ref", async () => {
+        const secondProperty = await PropertyManager.create({...propertyObjectIdExample, propertyRef: schema.schemaName})as IProperty;
+        (await SchemaManager.updateById(schema._id as string , newSchema)) as ISchema;
+        expect((await PropertyManager.getById(secondProperty._id as string))?.propertyRef).to.be.equal(newSchema.schemaName);
+      });
+
       it("Should update schema and create property", async () => {
         (await SchemaManager.updateById(schema._id as string, {
           ...newSchema,
@@ -486,7 +493,7 @@ describe("Schema Manager", () => {
     context("Duplicate schema names", () => {
       const ANOTHER_SCHEMA_NAME = "anotherName";
 
-      before(async () => {
+      beforeEach(async () => {
         await SchemaManager.create(
           {
             ...schemaExample,
@@ -496,7 +503,7 @@ describe("Schema Manager", () => {
         );
       });
 
-      after(async () => {
+      afterEach(async () => {
         await SchemaModel.deleteMany({}).exec();
       });
 
@@ -529,6 +536,23 @@ describe("Schema Manager", () => {
           expect(JSON.stringify(prevProperty)).to.equal(
             JSON.stringify(updatedProperty)
           );
+        }
+      });
+
+      it("Should update property ref", async () => {
+        let functionError: Object = {};
+        const secondProperty = await PropertyManager.create({...propertyObjectIdExample, propertyRef: schema.schemaName})as IProperty;
+        try {
+          await SchemaManager.updateById(schema._id as string, {
+            ...schemaExample,
+            schemaName: ANOTHER_SCHEMA_NAME,
+          });
+
+        } catch(error){
+          functionError = error
+        }finally {
+          expect(functionError instanceof DuplicateSchemaNameError).to.be.true;
+          expect((await PropertyManager.getById(secondProperty._id as string))?.propertyRef).to.be.equal(schema.schemaName);
         }
       });
     });

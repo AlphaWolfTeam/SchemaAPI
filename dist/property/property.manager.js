@@ -65,6 +65,11 @@ class PropertyManager {
             return property;
         });
     }
+    static updatePropertyRef(prevPropertyRef, newPropertyRef) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield property_repository_1.default.updatePropertyRef(prevPropertyRef, newPropertyRef);
+        });
+    }
     static validateProperty(property) {
         return __awaiter(this, void 0, void 0, function* () {
             if (property.validation &&
@@ -72,17 +77,7 @@ class PropertyManager {
                 throw new user_1.InvalidValueInPropertyError(property.propertyName);
             }
             if (property.propertyType === "ObjectId") {
-                if (!property.propertyRef) {
-                    throw new user_1.PropertyRefNotExistError();
-                else if (!(yield this.isSchemaExist(property.propertyRef))) {
-                    throw new user_1.SchemaNotFoundError();
-                }
-                else if (!(yield this.isSchemaExist(property.propertyRef))) {
-                    throw new user_1.SchemaNotFoundError();
-                }
-            }
-            else if (property.propertyRef) {
-                throw new user_1.PropertyRefExistError();
+                yield this.validateObjectId(property);
             }
             else if (property.propertyRef) {
                 throw new user_1.PropertyRefExistError();
@@ -90,21 +85,30 @@ class PropertyManager {
             if (property.defaultValue !== undefined) {
                 yield this.validateDefaultValue(property);
             }
-            if (property.enum) {
+            if (property.enum !== undefined) {
                 yield this.validateEnum(property);
             }
         });
     }
     static validateDefaultValue(property) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             property.defaultValue = yield this.convertValue(property.defaultValue, property.propertyType, property.propertyName);
             if (property.validation &&
                 !this.isValueValid(property.validation, property.propertyType, property.defaultValue)) {
                 throw new user_1.DefaultValueIsNotValidError(property.propertyName);
             }
-            if (!((_a = property.enum) === null || _a === void 0 ? void 0 : _a.includes(property.defaultValue))) {
+            if (property.enum && !property.enum.includes(property.defaultValue)) {
                 throw new user_1.InvalidValueInPropertyError(property.propertyName);
+            }
+        });
+    }
+    static validateObjectId(property) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!property.propertyRef) {
+                throw new user_1.PropertyRefNotExistError();
+            }
+            else if (!(yield this.isSchemaExist(property.propertyRef))) {
+                throw new user_1.SchemaNotFoundError();
             }
         });
     }
@@ -165,8 +169,8 @@ class PropertyManager {
             case "String":
                 return validator.validate(validationObj, string_validation_1.stringValidationSchema).valid;
             case "Date":
-                return validator.validate(validationObj, date_validation_1.dateValidationSchema).valid &&
-                    date_validation_1.isDateValidationObjValid(validationObj);
+                return (validator.validate(validationObj, date_validation_1.dateValidationSchema).valid &&
+                    date_validation_1.isDateValidationObjValid(validationObj));
             default:
                 return false;
         }
@@ -188,7 +192,9 @@ class PropertyManager {
     }
     static isSchemaExist(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (yield schema_manager_1.default.getAll()).map((schema) => schema.schemaName).includes(name);
+            return (yield schema_manager_1.default.getAll())
+                .map((schema) => schema.schemaName)
+                .includes(name);
         });
     }
 }

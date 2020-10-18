@@ -14,24 +14,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const schema_model_1 = __importDefault(require("./schema.model"));
 class SchemaRepository {
-    static create(schema) {
-        return schema_model_1.default.create(schema);
+    static getAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield schema_model_1.default.find().populate("schemaProperties").exec();
+        });
     }
     static getById(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield schema_model_1.default.findOne({ _id }).populate('schemaProperties').exec();
+            return yield schema_model_1.default.findOne({ _id })
+                .populate("schemaProperties")
+                .exec();
         });
     }
-    static deleteById(_id) {
-        return schema_model_1.default.findByIdAndRemove(_id).exec();
+    static create(schema) {
+        return schema_model_1.default.create(schema);
     }
     static updateById(_id, schema) {
         return schema_model_1.default.findOneAndUpdate({ _id }, { $set: schema }, { upsert: true }).exec();
     }
-    static getAll() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield schema_model_1.default.find().populate('schemaProperties').exec();
-        });
+    static deleteById(_id) {
+        return schema_model_1.default.findByIdAndRemove(_id).exec();
     }
 }
 exports.default = SchemaRepository;

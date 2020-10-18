@@ -1,28 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PropertyRefExistError = exports.PropertyRefNotExistError = exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.PropertyNameAlreadyExistError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
+exports.PropertyRefExistError = exports.PropertyRefNotExistError = exports.PermissionDeniedError = exports.EnumValuesAreNotValidError = exports.DefaultValueIsNotValidError = exports.DuplicateSchemaNameError = exports.DuplicatePropertyNameError = exports.InvalidValueInSchemaError = exports.InvalidValueInPropertyError = exports.InvalidIdError = exports.PropertyNotInSchemaError = exports.PropertyNotFoundError = exports.SchemaNotFoundError = void 0;
 const application_1 = require("./application");
 class SchemaNotFoundError extends application_1.UserError {
     constructor() {
-        super('Schema not found', 404);
+        super("Schema not found", 404);
     }
 }
 exports.SchemaNotFoundError = SchemaNotFoundError;
 class PropertyNotFoundError extends application_1.UserError {
     constructor() {
-        super('Property not found', 404);
+        super("Property not found", 404);
     }
 }
 exports.PropertyNotFoundError = PropertyNotFoundError;
 class PropertyNotInSchemaError extends application_1.UserError {
     constructor() {
-        super('Property not in schema', 404);
+        super("Property not in schema", 404);
     }
 }
 exports.PropertyNotInSchemaError = PropertyNotInSchemaError;
 class InvalidIdError extends application_1.UserError {
     constructor() {
-        super('Invalid id', 404);
+        super("Invalid id", 404);
     }
 }
 exports.InvalidIdError = InvalidIdError;
@@ -34,19 +34,19 @@ class InvalidValueInPropertyError extends application_1.UserError {
 exports.InvalidValueInPropertyError = InvalidValueInPropertyError;
 class InvalidValueInSchemaError extends application_1.UserError {
     constructor() {
-        super('Invalid value in schema', 404);
+        super("Invalid value in schema", 404);
     }
 }
 exports.InvalidValueInSchemaError = InvalidValueInSchemaError;
 class DuplicatePropertyNameError extends application_1.UserError {
     constructor() {
-        super('Property names are not unique in schema properties', 404);
+        super("Property names are not unique in schema properties", 404);
     }
 }
 exports.DuplicatePropertyNameError = DuplicatePropertyNameError;
 class DuplicateSchemaNameError extends application_1.UserError {
     constructor() {
-        super('There is already exist schema with this name', 404);
+        super("There is already exist schema with this name", 404);
     }
 }
 exports.DuplicateSchemaNameError = DuplicateSchemaNameError;

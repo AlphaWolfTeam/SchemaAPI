@@ -28,20 +28,22 @@ const SchemaSchema = new mongoose.Schema({
     schemaName: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
-    schemaProperties: [{
+    schemaProperties: [
+        {
             type: mongoose.Schema.Types.ObjectId,
             ref: index_1.default.mongo.propertyCollectionName,
-            required: true
-        }],
+            required: true,
+        },
+    ],
     createdAt: {
         type: Date,
-        required: true
+        required: true,
     },
     updatedAt: {
         type: Date,
-        required: true
+        required: true,
     },
 });
 const SchemaModel = mongoose.model(index_1.default.mongo.schemaCollectionName, SchemaSchema);

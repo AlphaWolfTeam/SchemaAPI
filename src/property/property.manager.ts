@@ -63,21 +63,20 @@ export default class PropertyManager {
     return property;
   }
 
-  static async updateById(
-    id: string,
-    newProperty: IProperty
-  ): Promise<IProperty | null> {
+  static async updateById(id: string,newProperty: IProperty): Promise<IProperty | null> {
     await this.validateProperty(newProperty);
-    const property = await PropertyRepository.updateById(id, {
-      ...newProperty,
-      updatedAt: new Date(),
-    }).catch(() => {
+    const property = await PropertyRepository.updateById(id, {...newProperty,updatedAt: new Date(),}).catch(() => {
       throw new InvalidIdError();
     });
     if (property === null) {
       throw new PropertyNotFoundError();
     }
     return property;
+  }
+
+
+  static async updatePropertyRef(prevPropertyRef: string, newPropertyRef: string): Promise<void> {
+    await PropertyRepository.updatePropertyRef(prevPropertyRef, newPropertyRef)
   }
 
   private static async validateProperty(property: IProperty): Promise<void> {
