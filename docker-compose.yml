@@ -14,10 +14,16 @@ services:
       - 5672:5672
       - 15672:15672
     
+      
   server:
     image: 'alphawolfsforce/jaws-schema-api:latest'
-    environment:
-      ENV_NAME: dev
+      environment:
+        PORT: "3000"
+        MONGO_SCHEMA_COLLECTION_NAME: "schema"
+        MONGO_URI: "mongodb://Alpha:Alpha123456@51.124.152.60:27017"
+        MONGO_PROPERTY_COLLECTION_NAME: "property"
+        RABBIT_URI: "amqp://rabbit"
+        QUEUE_NAME: "schema-instances-queue"
     ports:
       - '3000:3000'
     depends_on:
