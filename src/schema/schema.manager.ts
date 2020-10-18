@@ -101,7 +101,10 @@ export default class SchemaManager {
     return await SchemaRepository.getAll();
   }
 
-  static async updateById(id: string,newSchema: ISchema): Promise<ISchema | null | void> {
+  static async updateById(
+    id: string,
+    newSchema: ISchema
+  ): Promise<ISchema | null | void> {
     const prevSchema: ISchema = (await this.getById(id)) as ISchema;
     const newProperties: IProperty[] = [...newSchema.schemaProperties];
     const updatedProperties: IProperty[] = [];
@@ -123,17 +126,20 @@ export default class SchemaManager {
       newSchema.schemaProperties,
       createdProperties
     );
-    await PropertyManager.updatePropertyRef(prevSchema.schemaName, newSchema.schemaName)
+    await PropertyManager.updatePropertyRef(
+      prevSchema.schemaName,
+      newSchema.schemaName
+    );
     return SchemaRepository.updateById(id, {
       ...newSchema,
       updatedAt: new Date(),
-    }
-    ).catch(async (error: Object) => {
+    }).catch(async (error: Object) => {
       await this.revertUpdate(
         createdProperties,
         updatedProperties,
-        deletedProperties, 
-        prevSchema.schemaName, newSchema.schemaName
+        deletedProperties,
+        prevSchema.schemaName,
+        newSchema.schemaName
       );
       this.handleCreationError(error);
     });
@@ -198,8 +204,13 @@ export default class SchemaManager {
     );
   }
 
-  private static async revertUpdate(createdProperties: IProperty[], updatedProperties: IProperty[], deletedProperties: IProperty[],
-    prevSchemaName: string, newSchemaName: string) {
+  private static async revertUpdate(
+    createdProperties: IProperty[],
+    updatedProperties: IProperty[],
+    deletedProperties: IProperty[],
+    prevSchemaName: string,
+    newSchemaName: string
+  ) {
     await Promise.all(
       createdProperties.map(async (createdProperty) => {
         await PropertyManager.deleteById(createdProperty._id as string);
@@ -218,8 +229,7 @@ export default class SchemaManager {
         await PropertyManager.create(deletedProperty);
       })
     );
-    await PropertyManager.updatePropertyRef(newSchemaName, prevSchemaName)
-    
+    await PropertyManager.updatePropertyRef(newSchemaName, prevSchemaName);
   }
 
   private static checkIfAllPropertiesUnique(propertyList: IProperty[]): void {
