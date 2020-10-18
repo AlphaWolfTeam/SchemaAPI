@@ -45,8 +45,7 @@
   },
   "devDependencies": {
     "@types/mongoose": "^5.7.36",
-    "ts-interface-builder": "^0.2.2",
-    "ts-jest": "^26.3.0",
-    "ts-node": "^9.0.0"
+    "ts-interface-builder": "^0.2.2"
+
   }
 }

@@ -31,6 +31,11 @@ class PropertyRepository {
     static updateById(_id, property) {
         return property_model_1.default.findOneAndUpdate({ _id }, { $set: property }, { upsert: true }).exec();
     }
+    static updatePropertyRef(prevPropertyRef, newPropertyRef) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield property_model_1.default.updateMany({ propertyRef: prevPropertyRef }, { $set: { propertyRef: newPropertyRef } }).exec();
+        });
+    }
 }
 exports.default = PropertyRepository;
 //# sourceMappingURL=property.repository.js.map

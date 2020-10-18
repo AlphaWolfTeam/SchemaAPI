@@ -80,6 +80,13 @@ export default class PropertyManager {
     return property;
   }
 
+  static async updatePropertyRef(
+    prevPropertyRef: string,
+    newPropertyRef: string
+  ): Promise<void> {
+    await PropertyRepository.updatePropertyRef(prevPropertyRef, newPropertyRef);
+  }
+
   private static async validateProperty(property: IProperty): Promise<void> {
     if (
       property.validation &&
