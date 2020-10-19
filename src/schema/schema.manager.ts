@@ -13,14 +13,13 @@ import {
   InvalidValueInSchemaError,
 } from "../utils/errors/user";
 
-const MONGO_UNIQUE_NAME_CODE: number = 11000;
-
 export default class SchemaManager {
   static async create(
     schema: ISchema,
     schemaProperties: IProperty[]
   ): Promise<ISchema | null | void> {
     schema.schemaProperties = [];
+    await this.checkIfNameUnique(schema.schemaName);
     this.checkIfAllPropertiesUnique(schemaProperties);
     await this.createSchemaProperties(schemaProperties, schema);
 
@@ -28,9 +27,9 @@ export default class SchemaManager {
       ...schema,
       createdAt: new Date(),
       updatedAt: new Date(),
-    }).catch(async (error: Object) => {
+    }).catch(async () => {
       await this.revertCreation(schema);
-      this.handleCreationError(error);
+      throw new InvalidValueInSchemaError();
     });
   }
 
@@ -112,6 +111,7 @@ export default class SchemaManager {
     const deletedProperties: IProperty[] = [];
     newSchema.schemaProperties = [];
 
+    await this.checkIfNameUnique(newSchema.schemaName);
     this.checkIfAllPropertiesUnique(newProperties);
     await this.updatePrevProperties(
       prevSchema.schemaProperties,
@@ -133,7 +133,7 @@ export default class SchemaManager {
     return SchemaRepository.updateById(id, {
       ...newSchema,
       updatedAt: new Date(),
-    }).catch(async (error: Object) => {
+    }).catch(async () => {
       await this.revertUpdate(
         createdProperties,
         updatedProperties,
@@ -141,7 +141,8 @@ export default class SchemaManager {
         prevSchema.schemaName,
         newSchema.schemaName
       );
-      this.handleCreationError(error);
+      throw new InvalidValueInSchemaError();
+
     });
   }
 
@@ -242,15 +243,6 @@ export default class SchemaManager {
       throw new DuplicatePropertyNameError();
     }
   }
-
-  private static handleCreationError(error: Object): void {
-    if (error["code"] === MONGO_UNIQUE_NAME_CODE) {
-      throw new DuplicateSchemaNameError();
-    } else {
-      throw new InvalidValueInSchemaError();
-    }
-  }
-
   private static getPropertyIndexInList(
     propertiesList: IProperty[],
     propertyIdToFind: string
@@ -258,5 +250,13 @@ export default class SchemaManager {
     return propertiesList
       .map((property) => property._id as string)
       .indexOf(propertyIdToFind);
+  }
+
+  private static async checkIfNameUnique(name: string){
+    const schemas: ISchema[] =  await SchemaRepository.getAll() as ISchema[];
+    if(schemas.map((schema: ISchema)=> schema.schemaName).includes(name)){
+      throw new DuplicateSchemaNameError();
+    }
+    
   }
 }
