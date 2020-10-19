@@ -1,4 +1,4 @@
-# SchemaApi
+# schema-api
 
 ## HTTP Requests
 
