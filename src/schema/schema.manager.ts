@@ -18,19 +18,23 @@ export default class SchemaManager {
     schema: ISchema,
     schemaProperties: IProperty[]
   ): Promise<ISchema | null | void> {
-    schema.schemaProperties = [];
-    await this.checkIfNameUnique(schema.schemaName);
-    this.checkIfAllPropertiesUnique(schemaProperties);
-    await this.createSchemaProperties(schemaProperties, schema);
-
-    return SchemaRepository.create({
-      ...schema,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }).catch(async () => {
-      await this.revertCreation(schema);
+    if (schemaProperties === undefined) {
       throw new InvalidValueInSchemaError();
-    });
+    } else {
+      schema.schemaProperties = [];
+      await this.checkIfNameUnique(schema.schemaName);
+      this.checkIfAllPropertiesUnique(schemaProperties);
+      await this.createSchemaProperties(schemaProperties, schema);
+
+      return SchemaRepository.create({
+        ...schema,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }).catch(async (error) => {
+        await this.revertCreation(schema);
+        throw error;
+      });
+    }
   }
 
   private static async revertCreation(schema: ISchema) {
@@ -142,7 +146,6 @@ export default class SchemaManager {
         newSchema.schemaName
       );
       throw new InvalidValueInSchemaError();
-
     });
   }
 
@@ -252,11 +255,10 @@ export default class SchemaManager {
       .indexOf(propertyIdToFind);
   }
 
-  private static async checkIfNameUnique(name: string){
-    const schemas: ISchema[] =  await SchemaRepository.getAll() as ISchema[];
-    if(schemas.map((schema: ISchema)=> schema.schemaName).includes(name)){
+  private static async checkIfNameUnique(name: string) {
+    const schemas: ISchema[] = (await SchemaRepository.getAll()) as ISchema[];
+    if (schemas.map((schema: ISchema) => schema.schemaName).includes(name)) {
       throw new DuplicateSchemaNameError();
     }
-    
   }
 }

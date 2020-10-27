@@ -19,14 +19,19 @@ const user_2 = require("../utils/errors/user");
 class SchemaManager {
     static create(schema, schemaProperties) {
         return __awaiter(this, void 0, void 0, function* () {
-            schema.schemaProperties = [];
-            yield this.checkIfNameUnique(schema.schemaName);
-            this.checkIfAllPropertiesUnique(schemaProperties);
-            yield this.createSchemaProperties(schemaProperties, schema);
-            return schema_repository_1.default.create(Object.assign(Object.assign({}, schema), { createdAt: new Date(), updatedAt: new Date() })).catch(() => __awaiter(this, void 0, void 0, function* () {
-                yield this.revertCreation(schema);
+            if (schemaProperties === undefined) {
                 throw new user_2.InvalidValueInSchemaError();
-            }));
+            }
+            else {
+                schema.schemaProperties = [];
+                yield this.checkIfNameUnique(schema.schemaName);
+                this.checkIfAllPropertiesUnique(schemaProperties);
+                yield this.createSchemaProperties(schemaProperties, schema);
+                return schema_repository_1.default.create(Object.assign(Object.assign({}, schema), { createdAt: new Date(), updatedAt: new Date() })).catch((error) => __awaiter(this, void 0, void 0, function* () {
+                    yield this.revertCreation(schema);
+                    throw error;
+                }));
+            }
         });
     }
     static revertCreation(schema) {
@@ -166,7 +171,7 @@ class SchemaManager {
     }
     static checkIfNameUnique(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            const schemas = yield schema_repository_1.default.getAll();
+            const schemas = (yield schema_repository_1.default.getAll());
             if (schemas.map((schema) => schema.schemaName).includes(name)) {
                 throw new user_1.DuplicateSchemaNameError();
             }

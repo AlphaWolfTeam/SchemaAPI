@@ -1,5 +1,6 @@
 import SchemaModel from "./schema.model";
 import ISchema from "./schema.interface";
+import { InvalidValueInSchemaError } from "../utils/errors/user";
 
 export default class SchemaRepository {
   static async getAll(): Promise<ISchema[] | null> {
@@ -12,8 +13,10 @@ export default class SchemaRepository {
       .exec();
   }
 
-  static create(schema: ISchema): Promise<ISchema> {
-    return SchemaModel.create(schema);
+  static async create(schema: ISchema): Promise<ISchema> {
+    return await SchemaModel.create(schema).catch(() => {
+      throw new InvalidValueInSchemaError();
+    });
   }
 
   static updateById(

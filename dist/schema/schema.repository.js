@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const schema_model_1 = __importDefault(require("./schema.model"));
+const user_1 = require("../utils/errors/user");
 class SchemaRepository {
     static getAll() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -27,7 +28,11 @@ class SchemaRepository {
         });
     }
     static create(schema) {
-        return schema_model_1.default.create(schema);
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield schema_model_1.default.create(schema).catch(() => {
+                throw new user_1.InvalidValueInSchemaError();
+            });
+        });
     }
     static updateById(_id, schema) {
         return schema_model_1.default.findOneAndUpdate({ _id }, { $set: schema }, { upsert: true }).exec();
