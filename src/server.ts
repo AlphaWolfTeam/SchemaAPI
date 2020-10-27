@@ -6,6 +6,7 @@ import {
   serverErrorHandler,
   unknownErrorHandler,
 } from "./utils/errors/handler";
+import cors from 'cors';
 
 class Server {
   private app: express.Application;
@@ -20,6 +21,7 @@ class Server {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(cors());
     app.use(userErrorHandler);
     app.use(serverErrorHandler);
     app.use(unknownErrorHandler);

@@ -35,6 +35,7 @@ const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
 const router_1 = __importDefault(require("./router"));
 const handler_1 = require("./utils/errors/handler");
+const cors_1 = __importDefault(require("cors"));
 class Server {
     constructor(port) {
         this.app = Server.createExpressApp();
@@ -44,6 +45,7 @@ class Server {
         const app = express_1.default();
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(cors_1.default());
         app.use(handler_1.userErrorHandler);
         app.use(handler_1.serverErrorHandler);
         app.use(handler_1.unknownErrorHandler);
