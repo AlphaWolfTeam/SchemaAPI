@@ -7,7 +7,6 @@ export const checkPermission = async (
   next: NextFunction,
   permission: number
 ): Promise<void> => {
-  console.log('req body ' , req.body)
   req.body.currentUser?.permissions?.includes(permission)
     ? next()
     : res.json(new PermissionDeniedError());
