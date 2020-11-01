@@ -4,9 +4,10 @@ services:
     image: mongo
     container_name: mongo
     ports:
-      - '9000:27017'
+      - '9001:27017'
     volumes:
       - 'mongo:/data/db'
+    restart: always
 
   rabbit:
     image: rabbitmq:3-management
@@ -14,10 +15,11 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    restart: always
     
-  schema-server:
+  server:
     # image: 'alphawolfsforce/jaws-schema-api:latest'
-    container_name: schema-server
+    container_name: server
     build:
       context: ../../server
       dockerfile: Dockerfile
@@ -26,32 +28,37 @@ services:
         MONGO_SCHEMA_COLLECTION_NAME: "schema"
         MONGO_PROPERTY_COLLECTION_NAME: "property"
         # MONGO_URI: "mongodb://Alpha:Alpha123456@51.124.152.60:27017"
-        MONGO_URI: "mongodb://mongo:9000"
-        RABBIT_URI: "amqp://rabbit"
+        MONGO_URI: "mongodb://mongo:9001"
+        CLIENT_URL: "http://client-nginx:3001"
+        RABBIT_URI: "http://amqp://rabbit"
         QUEUE_NAME: "schema-instances-queue"
     ports:
       - '3000:3000'
     depends_on:
       - mongo
       - rabbit
+      -  client-nginx
+    restart: always
 
-    client-builder:
-      container_name: client-builder
-      image: trion/ng-cli:10.0.5
-      working_dir: /usr/client/
-      volumes:
-        - ../../client/:/usr/client/
-      command: bash -c "npm i && ng build --watch"
+  client-builder:
+    container_name: client-builder
+    image: trion/ng-cli:10.0.5
+    working_dir: /usr/client/
+    volumes:
+      - ../../client/:/usr/client/
+    command: bash -c "npm i && ng build --watch"
+    restart: always
       
-    client-nginx:
-      container_name: client-nginx
-      image: nginx
-      volumes:
-        - ../../client/nginx.dev.conf:/etc/nginx/nginx.conf
-        - ../../client/dist/:/usr/share/nginx/html/
-      ports:
-        - '3001:3001'
-      depends_on:
-        - schema-server
+  client-nginx:
+    container_name: client-nginx
+    image: nginx
+    volumes:
+      - ../../client/nginx.dev.conf:/etc/nginx/nginx.conf
+      - ../../client/dist/schema/:/usr/share/nginx/html/
+    ports:
+      - '3001:3001'
+    # depends_on:
+    #   - server
+    restart: always
 volumes: 
   mongo:
