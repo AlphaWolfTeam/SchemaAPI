@@ -1,0 +1,57 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - '9000:27017'
+    volumes:
+      - 'mongo:/data/db'
+
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    
+  schema-server:
+    # image: 'alphawolfsforce/jaws-schema-api:latest'
+    container_name: schema-server
+    build:
+      context: ../../server
+      dockerfile: Dockerfile
+    environment:
+        PORT: "3000"
+        MONGO_SCHEMA_COLLECTION_NAME: "schema"
+        MONGO_PROPERTY_COLLECTION_NAME: "property"
+        # MONGO_URI: "mongodb://Alpha:Alpha123456@51.124.152.60:27017"
+        MONGO_URI: "mongodb://mongo:9000"
+        RABBIT_URI: "amqp://rabbit"
+        QUEUE_NAME: "schema-instances-queue"
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+      - rabbit
+
+    client-builder:
+      container_name: client-builder
+      image: trion/ng-cli:10.0.5
+      working_dir: /usr/client/
+      volumes:
+        - ../../client/:/usr/client/
+      command: bash -c "npm i && ng build --watch"
+      
+    client-nginx:
+      container_name: client-nginx
+      image: nginx
+      volumes:
+        - ../../client/nginx.dev.conf:/etc/nginx/nginx.conf
+        - ../../client/dist/:/usr/share/nginx/html/
+      ports:
+        - '3001:3001'
+      depends_on:
+        - schema-server
+volumes: 
+  mongo:
