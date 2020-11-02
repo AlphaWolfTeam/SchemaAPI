@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
        
     steps:
-      - name: Get into server folder
-        run: cd ./server
-
       - name: Checkout code
         uses: actions/checkout@v2
 

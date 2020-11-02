@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Server from "./server";
 import config from "./config/index";
-// import { initRabbit } from "./utils/rabbitmq/rabbit";
+import { initRabbit } from "./utils/rabbitmq/rabbit";
 
 const { mongo, service } = config;
 
@@ -20,7 +20,7 @@ const initializeMongo = async () => {
 const main = async () => {
   await initializeMongo();
   // TODO: Remove from message
-  // await initRabbit();
+  await initRabbit();
 
   const server = new Server(service.port);
 
