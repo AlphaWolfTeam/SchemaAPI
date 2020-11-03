@@ -115,7 +115,9 @@ export default class SchemaManager {
     const deletedProperties: IProperty[] = [];
     newSchema.schemaProperties = [];
 
-    await this.checkIfNameUnique(newSchema.schemaName);
+    if(prevSchema.schemaName !== newSchema.schemaName) {
+      await this.checkIfNameUnique(newSchema.schemaName);
+    }
     this.checkIfAllPropertiesUnique(newProperties);
     await this.updatePrevProperties(
       prevSchema.schemaProperties,
@@ -191,6 +193,7 @@ export default class SchemaManager {
     schemaProperties: IProperty[],
     createdProperties: IProperty[]
   ): Promise<void> {
+
     await Promise.all(
       newProperties.map(async (newProperty) => {
         let prevPropertyIndex = this.getPropertyIndexInList(

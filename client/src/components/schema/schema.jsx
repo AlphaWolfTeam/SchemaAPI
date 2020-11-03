@@ -8,6 +8,7 @@ import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import useStyles from "./schema.styles";
 import ClickablePropertiesList from "../clickable-properties-list/clickable-properties-list";
+import SchemaService from "../../services/SchemaService";
 
 const Schema = () => {
   const classes = useStyles();
@@ -27,17 +28,11 @@ const Schema = () => {
     setSelectedProperty(undefined);
   };
 
-  const handleDeleteSchema = () => {
-    const newSchemasList = schemasList.filter(
-      (schema) => schema.schemaName !== schemaName
-    );
-    setSchemasList(newSchemasList);
+  const handleDeleteSchema = async () => {
+    await SchemaService.deleteSchemaById(schema._id);
+    await setSchemasList(await SchemaService.getSchemasList());
     history.push("/");
   };
-
-  useEffect(() => {
-    console.log("schema", schema);
-  }, [schema]);
 
   return (
     <div className={classes.root}>
