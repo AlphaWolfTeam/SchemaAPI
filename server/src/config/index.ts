@@ -6,7 +6,7 @@ const config = {
         port: env.get('PORT').required().asPortNumber(),
     },
     client:{
-        url: env.get('CLIENT_URL').required().asString(),
+        url: env.get('CLIENT_URI').required().asString(),
     },
     mongo: {
         uri: env.get('MONGO_URI').required().asUrlString(),

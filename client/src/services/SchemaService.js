@@ -6,7 +6,8 @@ class SchemaService {
     return data;
   }
 
-  static async getSchemasById(schemaId) {
+  // TODO: maybe delete
+  static async getSchemaById(schemaId) {
     const { data } = await axiosInstance.get(`/${schemaId}`);
     return data;
   }
@@ -23,12 +24,13 @@ class SchemaService {
     });
   }
 
-  static deleteSchemaById(schemaId) {
-    axiosInstance.delete(`/${schemaId}`);
+  static async deleteSchemaById(schemaId) {
+    await axiosInstance.delete(`/${schemaId}`);
   }
 
-  static deletePropertyFromSchemaById(schemaId, propertyId) {
-    axiosInstance.delete(`/${schemaId}/${propertyId}`);
+  // TODO: maybe delete
+  static async deletePropertyFromSchemaById(schemaId, propertyId) {
+    await axiosInstance.delete(`/${schemaId}/${propertyId}`);
   }
 }
 
