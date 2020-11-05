@@ -275,23 +275,23 @@ Request body:
 * Create Schema
 
     {
-    method: "create schema",
-    schema: ISchema
+      method: "create schema",
+      schema: ISchema
     }
 
 * Update Schema
 
     {
-    method: "update schema",
-    schema: ISchema,
-    prevSchema: ISchema
+      method: "update schema",
+      schema: ISchema,
+      prevSchema: ISchema
     }
 
 * Delete Schema
 
     {
-    method: "delete schema",
-    schemaName: string
+      method: "delete schema",
+      schemaName: string
     }
 
 * Delete Property
