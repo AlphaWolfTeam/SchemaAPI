@@ -19,7 +19,6 @@ const initializeMongo = async () => {
 
 const main = async () => {
   await initializeMongo();
-  // TODO: Remove from message
   await initRabbit();
 
   const server = new Server(service.port);

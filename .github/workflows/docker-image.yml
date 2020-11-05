@@ -23,6 +23,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: alphawolfsforce/jaws-schema-api
           tags: latest
+          path: ./server
         
       - name: ./
         uses: garygrossgarten/github-action-ssh@release

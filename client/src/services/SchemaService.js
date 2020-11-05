@@ -7,7 +7,7 @@ class SchemaService {
   }
 
   // TODO: maybe delete
-  static async getSchemaById(schemaId) {
+  static async getSchemasById(schemaId) {
     const { data } = await axiosInstance.get(`/${schemaId}`);
     return data;
   }

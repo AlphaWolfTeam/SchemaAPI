@@ -1,4 +1,4 @@
-# schema
+# schema-service
 
 ## HTTP Requests
 

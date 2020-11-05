@@ -115,7 +115,7 @@ export default class SchemaManager {
     const deletedProperties: IProperty[] = [];
     newSchema.schemaProperties = [];
 
-    if(prevSchema.schemaName !== newSchema.schemaName) {
+    if (prevSchema.schemaName !== newSchema.schemaName) {
       await this.checkIfNameUnique(newSchema.schemaName);
     }
     this.checkIfAllPropertiesUnique(newProperties);
