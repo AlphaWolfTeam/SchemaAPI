@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-// import { PermissionDeniedError } from "../errors/user";
+import { PermissionDeniedError } from "../errors/user";
 
 export const checkPermission = async (
   req: Request,
@@ -7,9 +7,7 @@ export const checkPermission = async (
   next: NextFunction,
   permission: number
 ): Promise<void> => {
-  // req.body.currentUser?.permission?.includes(permission)
-  //   ? next()
-  //   : res.json(new PermissionDeniedError());
-  if (req&&res&&permission)console.log('')
-  next()
+  req.body.currentUser?.permission?.includes(permission)
+    ? next()
+    : res.json(new PermissionDeniedError());
 };
