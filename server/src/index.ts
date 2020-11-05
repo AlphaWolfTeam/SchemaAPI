@@ -3,7 +3,7 @@ import Server from "./server";
 import config from "./config/index";
 import { initRabbit } from "./utils/rabbitmq/rabbit";
 
-const { mongo, service } = config;
+const { mongo, service, rabbit } = config;
 
 const initializeMongo = async () => {
   console.log("Connecting to Mongo...");
@@ -19,7 +19,7 @@ const initializeMongo = async () => {
 
 const main = async () => {
   await initializeMongo();
-  await initRabbit();
+  await initRabbit(rabbit.uri,rabbit.retryOptions,rabbit.queueName);
 
   const server = new Server(service.port);
 
