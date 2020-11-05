@@ -272,26 +272,35 @@ Request body:
 
 ## Rabbit Data To Instances-Server
 
-| METHOD | DATA | 
-| ----------- | --------------- |
-| Create Schema       | {
+* Create Schema
+
+    {
     method: "create schema",
-    schema: ISchema,
-  } |
-| Update Schema     |  {
+    schema: ISchema
+    }
+
+* Update Schema
+
+    {
     method: "update schema",
     schema: ISchema,
-    prevSchema: ISchema,
-  } |
-| Delete Schema       | {
+    prevSchema: ISchema
+    }
+
+* Delete Schema
+
+    {
     method: "delete schema",
-    schemaName: string,
-  } |
-| Delete Property       | {
-     method: "delete property",
+    schemaName: string
+    }
+
+* Delete Property
+
+    {
+    method: "delete property",
     schemaName: string,
     propertyName: string
-} |
+    }
 
 ## Http Errors
 
