@@ -6,6 +6,7 @@ class SchemaService {
     return data;
   }
 
+  // TODO: maybe delete
   static async getSchemasById(schemaId) {
     const { data } = await axiosInstance.get(`/${schemaId}`);
     return data;
@@ -27,6 +28,7 @@ class SchemaService {
     axiosInstance.delete(`/${schemaId}`);
   }
 
+  // TODO: maybe delete
   static deletePropertyFromSchemaById(schemaId, propertyId) {
     axiosInstance.delete(`/${schemaId}/${propertyId}`);
   }

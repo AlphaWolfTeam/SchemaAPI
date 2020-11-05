@@ -5,6 +5,7 @@ import { schemasListContext } from "../shared/contexts";
 import { useHistory } from "react-router";
 import useStyles from "./add-schema.styles";
 import EditablePropertiesList from "../editable-properties-list/editable-properties-list";
+import SchemaService from '../../services/SchemaService';
 
 const AddSchema = () => {
   const classes = useStyles();
@@ -16,15 +17,12 @@ const AddSchema = () => {
     false
   );
 
-  const handleSchemaCreation = () => {
-    // TODO: create schema
-    setSchemasList((prevSchemas) => [
-      ...prevSchemas,
-      {
-        schemaName: schemaName,
-        schemaProperties: schemaProperties,
-      },
-    ]);
+  const handleSchemaCreation = async () => {
+    await setSchemasList(await SchemaService.createSchema({
+      schemaName: schemaName,
+      schemaProperties: schemaProperties
+    }));
+    await setSchemasList(await SchemaService.getSchemasList());
     history.push("/");
   };
 

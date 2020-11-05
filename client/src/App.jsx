@@ -16,46 +16,7 @@ const App = () => {
   const [schemasList, setSchemasList] = useState([]);
 
   const getSchemaList = async () => {
-    // TODO: use service
-    // setSchemasList(await SchemaService.getSchemasList());
-    setSchemasList([
-      {
-        _id: "5f60f0b30f0b504044b149ba",
-        schemaName: "schema 1",
-        schemaProperties: [
-          {
-            _id: "5f60f0b30f0b504044b149bb",
-            propertyName: "property1",
-            propertyType: "Number",
-            defaultValue: 1,
-            enum: [1, 2, 3],
-            isUnique: true,
-            index: false,
-            required: true,
-            validation: { biggerThan: 0, differFrom: [4, 5] },
-            createdAt: "2020-10-15T13:07:02.134Z",
-            updatedAt: "2020-10-15T13:07:02.134Z",
-            __v: 0,
-          },
-        ],
-        createdAt: "2020-10-15T13:07:02.134Z",
-        updatedAt: "2020-10-15T13:07:02.134Z",
-      },
-      {
-        _id: "5f60f0b30f0b504044b149bc",
-        schemaName: "schema 2",
-        schemaProperties: [],
-        createdAt: "2020-10-15T13:07:02.134Z",
-        updatedAt: "2020-10-15T13:07:02.134Z",
-      },
-      {
-        _id: "5f60f0b30f0b504044b149bd",
-        schemaName: "schema 3",
-        schemaProperties: [],
-        createdAt: "2020-10-15T13:07:02.134Z",
-        updatedAt: "2020-10-15T13:07:02.134Z",
-      },
-    ]);
+    setSchemasList(await SchemaService.getSchemasList());
   };
 
   useEffect(() => {

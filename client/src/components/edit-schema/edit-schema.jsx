@@ -6,6 +6,7 @@ import { TextField, Button } from "@material-ui/core";
 import EditablePropertiesList from "../editable-properties-list/editable-properties-list";
 import AddProperty from "../add-property/add-property";
 import useStyles from "./edit-schema.styles";
+import SchemaService from '../../services/SchemaService';
 
 const EditSchema = () => {
   const classes = useStyles();
@@ -31,12 +32,10 @@ const EditSchema = () => {
   const handleCloseCreatePropertyDialog = () => {
     setOpenCreatePropertyDialog(false);
   };
-  const handleSchemaUpdate = () => {
-    const newSchemasList = schemasList.filter(
-      (schema) => schema.schemaName !== schemaName
-    );
-    newSchemasList.push(newSchema);
-    setSchemasList(newSchemasList);
+  const handleSchemaUpdate = async () => {
+    await setSchemasList(await SchemaService.updateSchema(
+      prevSchema._id, newSchema));
+    await setSchemasList(await SchemaService.getSchemasList());
     history.push("/");
   };
 
