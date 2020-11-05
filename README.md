@@ -269,7 +269,30 @@ Request body:
       ],
       "createdAt":"2013-10-01T00:00:00.000Z"
     }  
-    
+
+## Rabbit Data To Instances-Server
+
+| METHOD | DATA | 
+| ----------- | --------------- |
+| Create Schema       | {
+    method: "create schema",
+    schema: ISchema,
+  } |
+| Update Schema     |  {
+    method: "update schema",
+    schema: ISchema,
+    prevSchema: ISchema,
+  } |
+| Delete Schema       | {
+    method: "delete schema",
+    schemaName: string,
+  } |
+| Delete Property       | {
+     method: "delete property",
+    schemaName: string,
+    propertyName: string
+} |
+
 ## Http Errors
 
 Error responses includes a common HTTP status code, error name and message for the developer. For example:

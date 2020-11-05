@@ -12,6 +12,15 @@ import {
   SchemaNotFoundError,
   InvalidValueInSchemaError,
 } from "../utils/errors/user";
+import {
+  sendCreateSchemaMethod,
+  sendDeletePropertyMethod,
+  sendDeleteSchemaMethod,
+  sendUpdateSchemaMethod,
+} from "../utils/rabbitmq/rabbit";
+import config from "../config/index";
+
+const { rabbit } = config;
 
 export default class SchemaManager {
   static async create(
@@ -30,10 +39,15 @@ export default class SchemaManager {
         ...schema,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }).catch(async (error) => {
-        await this.revertCreation(schema);
-        throw error;
-      });
+      })
+        .then(async (createdSchema) => {
+          await sendCreateSchemaMethod(rabbit.queueName, createdSchema);
+          return createdSchema;
+        })
+        .catch(async (error) => {
+          await this.revertCreation(schema);
+          throw error;
+        });
     }
   }
 
@@ -67,6 +81,7 @@ export default class SchemaManager {
       schema.schemaProperties.forEach((property: IProperty) => {
         PropertyManager.deleteById(String(property));
       });
+      await sendDeleteSchemaMethod(rabbit.queueName, schema.schemaName);
     } else {
       throw new SchemaNotFoundError();
     }
@@ -82,12 +97,20 @@ export default class SchemaManager {
       propertyId
     );
     if (propertyIndex > -1) {
-      schema.schemaProperties.splice(propertyIndex, 1);
+      const deletedProperty: IProperty = schema.schemaProperties.splice(
+        propertyIndex,
+        1
+      )[0];
       await PropertyManager.deleteById(propertyId);
+      SchemaRepository.updateById(schemaId, schema as ISchema);
+      await sendDeletePropertyMethod(
+        rabbit.queueName,
+        deletedProperty.propertyName,
+        schema.schemaName
+      );
     } else {
       throw new PropertyNotInSchemaError();
     }
-    SchemaRepository.updateById(schemaId, schema as ISchema);
   }
 
   static async getById(schemaId: string): Promise<ISchema | null> {
@@ -139,16 +162,26 @@ export default class SchemaManager {
     return SchemaRepository.updateById(id, {
       ...newSchema,
       updatedAt: new Date(),
-    }).catch(async () => {
-      await this.revertUpdate(
-        createdProperties,
-        updatedProperties,
-        deletedProperties,
-        prevSchema.schemaName,
-        newSchema.schemaName
-      );
-      throw new InvalidValueInSchemaError();
-    });
+    })
+      .then(async () => {
+        const updatedSchema = await this.getById(prevSchema._id as string);
+        await sendUpdateSchemaMethod(
+          rabbit.queueName,
+          updatedSchema as ISchema,
+          prevSchema
+        );
+        return updatedSchema;
+      })
+      .catch(async () => {
+        await this.revertUpdate(
+          createdProperties,
+          updatedProperties,
+          deletedProperties,
+          prevSchema.schemaName,
+          newSchema.schemaName
+        );
+        throw new InvalidValueInSchemaError();
+      });
   }
 
   private static async updatePrevProperties(
@@ -193,7 +226,6 @@ export default class SchemaManager {
     schemaProperties: IProperty[],
     createdProperties: IProperty[]
   ): Promise<void> {
-
     await Promise.all(
       newProperties.map(async (newProperty) => {
         let prevPropertyIndex = this.getPropertyIndexInList(

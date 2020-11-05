@@ -22,13 +22,19 @@ import {
 import SchemaManager from "../src/schema/schema.manager";
 import ISchema from "../src/schema/schema.interface";
 import SchemaModel from "../src/schema/schema.model";
+// import { initRabbit } from "../src/utils/rabbitmq/rabbit";
 
 const { expect } = chai;
-const { mongo } = config;
+const { test } = config;
 
 describe("Property Type Manager", () => {
   before(async () => {
-    await mongoose.connect(mongo.testUri, {
+    // await initRabbit(
+    //   test.rabbit.uri,
+    //   test.rabbit.retryOptions,
+    //   test.rabbit.queueName
+    // );
+    await mongoose.connect(test.mongo.uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,

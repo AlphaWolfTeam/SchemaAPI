@@ -26,7 +26,7 @@ services:
         MONGO_SCHEMA_COLLECTION_NAME: "schema"
         MONGO_PROPERTY_COLLECTION_NAME: "property"
         MONGO_URI: "mongodb://mongo"
-        CLIENT_URL: "http://client:3001"
+        CLIENT_URI: "http://client:3001"
         RABBIT_URI: "amqp://rabbit"
         QUEUE_NAME: "schema-instances-queue"
     ports:
