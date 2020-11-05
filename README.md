@@ -270,16 +270,16 @@ Request body:
       "createdAt":"2013-10-01T00:00:00.000Z"
     }  
 
-## Rabbit Data To Instances-Server
+## Sending Data To Instances-Server Using Rabbit
 
-* Create Schema
+Create Schema
 
     {
       method: "create schema",
       schema: ISchema
     }
 
-* Update Schema
+Update Schema
 
     {
       method: "update schema",
@@ -287,14 +287,14 @@ Request body:
       prevSchema: ISchema
     }
 
-* Delete Schema
+Delete Schema
 
     {
       method: "delete schema",
       schemaName: string
     }
 
-* Delete Property
+Delete Property
 
     {
     method: "delete property",
