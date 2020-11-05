@@ -24,13 +24,13 @@ class SchemaService {
     });
   }
 
-  static deleteSchemaById(schemaId) {
-    axiosInstance.delete(`/${schemaId}`);
+  static async deleteSchemaById(schemaId) {
+    await axiosInstance.delete(`/${schemaId}`);
   }
 
   // TODO: maybe delete
-  static deletePropertyFromSchemaById(schemaId, propertyId) {
-    axiosInstance.delete(`/${schemaId}/${propertyId}`);
+  static async deletePropertyFromSchemaById(schemaId, propertyId) {
+    await axiosInstance.delete(`/${schemaId}/${propertyId}`);
   }
 }
 

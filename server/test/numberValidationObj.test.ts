@@ -9,12 +9,18 @@ import {
   EnumValuesAreNotValidError,
   InvalidValueInPropertyError,
 } from "../src/utils/errors/user";
+// import { initRabbit } from "../src/utils/rabbitmq/rabbit";
 
 const { expect } = chai;
-const { mongo } = config;
+const { test } = config;
 describe("Number validation object", () => {
   before(async () => {
-    await mongoose.connect(mongo.testUri, {
+    // await initRabbit(
+    //   test.rabbit.uri,
+    //   test.rabbit.retryOptions,
+    //   test.rabbit.queueName
+    // );
+    await mongoose.connect(test.mongo.uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,

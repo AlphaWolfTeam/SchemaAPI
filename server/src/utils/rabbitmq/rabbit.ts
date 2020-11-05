@@ -1,32 +1,63 @@
 import menash from "menashmq";
-import config from "../../config/index";
+import ISchema from "../../schema/schema.interface";
 import IRabbitMessage from "./rabbitMessage.interface";
 
-const { rabbit } = config;
-
-export const initRabbit = async () => {
+export const initRabbit = async (
+  uri: string,
+  retryOptions: object,
+  queueName: string
+) => {
   console.log("Connecting to Rabbit...");
-  await menash.connect(rabbit.uri, rabbit.retryOptions);
+  await menash.connect(uri, retryOptions);
   console.log("Rabbit connected");
-  await menash.declareQueue(rabbit.queueName);
+  await menash.declareQueue(queueName);
   console.log("Rabbit initialized");
 };
 
-export const sendDataToRabbit = async (data: IRabbitMessage) => {
-  return menash.send(rabbit.queueName, data);
+const sendDataToRabbit = async (queueName: string, data: IRabbitMessage) => {
+  return menash.send(queueName, data);
 };
 
-// export const receiveDataFromRabbit = (msg: ConsumerMessage) => {
-//     const data = msg.getContent();
-//     console.log(data);
-//     msg.ack();
-// }
+export const sendCreateSchemaMethod = async (
+  queueName: string,
+  createdSchema: ISchema
+): Promise<void> => {
+  await sendDataToRabbit(queueName, {
+    method: "create schema",
+    schema: createdSchema,
+  } as IRabbitMessage);
+};
 
-// const main = async() => {
-//     await initRabbit();
-//     await menash.queue('instances-queue').activateConsumer(receiveDataFromRabbit: ConsumerMessage);
-// }
+export const sendUpdateSchemaMethod = async (
+  queueName: string,
+  updatedSchema: ISchema,
+  prevSchema: ISchema
+): Promise<void> => {
+  await sendDataToRabbit(queueName, {
+    method: "update schema",
+    schema: updatedSchema,
+    prevSchema: prevSchema,
+  } as IRabbitMessage);
+};
 
-// const main = async() => {
-//     await initRabbit();
-// }
+export const sendDeleteSchemaMethod = async (
+  queueName: string,
+  deletedSchemaName: string
+): Promise<void> => {
+  await sendDataToRabbit(queueName, {
+    method: "delete schema",
+    schemaName: deletedSchemaName,
+  } as IRabbitMessage);
+};
+
+export const sendDeletePropertyMethod = async (
+  queueName: string,
+  deletedPropertyName: string,
+  schemaName: string
+): Promise<void> => {
+  await sendDataToRabbit(queueName, {
+    method: "delete property",
+    schemaName: schemaName,
+    propertyName: deletedPropertyName,
+  } as IRabbitMessage);
+};
