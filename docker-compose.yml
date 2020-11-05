@@ -7,7 +7,6 @@ services:
       - '9000:27017'
     volumes:
       - 'mongo:/data/db'
-    # restart: always
 
   rabbit:
     image: rabbitmq:3-management
@@ -15,21 +14,18 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    restart: always
     
   server:
-    # image: 'alphawolfsforce/jaws-schema-api:latest'
     container_name: server
     build:
-      context: ../../server
+      context: ./server
       dockerfile: Dockerfile
     environment:
         PORT: "3000"
         MONGO_SCHEMA_COLLECTION_NAME: "schema"
         MONGO_PROPERTY_COLLECTION_NAME: "property"
-        # MONGO_URI: "mongodb://Alpha:Alpha123456@51.124.152.60:27017"
         MONGO_URI: "mongodb://mongo"
-        CLIENT_URL: "client-nginx"
+        CLIENT_URL: "http://client:3001"
         RABBIT_URI: "amqp://rabbit"
         QUEUE_NAME: "schema-instances-queue"
     ports:
@@ -37,7 +33,15 @@ services:
     depends_on:
       - mongo
       - rabbit
-      # -  client-nginx
-    restart: always
+
+  client:
+    container_name: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    depends_on:
+      - server
 volumes: 
   mongo:
