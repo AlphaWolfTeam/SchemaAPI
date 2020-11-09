@@ -3,7 +3,7 @@ import ISchema from "../../schema/schema.interface";
 export default interface IRabbitMessage {
   method: string;
   schema?: ISchema;
-  propertyName?: string;
+  prevSchema?: ISchema;
   schemaName?: string;
-  prevSchemaName?: string;
+  propertyName?: string;
 }
