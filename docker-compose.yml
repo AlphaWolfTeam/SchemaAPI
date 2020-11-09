@@ -1,20 +1,20 @@
 version: '3'
 
 services:
-  mongo:
-    image: mongo
-    container_name: mongo
-    ports:
-      - '9000:27017'
-    volumes:
-      - 'mongo:/data/db'
+  # mongo:
+  #   image: mongo
+  #   container_name: mongo
+  #   ports:
+  #     - '9000:27017'
+  #   volumes:
+  #     - 'mongo:/data/db'
 
-  rabbit:
-    image: rabbitmq:3-management
-    container_name: rabbit
-    ports:
-      - 5672:5672
-      - 15672:15672
+  # rabbit:
+  #   image: rabbitmq:3-management
+  #   container_name: rabbit
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
     
   server:
     container_name: server
@@ -25,15 +25,17 @@ services:
         PORT: "3000"
         MONGO_SCHEMA_COLLECTION_NAME: "schema"
         MONGO_PROPERTY_COLLECTION_NAME: "property"
-        MONGO_URI: "mongodb://mongo"
+        # MONGO_URI: "mongodb://mongo"
+        MONGO_URI: "mongodb://Alpha:Alpha123456@51.124.152.60:27017"
         CLIENT_URI: "http://client:3001"
-        RABBIT_URI: "amqp://rabbit"
+        # RABBIT_URI: "amqp://rabbit"
+        RABBIT_URI: "amqp://Alpha:Alpha123456@52.169.234.174:15672"
         QUEUE_NAME: "schema-instances-queue"
     ports:
       - '3000:3000'
-    depends_on:
-      - mongo
-      - rabbit
+    # depends_on:
+      # - mongo
+      # - rabbit
 
   client:
     container_name: client
