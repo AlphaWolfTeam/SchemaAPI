@@ -29,7 +29,7 @@ services:
         MONGO_URI: "mongodb://Alpha:Alpha123456@51.124.152.60:27017"
         CLIENT_URI: "http://client:3001"
         # RABBIT_URI: "amqp://rabbit"
-        RABBIT_URI: "amqp://Alpha:Alpha123456@52.169.234.174:15672"
+        RABBIT_URI: "amqp://jawsAlpha:jawsAlpha123456@52.164.243.130:5672"
         QUEUE_NAME: "schema-instances-queue"
     ports:
       - '3000:3000'
